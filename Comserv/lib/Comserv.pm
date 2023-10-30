@@ -44,8 +44,17 @@ __PACKAGE__->config(
     'View::TT' => {
         WRAPPER => 'layout.tt',
         TEMPLATE_EXTENSION => '.tt',
+    'Controller::BMaster' => { path => '/BMaster' },
+    'Controller::CSC' => { path => '/CSC' },
+    'Controller::USBM' => { path => '/USBM' },
     },
 );
+sub bmaster :Path('/BMaster') {
+    my ($self, $c) = @_;
+    print "Calling /BMaster in Comserv.pm\n";  # Add this print statement
+    $c->stash(template => 'BMaster/BMaster.tt', layout => 'layout.tt');
+    $c->forward('Comserv::View::TT');  # Render the template
+}
 # Start the application
 __PACKAGE__->setup();
 
