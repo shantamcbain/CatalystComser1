@@ -1,0 +1,19 @@
+[% PageVersion = 'setup.tt,v 0.01 2023/09/01 shanta Exp shanta ' %]
+[% IF debug == 1 %]
+  [% PageVersion %]
+[% END %]
+
+<h1>Database Setup.pm</h1>
+
+[% IF error_message %]
+    <div class="alert alert-danger">
+        <strong>Error:</strong> [% error_message %]
+    </div>
+[% END %]
+
+<form method="POST">
+    Host: <input type="text" name="host" /><br>
+    User: <input type="text" name="user" /><br>
+    Password: <input type="password" name="password" /><br>
+    <input type="submit" value="Submit" />
+</form>

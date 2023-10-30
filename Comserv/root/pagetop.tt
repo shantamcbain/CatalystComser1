@@ -1,0 +1,182 @@
+<header>
+    <!-- Site Greeting -->
+    <h1>[% welcome_message | html %]</h1>
+    <!-- Debug Information -->
+    [% IF debug_mode == 1 %]
+    [% INCLUDE 'debug.tt' %]
+    <div class="debug-content">
+        [% debug_content %]
+    </div>
+    [% END %]
+   [%# INCLUDE 'debug.tt' %]
+    <!-- Main Menu -->
+    <nav>
+        <ul class="horizontal-menu">
+            <li class="horizontal-dropdown">
+                <a href="#" class="dropbtn">Main</a>
+                <div class="dropdown-content">
+                    <a href="[% c.uri_for('/' _ c.session.SiteName)%]" onclick="activateSite('Home')">Home</a>
+                    <a href="[% c.session.return_url %]">Go Back</a>
+                    <!-- Add more main menu options -->
+                </div>
+            </li>
+            <li class="horizontal-dropdown">
+                <a href="#" class="dropbtn">Login</a>
+                <div class="dropdown-content">
+                    <a href="/login">Login</a>
+                    <!-- Add more login options if needed -->
+                </div>
+            </li>
+            <li class="horizontal-dropdown">
+                <a href="#" class="dropbtn">Global</a>
+                <div class="dropdown-content">
+                    <a href="/mail">Mail</a>
+                    <a href="/jobs">Jobs</a>
+                    <a href="/join">Join</a>
+                    <!-- Add more global options -->
+                </div>
+            </li>
+            <li class="horizontal-dropdown">
+                <a href="#" class="dropbtn">Hosted</a>
+                <div class="dropdown-content">
+                    <a href="/apply">Apply for Hosted Account</a>
+                    <a href="/accounts">Hosted Accounts</a>
+                    <!-- Add more hosted op    function toggleDebugMode() {
+        // Get the current debug mode value from the session or stash
+        var debugMode = getSessionDebugMode(); // Replace with your implementation to retrieve the debug mode value
+
+        // Toggle the debug mode value
+        if (debugMode === 0) {
+            debugMode = 1;
+        } else {
+            debugMode = 0;
+        }
+
+        // Update the debug mode value in the session and stash
+        setSessionDebugMode(debugMode); // Replace with your implementation to update the debug mode value
+
+        // Optionally, perform any additional actions based on the new debug mode value
+        if (debugMode === 1) {
+            console.log('Debug mode enabled');
+            // Perform actions for debug mode enabled
+        } else {
+            console.log('Debug mode disabled');
+            // Perform actions for debug mode disabled
+        }
+    }
+
+    // Implement the functions getSessionDebugMode() and setSessionDebugMode() to retrieve and update the debug mode value in the session or stash.
+    // You can use AJAX requests or any other method suitable for your application.
+tions -->
+                </div>
+            </li>
+            <li class="horizontal-dropdown">
+                <a href="#" class="dropbtn">Member</a>
+                <div class="dropdown-content">
+                    <a href="/membership">Membership Information</a>
+                    <a href="/applymembership">Apply for Membership</a>
+                    <!-- Add more member options -->
+                </div>
+            </li>
+            [% INCLUDE 'admintopmenu.tt' %]
+            [% INCLUDE 'TopDropListHelpDesk.tt' %]
+        </ul>
+    </nav>
+</header>
+<script>
+    var submenuTimeouts = {};
+
+    function openSubmenu(submenuId) {
+        clearTimeout(submenuTimeouts[submenuId]);
+        document.getElementById(submenuId).classList.add('show');
+    }
+
+    function closeSubmenu(submenuId) {
+        submenuTimeouts[submenuId] = setTimeout(function () {
+            document.getElementById(submenuId).classList.remove('show');
+        }, 300);
+    }
+
+    function openAdminDropdown() {
+        clearTimeout(adminDropdownTimeout);
+        document.getElementById('adminDropdown').classList.add('show');
+    }
+
+    function closeAdminDropdown() {
+        adminDropdownTimeout = setTimeout(function () {
+            document.getElementById('adminDropdown').classList.remove('show');
+        }, 300);
+    }
+
+    function activateSite(site) {
+        // Code to be executed when a site is clicked
+        console.log('Site activated:', site);
+        // Replace the console.log statement with your desired code for site activation
+        // Perform the necessary action based on the site clicked (e.g., redirect, perform an operation, etc.)
+    }
+</script>
+<style>
+    .horizontal-menu {
+        display: flex;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .horizontal-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropbtn {
+        display: inline-block;
+        color: black;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        text-align: left;
+    }
+
+    .dropdown-content a:hover {
+        background-color: #f1f1f1;
+    }
+
+    .horizontal-dropdown:hover .dropdown-content {
+        display: block;
+    }
+    .dropdown-content .submenu-item {
+    position: relative;
+}
+
+.dropdown-content .submenu-item .submenu {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    padding: 10px;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.dropdown-content .submenu-item:hover .submenu {
+    display: block;
+}
+</style>

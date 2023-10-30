@@ -1,0 +1,103 @@
+<li class="horizontal-dropdown">
+    <a href="#" class="dropbtn">Admin</a>
+    <div class="dropdown-content">
+        <a href="/setup">Site Setup</a>
+        <div class="submenu-item">
+            <span class="submenu-header">Select Domain</span>
+            <div class="domain-submenu">
+                <!-- Add domain options here -->
+                 <a href="/BMaster?site=BMaster" class="site-dropdown-item" onclick="activateSite('BMaster')
+">BMaster</a>
+                <a href="/CSC?site=CSC" class="site-dropdown-item" onclick="activateSite('CSC')">CSC</a>
+                <a href="/USBM?site=USBM" class="site-dropdown-item" onclick="activateSite('USBM')">USBM</a>
+    </div>
+        </div>
+        <div class="submenu-item">
+            <span class="submenu-header">Other Options</span>
+            <div class="options-submenu">
+                <!-- Add other option links here -->
+[%#  debug_mode %]   [%# c.stash.debug_mode %]<!-- In the Template Toolkit template -->
+
+               [% IF debug_mode == 0 %]
+               [%# <a href="#" onclick="toggleDebugMode()">Toggle Debug Mode (On)</a> %]
+               <a href="[% c.session.return_url %]?debug=1">Toggle Debug Mode ON</a>
+               [% ELSE %]
+               [%# <a href="#" onclick="toggleDebugMode()">Toggle Debug Mode (Off)</a> %]
+               <a href="[% c.session.return_url %]?&debug=0">Toggle Debug Mode OFF</a>
+               [% END %]
+                <a href="/admin/settings">Settings</a>
+                <a href="/admin/users">Users</a>
+                <a href="#">Option 3</a>
+            </div>
+        </div>
+    </div>
+</li>
+<style>
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    left: 0; /* Add this line to align the menu to the left */
+}
+
+.domain-submenu,
+.options-submenu {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
+
+.submenu-item:hover .domain-submenu,
+.submenu-item:hover .options-submenu {
+    display: block;
+    left: 100%; /* Add this line to align the submenu to the right of the parent item */
+    top: 0;
+}
+</style>
+<script>
+    function openSubmenu(submenuId) {
+        document.getElementById(submenuId).style.display = "block";
+    }
+
+    function closeSubmenu(submenuId) {
+        document.getElementById(submenuId).style.display = "none";
+    }
+
+    function activateSite(site) {
+        // Code to be executed when a site is clicked
+        console.log('Site activated:', site);
+        // Replace the console.log statement with your desired code for site activation
+        // Perform the necessary action based on the site clicked (e.g., redirect, perform an operation, etc.)
+    }
+function toggleDebugMode() {
+    var debugMode = getSessionDebugMode();
+    var newDebugMode = debugMode === 0 ? 1 : 0;
+    setSessionDebugMode(newDebugMode);
+}
+
+function setSessionDebugMode(debugMode) {
+    // Update the debug mode value on the server-side
+    $.ajax({
+        url: '/update_debug_mode',
+        method: 'POST',
+        data: { debug_mode: debugMode },
+        success: function(response) {
+            console.log('Debug mode updated successfully');
+            // Reload the page or perform any necessary action after updating the debug mode
+            location.reload();
+        },
+        error: function(xhr, status, error) {
+            console.error('Error updating debug mode:', error);
+        }
+    });
+}
+function getSessionDebugMode() {
+    // Retrieve the debug mode value from the session or stash
+    return <%= $c->stash->{debug_mode} // $c->session->{debug_mode}%>;
+}
+</script>

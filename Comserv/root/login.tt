@@ -1,0 +1,15 @@
+[% INCLUDE 'layout.tt' %]
+[% PageVersion = 'login.tt,v 0.01 2023/09/01 shanta Exp shanta ' %]
+[% IF debug == 1 %]
+  [% PageVersion %]
+[% END %]
+<!-- root/src/login.tt2 -->
+<form method="post" action="/login">
+    <label for="username">Username</label>
+    <input type="text" id="username" name="username">
+
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password">
+
+    <input type="submit" value="Login">
+</form>

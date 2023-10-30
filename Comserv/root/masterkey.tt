@@ -1,0 +1,9 @@
+[%# masterkey.tt %]
+[%# Template for the popup to enter the master key %]
+<div>
+    <h1>Enter Master Key</h1>
+    <form action="/set_master_key" method="post">
+        <input type="text" name="master_key" placeholder="Enter master key">
+        <button type="submit">Submit</button>
+    </form>
+</div>

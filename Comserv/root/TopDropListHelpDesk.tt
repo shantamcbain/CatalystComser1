@@ -1,0 +1,17 @@
+
+ 
+           <li class="horizontal-dropdown">
+                <a href="#" class="dropbtn" target=.blank'>HelpDesk</a>
+                <div class="dropdown-content">
+                    <a href="/helpdesk"target=.blank'>HelpDesk</a>
+                    <a href="/faq" target="_blank" ><font   class="LeftSideBarNavStyle">Our FAQ</font></a>
+                    <a href="/knowlegebase" target="_blank" >Knowledge
+                            base<</a>
+                    <a href="https://www.computersystemconsulting.ca/whmcs/submitticket.php?step=2&deptid=2"
+                   target='_blank' >Sumbmit a support ticket.</a>
+
+                    <!-- Add more hosted options -->
+                </div>
+            </li>
+
+

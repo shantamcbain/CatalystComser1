@@ -1,0 +1,41 @@
+<h1>Stash Information</h1>
+<table>
+    <tr>
+        <th>Variable</th>
+        <th>Value</th>
+    </tr>
+    [% FOREACH key IN c.stash.keys.sort %]
+    <tr>
+        <td>[% key %]</td>
+        <td>[% c.stash.$key | html  %]</td>
+    </tr>
+    [% END %]
+</table>
+
+<h1>Session Information</h1>
+<table>
+    <tr>
+        <th>Variable</th>
+        <th>Value</th>
+    </tr>
+    [% FOREACH key IN c.session.keys.sort %]
+    <tr>
+        <td>[% key %]</td>
+        <td>[% c.session.$key | html %]</td>
+    </tr>
+    [% END %]
+</table>
+[% USE Dumper %]
+<h1>Debug Information</h1>
+<table>
+    <tr>
+        <th>Variable</th>
+        <th>Value</th>
+    </tr>
+    [% FOREACH key IN debug_vars.keys.sort %]
+    <tr>
+        <td>[% key %]</td>
+        <td>[% debug_vars.$key | html %]</td>
+    </tr>
+    [% END %]
+</table>

@@ -1,0 +1,75 @@
+<head>[% PageVersion	= 'Header.tt,v 0.01 2023/08/30 shanta Exp shanta '	%]
+<meta charset="utf-8">
+[% IF debug == 1 %]
+ [%	PageVersion %]
+[% END %]
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta NAME="REVISIT-AFTER" CONTENT="7 days">
+<meta NAME="ROBOTS" CONTENT="index all, follow all">
+   [%#  HostName = 'https://computersystemconsulting.ca' %]
+    [% HostName =  c.stash.HostName %]  <!-- This is where you access the stashed HostName -->
+    [% SiteName = c.stash.SiteName %]  <!-- This is where you access the stashed SiteName -->
+    [% favicon =  c.stash.HostName _ "/images/favicon.ico" %]
+
+     [% page_title = "Defalt Home" %]
+	[% ScriptDisplayName = 'Catalyst' %]
+[% css_view_url= c.stash.HostName  _ "/styles/usbmstyle.css"  %]
+
+<meta charset="utf-8">
+[% Catalyst.debug(obj) %]
+
+[% PageSiteName = HostName _ 'Comserv home'  %]
+
+
+
+[% ScriptDisplayName =  'Comserv home' %]
+<title> [%  HostName _ ': ' _ ScriptDisplayName _ ': ' _ page_title %] </title>
+
+
+[%  HostName = "http://computersystemconsulting.ca" %]
+[%# data.css_view_url ||%]
+[% css_view_url = HostName _ "/styles/usbmstyle.css"  %]
+<LINK REL ="stylesheet" TYPE ="text/css" HREF ="[%  css_view_url %]">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta NAME="REVISIT-AFTER" CONTENT="7 days">
+<meta NAME="ROBOTS" CONTENT="index all, follow all">
+
+[% IF keywords %]
+ <META NAME = "keywords" CONTENT= "[% keywords %] ">
+
+[% ELSE %]
+<META NAME = "keywords" CONTENT= "[% data.http_header_keywords %] ">
+[% END %]
+
+[% IF  description %]
+<META NAME = "description" CONTENT= "[% description %] ">
+[% ELSE %]
+<META NAME = "description" CONTENT= "[% data.http_header_description %] ">
+[% END %]
+<link rel="shortcut icon" href="[% favicon %]" >
+ [% IF  SiteName == "CSC" %]
+  [% embed('CSCWHMCSInterface') %]
+
+ [% END %]
+
+<script language="javascript" type="text/javascript">
+function switchpage(select) {
+var index;
+for(index=0; index<select.options.length; index++)
+if(select.options[index].selected)
+{
+if(select.options[index].value!="")
+window.location.href=select.options[index].value;
+break;
+}
+</script>
+<script>type="text/javascript" src="/javascript/menu.js"></script>
+
+<link rel="stylesheet" type="text/css" href="/styles/Dropdown.css" />
+ <link rel="stylesheet" href="/styles/demonstration.css" type="text/css">
+
+    <script src="/javascript/Dropdown.crc.js"></script>
+    <script src="/javascript/demonstration.js"></script>
+</HEAD>
+
