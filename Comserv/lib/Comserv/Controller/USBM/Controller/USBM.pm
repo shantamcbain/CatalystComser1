@@ -3,6 +3,10 @@ use Moose;
 use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
+my $debug = "Comserv::Controller::USBM::Controller::USBM # " . __LINE__ . "\n";
+
+print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package:
+" . (caller(1))[0] . "\n";
 
 =head1 NAME
 
@@ -21,12 +25,13 @@ Catalyst Controller.
 
 =cut
 
-sub index :Path :Args(0) {
-    my ( $self, $c ) = @_;
 
-    $c->response->body('Matched Comserv::Controller::USBM::Controller::USBM in USBM::Controller::USBM.');
+sub csc :Path('/USBM') {
+    my ($self, $c) = @_;
+    print $debug. __LINE__. "Calling /USBM in USBM.pm\n";
+    $c->stash(template => 'USBM/USBMHome.tt', layout => 'layout.tt');
+    $c->forward($c->view('TT'));  # Render the template
 }
-
 
 
 =encoding utf8
