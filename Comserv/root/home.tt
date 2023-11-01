@@ -3,7 +3,8 @@
 [% IF debug == 1 %]
  [%	PageVersion %]
     [% "Debugging HostName: " _ HostName %]
-[% END %]
+    [% INCLUDE 'debug.tt' %]
+[% END %]    [% INCLUDE 'debug.tt' %]
 <p>This is the landing page for the ComServ Application.</p>
 <p>Here is a list of the modules and sites available for this application.</p>
 <p>Check out our BMaster Module:</p>

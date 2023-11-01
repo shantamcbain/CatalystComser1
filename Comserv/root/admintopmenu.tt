@@ -18,7 +18,7 @@
                 <!-- Add other option links here -->
 [%#  debug_mode %]   [%# c.stash.debug_mode %]<!-- In the Template Toolkit template -->
 
-               [% IF debug_mode == 0 %]
+               [% IF debug == 0 %]
                [%# <a href="#" onclick="toggleDebugMode()">Toggle Debug Mode (On)</a> %]
                <a href="[% c.session.return_url %]?debug=1">Toggle Debug Mode ON</a>
                [% ELSE %]

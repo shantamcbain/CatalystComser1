@@ -1,19 +1,7 @@
-
-
-
-
-
-
-
- 
-
-	 
-	
-	
-        
-	
-
-
+[% PageVersion	= 'WebSiteAdminView.tt,v 0.01 2023/08/30 shanta Exp shanta '	%]
+[% IF debug == 1 %]
+ [%	PageVersion %]
+[% END %]
 <A NAME="PageTop"></A>
 <br>
 <br>

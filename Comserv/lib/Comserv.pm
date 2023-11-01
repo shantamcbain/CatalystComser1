@@ -20,11 +20,19 @@ use Catalyst qw/
     -Debug
     ConfigLoader
     Static::Simple
+    StackTrace
+    Session
+    Session::Store::FastMmap
+    Session::State::Cookie
 /;
 
 extends 'Catalyst';
 
 our $VERSION = '0.01';
+my $debug = "Comserv Line #";
+
+print $debug . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller
+    (1))[0] . "\n";
 
 # Configure the application.
 #
@@ -44,18 +52,70 @@ __PACKAGE__->config(
     'View::TT' => {
         WRAPPER => 'layout.tt',
         TEMPLATE_EXTENSION => '.tt',
+    },
     'Controller::BMaster' => { path => '/BMaster' },
     'Controller::CSC' => { path => '/CSC' },
     'Controller::USBM' => { path => '/USBM' },
-    },
 );
-sub bmaster :Path('/BMaster') {
+sub home :Path :Args(0) {
     my ($self, $c) = @_;
-    print "Calling /BMaster in Comserv.pm\n";  # Add this print statement
-    $c->stash(template => 'BMaster/BMaster.tt', layout => 'layout.tt');
-    $c->forward('Comserv::View::TT');  # Render the template
+
+    # Get the domain name from the request
+    my $domain = $c->request->uri->host;
+    $c->session->{Domain} = $domain;
+    print $debug . __LINE__ . "Domain ". $domain . "\n";
+    # Get the debug parameter from the URL
+    my $debug_param = $c->req->param('debug');
+    print "Debug parameter: $debug_param\n" if $c->debug;
+    # Save the debug parameter value in the session
+    $c->session->{Debug} = $debug_param;
+
+    # Save the debug parameter value in the stash
+    $c->stash->{debug} = $debug_param;
+
+    my $site_name = $c->req->param('site');
+    if ($site_name) {
+        # Check if site name exists in session
+        my $stored_site_name = $c->session->{SiteName};
+        if ($stored_site_name && $stored_site_name ne $site_name) {
+            # Update the site name in the session
+            $c->session->{SiteName} = $site_name;
+            print "Site name updated in session to $site_name\n" if $c->debug;
+        }
+    }
+
+    # Get the domain name from the session
+    my $stored_domain = $c->session->{Domain};
+
+    # Check if the domain has changed
+    if ($stored_domain && $stored_domain ne $domain) {
+        # Update the domain name in the session
+        $c->session->{Domain} = $domain;
+    }
+
+    # Set the appropriate controller based on the domain name
+    my $controller;
+    if ($site_name eq 'CSC') {
+        $controller = 'CSC';
+    } elsif ($site_name eq 'USBM') {
+        $controller = 'USBM';
+    } elsif ($site_name eq 'BMaster') {
+        $controller = 'BMaster';
+    }
+
+    # Set the appropriate template based on the controller
+    my $template;
+    if ($controller) {
+        $c->stash(controller => $controller);
+        $template = lc($controller) . '/home.tt';
+    } else {
+        # If the domain is not recognized, do not display the home.tt template
+        $template = '';
+    }
+
+    $c->stash(template => $template);
+    $c->forward('View::TT');
 }
-# Start the application
 __PACKAGE__->setup();
 
 =encoding utf8
