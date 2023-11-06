@@ -56,6 +56,19 @@ __PACKAGE__->config(
     'Controller::BMaster' => { path => '/BMaster' },
     'Controller::CSC' => { path => '/CSC' },
     'Controller::USBM' => { path => '/USBM' },
+    'Controller::Root' => {
+        css_form => '/css_form',
+    },
+    'Plugin::Static::Simple' => {
+        dirs => [
+            'static',
+            qr/^(images|js|css)/,
+        ],
+        ignore_extensions => [ qw/ tt tt2 / ],
+    },
+    'Model::CssForm' => {
+           class => 'Comserv::Model::CssForm',
+       },
 );
 sub home :Path :Args(0) {
     my ($self, $c) = @_;
@@ -63,37 +76,16 @@ sub home :Path :Args(0) {
     # Get the domain name from the request
     my $domain = $c->request->uri->host;
     $c->session->{Domain} = $domain;
-    print $debug . __LINE__ . "Domain ". $domain . "\n";
+
     # Get the debug parameter from the URL
     my $debug_param = $c->req->param('debug');
-    print "Debug parameter: $debug_param\n" if $c->debug;
-    # Save the debug parameter value in the session
-    $c->session->{Debug} = $debug_param;
-
-    # Save the debug parameter value in the stash
     $c->stash->{debug} = $debug_param;
 
+    # Get the site name from the URL
     my $site_name = $c->req->param('site');
-    if ($site_name) {
-        # Check if site name exists in session
-        my $stored_site_name = $c->session->{SiteName};
-        if ($stored_site_name && $stored_site_name ne $site_name) {
-            # Update the site name in the session
-            $c->session->{SiteName} = $site_name;
-            print "Site name updated in session to $site_name\n" if $c->debug;
-        }
-    }
+    $c->stash->{SiteName} = $site_name;
 
-    # Get the domain name from the session
-    my $stored_domain = $c->session->{Domain};
-
-    # Check if the domain has changed
-    if ($stored_domain && $stored_domain ne $domain) {
-        # Update the domain name in the session
-        $c->session->{Domain} = $domain;
-    }
-
-    # Set the appropriate controller based on the domain name
+    # Set the appropriate controller based on the site name
     my $controller;
     if ($site_name eq 'CSC') {
         $controller = 'CSC';
@@ -106,17 +98,29 @@ sub home :Path :Args(0) {
     # Set the appropriate template based on the controller
     my $template;
     if ($controller) {
-        $c->stash(controller => $controller);
+        $c->stash->{controller} = $controller;
         $template = lc($controller) . '/home.tt';
     } else {
-        # If the domain is not recognized, do not display the home.tt template
+        # If the site name is not recognized, do not display the home.tt template
         $template = '';
     }
+    $c->stash->{template} = $template;
 
-    $c->stash(template => $template);
+    # Set the HostName and SiteName in the stash
+    $c->stash->{HostName} = $c->request->base;
+    my $hostName = $c->stash->{HostName};
+        # Print the value of HostName
+    $c->log->debug("HostName: $hostName");
+    print "HostName: $hostName\n";
+    $c->stash->{SiteName} = $site_name;
+
+    # Set the SiteName and Domain in the session
+    $c->session->{SiteName} = $site_name;
+    $c->session->{Domain} = $domain;
+    print $debug. " SiteName: ". $site_name. ", Domain: ". $domain. "\n";
+
     $c->forward('View::TT');
-}
-__PACKAGE__->setup();
+}__PACKAGE__->setup();
 
 =encoding utf8
 

@@ -1,4 +1,8 @@
 
+[% PageVersion	= 'InheretedVariablesView.tt,v 0.01 2023/08/30 shanta Exp shanta '	%]
+[% IF debug == 1 %]
+ [%	PageVersion %]
+[% END %]
 
 <!-- InharatedVariablesView.ttml -->
 <table cellspacing="2" align="center" rules="cols">
