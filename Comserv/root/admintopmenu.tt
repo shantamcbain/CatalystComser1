@@ -1,9 +1,16 @@
+[% PageVersion	= 'admintopmenu.tt,v 0.2 2023/08/30 shanta Exp shanta '	%]
+[% IF debug == 1 %]
+ [%	PageVersion %]
+    [% "Debugging HostName: " _ HostName %]
+    [% INCLUDE 'debug.tt' %]
+[% END %]
 <ul class="horizontal-menu">
     <!-- Other menu items -->
     <li class="horizontal-dropdown">
         <a href="#" class="dropbtn">Admin</a>
         <div class="dropdown-content">
             <a href="/setup">Site Setup</a>
+            <a href="/todo" class="dropbtn">ToDo</a>
             <div class="submenu-item">
                 <span class="submenu-header">Select Domain</span>
                 <div class="domain-submenu submenu">

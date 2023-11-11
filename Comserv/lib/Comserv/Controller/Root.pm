@@ -81,6 +81,11 @@ sub default :Path {
     $c->response->body( 'Page not found' );
     $c->response->status(404);
 }
+sub todo :Path('/todo') {
+    my ($self, $c) = @_;
+    $c->stash(template => 'todo.tt');
+}
+
 # Other methods ...
 =head1 AUTHOR
 Shanta McBain

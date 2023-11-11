@@ -210,4 +210,11 @@ inc/
 
 # Carton
 local/
+carton.lock
+
+# Module::Build generated this
+Build
+
+# Module::Build generated this
+B
 
