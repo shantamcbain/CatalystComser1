@@ -46,11 +46,6 @@ sub css_form :Path('/css_form') {
     print $debug. __LINE__. " Site Name: $site_name\n";
     # Rest of the code...
 }
-sub todo :Path('/todo') {
-    my ($self, $c) = @_;
-    $c->stash(template => 'todo.tt');
-    $c->forward($c->view('TT'));
-}
 
 
 sub default :Path {

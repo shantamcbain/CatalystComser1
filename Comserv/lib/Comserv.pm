@@ -57,6 +57,7 @@ __PACKAGE__->config(
     'Controller::BMaster' => { path => '/BMaster' },
     'Controller::CSC' => { path => '/CSC' },
     'Controller::USBM' => { path => '/USBM' },
+    'Controller::ToDo' => { path => '/todo' },
     'Controller::Root' => {
         css_form => '/css_form',
     },
