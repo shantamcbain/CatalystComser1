@@ -4,7 +4,8 @@ use namespace::autoclean;
 
 use Catalyst::Runtime 5.80;
 
-# Set flags and add plugins for the application.
+# Set flags and add plugins for the application.  See
+# Catalyst::Plugin::ConfigLoader for more details.
 #
 # Note that ORDERING IS IMPORTANT here as plugins are initialized in order,
 # therefore you almost certainly want to keep ConfigLoader at the head of the
