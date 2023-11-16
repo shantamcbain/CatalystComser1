@@ -57,8 +57,12 @@ __PACKAGE__->config(
     'Controller::BMaster' => { path => '/BMaster' },
     'Controller::CSC' => { path => '/CSC' },
     'Controller::USBM' => { path => '/USBM' },
+    'Controller::ToDo' => { path => '/todo' },
     'Controller::Root' => {
         css_form => '/css_form',
+    },
+       'Model::Todo' => {
+        class => 'Comserv::Model::Todo',
     },
     'Plugin::Static::Simple' => {
         dirs => [
@@ -122,7 +126,7 @@ sub home :Path :Args(0) {
 
     $c->forward('View::TT');
 }__PACKAGE__->setup();
-
+print join("\n", @INC);
 =encoding utf8
 
 =head1 NAME

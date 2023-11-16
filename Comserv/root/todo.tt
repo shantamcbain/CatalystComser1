@@ -1,12 +1,33 @@
 [% PageVersion  = 'todo.tt,v 0.1 2023/11/09 Shanta Exp Shanta' %]
 [% IF debug == 1 %]
- [%	PageVersion %]
+    [% PageVersion %]
     [% "Debugging HostName: " _ HostName %]
     [% INCLUDE 'debug.tt' %]
 [% END %]
 <h1>ToDo List</h1>
-<ul>
-    [% FOREACH task IN tasks %]
-        <li>[% task %]</li>
-    [% END %]
-</ul>
+<form action="/todo/add" method="post">
+    <button type="submit">Add New Record</button>
+</form>
+<table>
+  <tr>
+    <th>Sitename</th>
+    <th>Start Date</th>
+    <th>Due Date</th>
+    <th>Subject</th>
+    <th>Action</th>
+  </tr>
+  [% FOREACH task IN tasks %]
+    <tr>
+      <td>[% task.sitename %]</td>
+      <td>[% task.start_date %]</td>
+      <td>[% task.due_date %]</td>
+      <td>[% task.subject %]</td>
+      <td>
+        <form action="/todo/details" method="POST">
+          <input type="hidden" name="record_id" value="[% task.record_id %]">
+          <button type="submit">View Details</button>
+        </form>
+      </td>
+    </tr>
+  [% END %]
+</table>
