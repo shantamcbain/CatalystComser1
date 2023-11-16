@@ -13,6 +13,8 @@
 
 <form method="POST">
     Host: <input type="text" name="host" /><br>
+    Port: <input type="text" name="port" /><br>
+    Database: <input type="text" name="database" /><br>
     User: <input type="text" name="user" /><br>
     Password: <input type="password" name="password" /><br>
     <input type="submit" value="Submit" />

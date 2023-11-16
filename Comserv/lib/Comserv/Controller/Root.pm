@@ -27,6 +27,7 @@ sub index :Path :Args(0) {
     my ($self, $c) = @_;
     my $site_name = $c->stash->{SiteName};
     $c->stash(template => 'home.tt');
+    $c->model('MyDB')->dbi_info;
     print $debug. __LINE__. " Site Name: $site_name\n";
     $c->forward($c->view('TT'));
 }
@@ -76,7 +77,31 @@ sub setup :Path('/setup') {
     $c->forward($c->view('TT'));
 
 }
+sub generate_new_key :Path('/generate_new_key') {
+    my ($self, $c) = @_;
+    my $site_name = $c->stash->{SiteName};
+    print $debug. __LINE__. " Site Name: $site_name\n";
+    # In your controller
+    $c->model('MyDB')->_build_dbi_info($c);
+    $c->stash(template => 'newkey.tt');
+    $c->forward($c->view('TT'));
 
+}
+sub generate_new_key :Path('/generate_new_key') :Args(0) {
+    my ($self, $c) = @_;
+
+    # Create an instance of the MyDB model
+    my $mydb = $c->model('MyDB');
+
+    # Generate a new encryption key
+    my $new_key = $mydb->_generate_random_key();
+
+    # Save the new key to the encrypted_dbi_data.dat file
+    $mydb->_save_encrypted_dbi_info($new_key, $ENV{MASTER_KEY});
+
+    # Redirect the user back to the original page
+    $c->response->redirect($c->uri_for('/'));
+}
 sub default :Path {
     my ($self, $c) = @_;
     $c->response->body('Page not found');
