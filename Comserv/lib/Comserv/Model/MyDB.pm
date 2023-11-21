@@ -1,8 +1,8 @@
 package Comserv::Model::MyDB;
 use Moose;
 use namespace::autoclean;
-use JSON::MaybeXS qw(decode_json);
-
+use JSON::MaybeXS qw(decode_json encode_json);
+use Term::ReadPassword;
 extends 'Catalyst::Model';
 my $debug = "Comserv::Model::MyDB Line #";
 print $debug . __LINE__ . "\n";
@@ -19,7 +19,7 @@ Catalyst Model.
 
 =encoding utf8
 
-=head1 AUTHOR
+=head1 AUTHOR" @u
 
 Shanta McBain
 
@@ -29,73 +29,85 @@ This library is free software. You can redistribute it and/or modify
 it under the same terms as Perl itself.
 
 =cut
-my $env_master_key = '12345678901234567890123456789012';
 
+my $env_master_key = '12345678901234567890123456789012';
+$ENV{MASTER_KEY} = $env_master_key;
+print $debug . __LINE__ . " MASTER_KEY: $ENV{MASTER_KEY}\n";
 # Define the attribute to hold the DBI information
 has 'dbi_info' => (
     is      => 'ro',
     lazy    => 1,
     builder => '_build_dbi_info',
 );
+
+sub retrieve_master_key_from_secrets_manager {
+    # Retrieve the MASTER_KEY from an environment variable
+    my $master_key = $ENV{'MASTER_KEY'};
+    print $debug . __LINE__ . "Retrieved  MASTER_KEY: $master_key\n";
+    return $master_key;
+}
 sub _build_dbi_info {
     my ($self, $c) = @_;
 
     # Create an instance of the Encryption module
     my $encryption = Comserv::Model::Encryption->new();
 
-    # Check if the MASTER_KEY environment variable is set and its length is 32
-    my $master_key = $ENV{MASTER_KEY};
-    unless ($master_key && length($master_key) == 32) {
-        # Generate a random 32-character master key
-        $master_key = $self->_generate_random_key();
-        # Set the master key in the environment
-        $ENV{MASTER_KEY} = $master_key;
-    }
-
-    # Check if the encrypted DBI file exists
-    if (-e 'encrypted_dbi_data.dat') {
-        # If the file exists, read the file
+    # Check if the encrypted DBI file exists and is not empty
+    if (-e 'encrypted_dbi_data.dat' && -s 'encrypted_dbi_data.dat') {
+        # If the file exists and is not empty, read the file
         open my $fh, '<', 'encrypted_dbi_data.dat' or die "Cannot open encrypted_dbi_data.dat: $!";
-        my $encrypted_data = do { local $/; <$fh> };
+        my @lines = <$fh>;
         close($fh);
 
-        # Decrypt the encrypted data
-        my $decrypted_data = $encryption->decrypt($encrypted_data, $master_key);
+        # Decrypt the first line to get the encryption key
+        my $encrypted_encryption_key = $lines[0];
+        chomp $encrypted_encryption_key;
 
-        # Try to decode the JSON data
-        my $json_data;
-        eval {
-            $json_data = decode_json($decrypted_data);
-        };
-        if ($@) {
-            print "Error decoding JSON data in encrypted_dbi_data.dat: $@\n";
-            print "Decrypted data: $decrypted_data\n";
-            # Redirect the user to a specific route if an error occurs during decryption
-            $c->response->redirect($c->uri_for('/generate_new_key'));
-            return;
+        # Check if the encrypted encryption key is a multiple of 16 bytes
+        if (length($encrypted_encryption_key) % 16 != 0) {
+            die "Error: Encrypted encryption key is not a multiple of 16 bytes";
         }
 
+        my $encryption_key = $encryption->decrypt($encrypted_encryption_key, $ENV{'MASTER_KEY'});
+
+        # Decrypt the second line to get the JSON string
+        my $encrypted_dbi_info = $lines[1];
+        chomp $encrypted_dbi_info;
+        my $dbi_info_json = $encryption->decrypt($encrypted_dbi_info, $encryption_key);
+
+        # Decode the JSON string to get the DBI information
+        my $dbi_info = decode_json($dbi_info_json);
+
         # Test the DB connection using the decrypted DBI information
-        if ($self->_test_db_connection($json_data)) {
+        if ($self->_test_db_connection($dbi_info)) {
             print "DB connection test successful. Returning the decrypted DBI information.\n";
-            $c->stash(
-                master_key => $master_key,
-                dbi_info => $json_data,
-            );
-            return $json_data;  # Return the decrypted DBI information
+            return $dbi_info;  # Return the decrypted DBI information
         }
     }
 
     # If the file doesn't exist or the connection test failed, prompt the user for DBI information
-    print "encrypted_dbi_data.dat file does not exist or DB connection test failed. Prompting the user for DBI information...\n";
-    my $dbi_info = $self->_prompt_user_for_dbi_info();  # Prompt the user for DBI information
-    my $encrypted_dbi_info = $encryption->encrypt(encode_json($dbi_info), $master_key);
-    $self->_save_encrypted_dbi_info($encrypted_dbi_info, $master_key);  # Save the encrypted DBI information to a file
-    $c->stash(
-        master_key => $master_key,
-        dbi_info => $dbi_info,
-    );
-    return $dbi_info;  # Return the new DBI information
+    my $dbi_info = $self->_prompt_user_for_dbi_info();
+
+    # Generate a new encryption key
+    my $encryption_key = $self->_generate_random_key();
+
+    # Encrypt the encryption key using the master key and save it to the file
+    my $encrypted_encryption_key = $encryption->encrypt($encryption_key, $ENV{MASTER_KEY});
+    open(my $fh, '>', 'encrypted_dbi_data.dat') or die "Cannot open encrypted_dbi_data.dat for writing: $!";
+    print $fh $encrypted_encryption_key . "\n";
+
+    # Convert the DBI information to JSON
+    my $json = JSON::MaybeXS->new->allow_nonref;
+    my $dbi_info_json = $json->encode($dbi_info);
+
+    # Encrypt the DBI information (now in JSON format) using the encryption key
+    my $encrypted_dbi_info = $encryption->encrypt($dbi_info_json, $encryption_key);
+
+    # Write the encrypted DBI information to the file
+    print $fh $encrypted_dbi_info . "\n";
+    close($fh);
+
+    return $dbi_info;
 }
 
 sub _set_master_key_in_env {
@@ -114,7 +126,7 @@ sub _generate_random_key {
     foreach (1..$key_length) {
         $random_key .= $chars[rand @chars];
     }
-
+    print $debug . __LINE__ . " random_key: $random_key\n";
     return $random_key;
 }
 sub _launch_master_key_popup {
@@ -154,11 +166,21 @@ sub _launch_master_key_popup {
 sub _read_encrypted_dbi_info {
     my $self = shift;
 
-    open(my $fh, '<', 'encrypted_dbi_data.dat') or die "Cannot open encrypted_dbi_data.dat: $!";
+    # Open the .dat file
+    open my $fh, '<', 'encrypted_dbi_data.dat' or die "Cannot open encrypted_dbi_data.dat: $!";
     my $encrypted_data = do { local $/; <$fh> };
     close($fh);
 
-    return $encrypted_data;
+    # Create an instance of the Encryption module
+    my $encryption = Comserv::Model::Encryption->new();
+
+    # Decrypt the encrypted data
+    my $decrypted_data = $encryption->decrypt($encrypted_data, $ENV{'MASTER_KEY'});
+
+    # Decode the decrypted data from JSON
+    my $dbi_info = decode_json($decrypted_data);
+
+    return $dbi_info;
 }
 
 # Method to decrypt the DBI information
@@ -226,19 +248,32 @@ sub _prompt_user_for_dbi_info {
 
 # Method to save the encrypted DBI information to a file
 sub _save_encrypted_dbi_info {
-    my ($self, $dbi_info) = @_;
+    my ($self, $dbi_info, $encryption_key) = @_;
 
     # Create an instance of the Encryption module
     my $encryption = Comserv::Model::Encryption->new();
 
-    # Encrypt the DBI information
-    my $encrypted_data = $encryption->encrypt($dbi_info);
+    # Encrypt the encryption_key using the master_key
+    my $encrypted_encryption_key = $encryption->encrypt($encryption_key, $ENV{MASTER_KEY});
 
+    # Open the file for writing
     open(my $fh, '>', 'encrypted_dbi_data.dat') or die "Cannot open encrypted_dbi_data.dat for writing: $!";
-    print $fh $encrypted_data;
+
+    # Write the encrypted encryption_key to the file
+    print $fh $encrypted_encryption_key;
+
+    # Check if the DBI information is provided
+    if ($dbi_info) {
+        # Encrypt the DBI information using the encryption_key
+        my $json = JSON::MaybeXS->new->allow_nonref;
+        my $encrypted_dbi_info = $encryption->encrypt($json->encode($dbi_info), $encryption_key);
+
+        # Write the encrypted DBI information to the file
+        print $fh $encrypted_dbi_info;
+    }
+
     close($fh);
 }
-
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);
 
 ;

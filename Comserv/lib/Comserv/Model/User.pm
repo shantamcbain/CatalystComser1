@@ -35,7 +35,7 @@ has 'username' => (is => 'rw', isa => 'Str', default => 'shanta');
 has 'password' => (is => 'rw', isa => 'Str');  # This should be a hashed password
 has 'roles' => (is => 'rw', isa => 'ArrayRef[Str]', default => sub { ['admin'] });
 
-# Other methods for handling user data...
+
 
 # Hash a password
 sub hash_password {

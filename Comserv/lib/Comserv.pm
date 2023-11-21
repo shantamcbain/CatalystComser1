@@ -35,7 +35,7 @@ my $debug = "Comserv Line #";
 print $debug . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller
     (1))[0] . "\n";
 
-# Configure the application.
+    # Configure the application.
 #
 # Note that settings in comserv.conf (or other external
 # configuration file that you set up manually) take precedence
@@ -88,8 +88,8 @@ sub home :Path :Args(0) {
 
     # Get the site name from the URL
     my $site_name = $c->req->param('site');
-    $c->stash->{SiteName} = $site_name;
-
+    $c->stash->{SiteName} = $site_name ;
+    print $debug. " SiteName: ". $site_name. ", Domain: ". $site_name. "\n";
     # Set the appropriate controller based on the site name
     my $controller;
     if ($site_name eq 'CSC') {

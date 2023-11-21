@@ -9,29 +9,41 @@ print $debug . __LINE__ . "\n";
 print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
 
 BEGIN { extends 'Catalyst::Controller' }
+my $site_name = 'home';
 __PACKAGE__->config(namespace => '');
 
-=head1 NAME
-Comserv::Controller::Root - Root Controller for Comserv
-
-=head1 DESCRIPTION
-[enter your description here]
-
-=head1 METHODS
-
-=head2 index
-The root page (/)
-
-=cut
 sub index :Path :Args(0) {
+    print $debug. __LINE__. " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
     my ($self, $c) = @_;
     my $site_name = $c->stash->{SiteName};
+    print $debug . __LINE__ . " Site Name: $site_name\n";
     $c->stash(template => 'home.tt');
-    $c->model('MyDB')->dbi_info;
+    $c->model('MyDB')->_build_dbi_info($c);
     print $debug. __LINE__. " Site Name: $site_name\n";
     $c->forward($c->view('TT'));
 }
+sub auto :Private {
+    my ($self, $c) = @_;
 
+    # Get the domain name from the request
+    my $domain = $c->request->uri->host;
+    $c->session->{Domain} = $domain;
+
+    # Get the site name from the URL
+    my $site_name = $c->req->param('site');
+    $c->stash->{SiteName} = $site_name;
+
+    # Set the HostName and SiteName in the stash
+    $c->stash->{HostName} = $c->request->base;
+    $c->stash->{SiteName} = $site_name;
+
+    # Set the SiteName and Domain in the session
+    $c->session->{SiteName} = $site_name;
+    $c->session->{Domain} = $domain;
+
+    # Continue processing the rest of the request
+    return 1;
+}
 sub catalyst_help :Path('/catalyst_help') {
     my ($self, $c) = @_;
     $c->response->body($c->welcome_message);
@@ -59,30 +71,35 @@ sub login :Path('/login') :Args(0) {
     $c->stash(template => 'login.tt');
     $c->forward($c->view('TT'));
 }
-=head2 default
-Standard 404 error page
 
-=cut
 sub css_form :Path('/css_form') {
     my ($self, $c) = @_;
     my $site_name = $c->stash->{SiteName};
     print $debug. __LINE__. " Site Name: $site_name\n";
-    # Rest of the code...
+     $c->stash(template => 'css_form.tt');
+    $c->forward($c->view('TT'));
+
 }
 sub setup :Path('/setup') {
     my ($self, $c) = @_;
+       # Get the DBI information
+    my $dbi_info = $c->model('MyDB')->dbi_info;
+
     my $site_name = $c->stash->{SiteName};
     print $debug. __LINE__. " Site Name: $site_name\n";
+
+    # Add the DBI information to the stash
+    $c->stash(
+        dbi_info => $dbi_info,
+    );
     $c->stash(template => 'setup.tt');
     $c->forward($c->view('TT'));
 
 }
-sub generate_new_key :Path('/generate_new_key') {
+sub new_key :Path('/new_key') {
     my ($self, $c) = @_;
     my $site_name = $c->stash->{SiteName};
     print $debug. __LINE__. " Site Name: $site_name\n";
-    # In your controller
-    $c->model('MyDB')->_build_dbi_info($c);
     $c->stash(template => 'newkey.tt');
     $c->forward($c->view('TT'));
 
@@ -95,7 +112,7 @@ sub generate_new_key :Path('/generate_new_key') :Args(0) {
 
     # Generate a new encryption key
     my $new_key = $mydb->_generate_random_key();
-
+    print $debug. __LINE__. " env Masterkey Key: $ENV{MASTER_KEY}\n";
     # Save the new key to the encrypted_dbi_data.dat file
     $mydb->_save_encrypted_dbi_info($new_key, $ENV{MASTER_KEY});
 
@@ -108,16 +125,7 @@ sub default :Path {
     $c->response->status(404);
 }
 
-# Other methods ...
 
-=head1 AUTHOR
-Shanta McBain
-
-=head1 LICENSE
-This library is free software. You can redistribute it and/or modify
-it under the same terms as Perl itself.
-
-=cut
 
 __PACKAGE__->meta->make_immutable;
 
