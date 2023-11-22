@@ -32,10 +32,11 @@ extends 'Catalyst';
 our $VERSION = '0.01';
 my $debug = "Comserv Line #";
 
-print $debug . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller
+print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package:
+" . (caller
     (1))[0] . "\n";
 
-# Configure the application.
+    # Configure the application.
 #
 # Note that settings in comserv.conf (or other external
 # configuration file that you set up manually) take precedence
@@ -61,6 +62,9 @@ __PACKAGE__->config(
     'Controller::Root' => {
         css_form => '/css_form',
     },
+       'Model::Todo' => {
+        class => 'Comserv::Model::Todo',
+    },
     'Plugin::Static::Simple' => {
         dirs => [
             'static',
@@ -72,8 +76,38 @@ __PACKAGE__->config(
            class => 'Comserv::Model::CssForm',
        },
 );
+sub setup {
+    print $debug . __LINE__ . " Enter setup\n";
+    my $self = shift;
+
+    # Call the parent setup method
+    $self->SUPER::setup(@_);
+
+    # Get the MyDB model
+    print $debug . __LINE__ . " Enter MyBD model\n";
+#    my $mydb = $self->model('MyDB');
+#    print $debug . __LINE__ . " Value of mydb: " . $mydb . "\n";
+
+    # Get the DBI info
+    print $debug . __LINE__ . " Enter dbi_info\n";
+#    my $dbi_info = $mydb->_read_encrypted_dbi_info();
+
+    # Print the include path
+    print join("\n", @INC);
+}
 sub home :Path :Args(0) {
+    print $debug . " Enter home\n";
     my ($self, $c) = @_;
+       # Call the parent setup method
+    $self->SUPER::setup(@_);
+
+    print $debug . " Value of self: " . $self . "\n";
+    # Get the MyDB model
+    my $mydb = $self->model('MyDB');
+
+    # Build the DBI info
+    print $debug . " Enter _build_dbi_info\n";
+    $mydb->_build_dbi_info($c);
 
     # Get the domain name from the request
     my $domain = $c->request->uri->host;
@@ -85,8 +119,8 @@ sub home :Path :Args(0) {
 
     # Get the site name from the URL
     my $site_name = $c->req->param('site');
-    $c->stash->{SiteName} = $site_name;
-
+    $c->stash->{SiteName} = $site_name ;
+    print $debug. " SiteName: ". $site_name. ", Domain: ". $site_name. "\n";
     # Set the appropriate controller based on the site name
     my $controller;
     if ($site_name eq 'CSC') {
@@ -122,8 +156,9 @@ sub home :Path :Args(0) {
     print $debug. " SiteName: ". $site_name. ", Domain: ". $domain. "\n";
 
     $c->forward('View::TT');
-}__PACKAGE__->setup();
-
+}
+__PACKAGE__->setup();
+print join("\n", @INC);
 =encoding utf8
 
 =head1 NAME

@@ -1,4 +1,4 @@
-[% INCLUDE 'layout.tt' %]
+
 [% PageVersion = 'login.tt,v 0.01 2023/09/01 shanta Exp shanta ' %]
 [% IF debug == 1 %]
   [% PageVersion %]

@@ -1,0 +1,12 @@
+[% PageVersion = 'newkey.tt,v 0.01 2023/09/01 shanta Exp shanta ' %]
+[% IF debug == 1 %]
+  [% PageVersion %]
+[% END %]
+
+<h1>Generate New Encryption Key</h1>
+
+<p>It seems there was an issue with the current encryption key. Would you like to generate a new one?</p>
+
+<form method="POST" action="/generate_new_key">
+    <input type="submit" value="Generate New Key" />
+</form>

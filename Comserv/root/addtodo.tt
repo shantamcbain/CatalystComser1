@@ -1,0 +1,35 @@
+[% PageVersion  = 'addtodo.tt,v 0.1 2023/11/09 Shanta Exp Shanta' %]
+[% IF debug == 1 %]
+    [% PageVersion %]
+    [% "Debugging HostName: " _ HostName %]
+    [% INCLUDE 'debug.tt' %]
+[% END %]<h1>Add New Record</h1>
+<form action="/todo/create" method="post">
+    <label for="sitename">Sitename:</label>
+    <input type="text" name="sitename" id="sitename" value="home" required><br><br>
+    <label for="username">Username:</label>
+    <input type="text" name="username" id="username" value="shanta"><br><br>
+    <label for="group">Group:</label>
+    <input type="text" name="group" id="group" value="admin"><br><br>
+    <label for="subject">Subject:</label>
+    <input type="text" name="subject" id="subject" required><br><br>
+    <label for="details">Details:</label>
+    <textarea name="details" id="details" required></textarea><br><br>
+    <label for="subtask">Subtask:</label>
+    <input type="text" name="subtask" id="subtask"><br><br>
+    <label for="startdate">Start Date:</label>
+    <input type="date" name="startdate" id="startdate"><br><br>
+    <label for="duedate">Due Date:</label>
+    <input type="date" name="duedate" id="duedate"><br><br>
+    <label for="projectcode">Project Code:</label>
+    <input type="text" name="projectcode" id="projectcode" value="comserv.pm"><br><br>
+    <label for="status">Status:</label>
+    <input type="text" name="status" id="status" value="created"><br><br>
+    <label for="priority">Priority:</label>
+    <input type="number" name="priority" id="priority" value="1"><br><br>
+    <label for="share_groups">Share Groups:</label>
+    <input type="text" name="share_groups" id="share_groups" value="admin"><br><br>
+    <label for="estimated_time">Estimated Time:</label>
+    <input type="text" name="estimated_time" id="estimated_time"><br><br>
+    <button type="submit">Add Record</button>
+</form>

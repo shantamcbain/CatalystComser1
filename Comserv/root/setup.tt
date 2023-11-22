@@ -12,8 +12,10 @@
 [% END %]
 
 <form method="POST">
-    Host: <input type="text" name="host" /><br>
-    User: <input type="text" name="user" /><br>
-    Password: <input type="password" name="password" /><br>
+    Host: <input type="text" name="host" value="[% dbi_info.host %]" /><br>
+    Port: <input type="text" name="port" value="[% dbi_info.port %]" /><br>
+    Database: <input type="text" name="database" value="[% dbi_info.database %]" /><br>
+    User: <input type="text" name="user" value="[% dbi_info.user %]" /><br>
+    Password: <input type="password" name="password" value="[% dbi_info.password %]" /><br>
     <input type="submit" value="Submit" />
 </form>

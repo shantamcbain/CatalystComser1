@@ -4,23 +4,6 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
-=head1 NAME
-
-Comserv::Controller::ToDo - Catalyst Controller
-
-=head1 DESCRIPTION
-
-Catalyst Controller.
-
-=head1 METHODS
-
-=cut
-
-
-=head2 index
-
-=cut
-
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
@@ -28,20 +11,42 @@ sub index :Path :Args(0) {
     $c->forward($c->view('TT'));
 }
 
+sub add :Path('add') :Args(0) {
+    my ( $self, $c ) = @_;
 
+    $c->stash(template => 'addtodo.tt');
+    $c->forward($c->view('TT'));
+}
 
-=encoding utf8
+sub create :Path('create') :Args(0) {
+    my ( $self, $c ) = @_;
 
-=head1 AUTHOR
+    # Retrieve the submitted form data
+    my $params = $c->req->params;
 
-Shanta McBain
+    # Create a new record with the submitted data
+    my $new_record = {
+        sitename     => $params->{sitename},
+        username     => $params->{username},
+        group        => $params->{group},
+        subject      => $params->{subject},
+        details      => $params->{details},
+        subtask      => $params->{subtask},
+        startdate    => $params->{startdate},
+        duedate      => $params->{duedate},
+        projectcode  => $params->{projectcode},
+        status       => $params->{status},
+        priority     => $params->{priority},
+        share_groups => $params->{share_groups},
+        estimated_time => $params->{estimated_time},
+    };
 
-=head1 LICENSE
+    # Call the model method to save the new record
+    $c->model('Model::Todo')->add_new_record($new_record);
 
-This library is free software. You can redistribute it and/or modify
-it under the same terms as Perl itself.
-
-=cut
+    # Redirect to the todo.tt template or any other desired page
+    $c->response->redirect($c->uri_for('/todo'));
+}
 
 __PACKAGE__->meta->make_immutable;
 

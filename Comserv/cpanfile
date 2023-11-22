@@ -1,0 +1,10 @@
+requires 'Moose';
+requires 'namespace::autoclean';
+requires 'JSON::MaybeXS';
+requires 'Catalyst::Model';
+requires 'DBI';
+requires 'Paws'; # AWS SDK for Perl
+requires 'Catalyst'; # Catalyst framework
+requires 'Catalyst::Runtime'; # Catalyst framework
+requires 'Catalyst::Plugin::ConfigLoader'; # Catalyst framework
+requires 'Term::ReadPassword'; # Catalyst framework
