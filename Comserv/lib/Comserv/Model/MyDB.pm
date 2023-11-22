@@ -1,9 +1,11 @@
 package Comserv::Model::MyDB;
 use Moose;
 use namespace::autoclean;
+use DBI;  # Add this line
 use JSON::MaybeXS qw(decode_json encode_json);
 use Term::ReadPassword;
 extends 'Catalyst::Model';
+# Rest of your code...
 my $debug = "Comserv::Model::MyDB Line #";
 print $debug . __LINE__ . "\n";
 print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
@@ -49,63 +51,14 @@ sub retrieve_master_key_from_secrets_manager {
 sub _build_dbi_info {
     my ($self, $c) = @_;
 
-    # Create an instance of the Encryption module
-    my $encryption = Comserv::Model::Encryption->new();
+    # Try to read the DBI information from the file
+    my $dbi_info = $self->_read_dbi_info_from_file();
 
-    # Check if the encrypted DBI file exists and is not empty
-    if (-e 'encrypted_dbi_data.dat' && -s 'encrypted_dbi_data.dat') {
-        # If the file exists and is not empty, read the file
-        open my $fh, '<', 'encrypted_dbi_data.dat' or die "Cannot open encrypted_dbi_data.dat: $!";
-        my @lines = <$fh>;
-        close($fh);
-
-        # Decrypt the first line to get the encryption key
-        my $encrypted_encryption_key = $lines[0];
-        chomp $encrypted_encryption_key;
-
-        # Check if the encrypted encryption key is a multiple of 16 bytes
-        if (length($encrypted_encryption_key) % 16 != 0) {
-            die "Error: Encrypted encryption key is not a multiple of 16 bytes";
-        }
-
-        my $encryption_key = $encryption->decrypt($encrypted_encryption_key, $ENV{'MASTER_KEY'});
-
-        # Decrypt the second line to get the JSON string
-        my $encrypted_dbi_info = $lines[1];
-        chomp $encrypted_dbi_info;
-        my $dbi_info_json = $encryption->decrypt($encrypted_dbi_info, $encryption_key);
-
-        # Decode the JSON string to get the DBI information
-        my $dbi_info = decode_json($dbi_info_json);
-
-        # Test the DB connection using the decrypted DBI information
-        if ($self->_test_db_connection($dbi_info)) {
-            print "DB connection test successful. Returning the decrypted DBI information.\n";
-            return $dbi_info;  # Return the decrypted DBI information
-        }
+    # If the DBI information could not be read or is not valid
+    if (!defined $dbi_info || !$self->_test_db_connection($c, $dbi_info)) {
+        # Prompt the user for DBI information
+        $dbi_info = $self->_prompt_user_for_dbi_info();
     }
-
-    # If the file doesn't exist or the connection test failed, prompt the user for DBI information
-    my $dbi_info = $self->_prompt_user_for_dbi_info();
-
-    # Generate a new encryption key
-    my $encryption_key = $self->_generate_random_key();
-
-    # Encrypt the encryption key using the master key and save it to the file
-    my $encrypted_encryption_key = $encryption->encrypt($encryption_key, $ENV{MASTER_KEY});
-    open(my $fh, '>', 'encrypted_dbi_data.dat') or die "Cannot open encrypted_dbi_data.dat for writing: $!";
-    print $fh $encrypted_encryption_key . "\n";
-
-    # Convert the DBI information to JSON
-    my $json = JSON::MaybeXS->new->allow_nonref;
-    my $dbi_info_json = $json->encode($dbi_info);
-
-    # Encrypt the DBI information (now in JSON format) using the encryption key
-    my $encrypted_dbi_info = $encryption->encrypt($dbi_info_json, $encryption_key);
-
-    # Write the encrypted DBI information to the file
-    print $fh $encrypted_dbi_info . "\n";
-    close($fh);
 
     return $dbi_info;
 }
@@ -164,61 +117,83 @@ sub _launch_master_key_popup {
 }
 # Method to read the encrypted DBI information from the file
 sub _read_encrypted_dbi_info {
-    my $self = shift;
+sub _read_dbi_info_from_file {
+    my ($self) = @_;
+    print $debug . __LINE__ . " in _read_dbi_info_from_file\n";
+    # Path to the DBI information file
+    my $file = 'dbi_info.dat';
 
-    # Open the .dat file
-    open my $fh, '<', 'encrypted_dbi_data.dat' or die "Cannot open encrypted_dbi_data.dat: $!";
-    my $encrypted_data = do { local $/; <$fh> };
-    close($fh);
+    # Check if the file exists
+    if (-e $file) {
+        # If the file exists, open it
+        open my $fh, '<', $file or die "Cannot open $file: $!";
+        print $debug . __LINE__ . " Opened file: $file\n";
 
-    # Create an instance of the Encryption module
-    my $encryption = Comserv::Model::Encryption->new();
+        # Read the file content
+        my $json_text = do { local $/; <$fh> };
+        print $debug . __LINE__ . " json_text: $json_text\n";
 
-    # Decrypt the encrypted data
-    my $decrypted_data = $encryption->decrypt($encrypted_data, $ENV{'MASTER_KEY'});
+        # Close the file
+        print $debug . __LINE__ . " Closed file: $file\n";
+        close($fh);
 
-    # Decode the decrypted data from JSON
-    my $dbi_info = decode_json($decrypted_data);
+        # Decode the JSON text to get the DBI information
+        my $dbi_info;
+        eval {
+            $dbi_info = decode_json($json_text);
+            1;
+        } or do {
+            my $error = $@;
+            print $debug . __LINE__ . " Failed to decode JSON: $error\n";
+        };
 
-    return $dbi_info;
-}
-
-# Method to decrypt the DBI information
-sub _decrypt_dbi_info {
-    my ($self, $encrypted_data) = @_;
-
-    # Create an instance of the Encryption module
-    my $encryption = Comserv::Model::Encryption->new();
-
-    # Decrypt the encrypted data
-    return $encryption->decrypt($encrypted_data);
-}
-
-# Method to test the DB connection using the DBI information
-sub _test_db_connection {
-    my ($self, $dbi_info) = @_;
-
-    # Perform the necessary code to test the database connection using the $dbi_info
-    # Return true if the connection is successful, false otherwise
-    # [Add code here to test the database connection]
-    # For example, using DBI to connect and execute a simple query
-    my $dbh = DBI->connect("DBI:mysql:$dbi_info->{database}", $dbi_info->{username}, $dbi_info->{password});
-    if ($dbh) {
-        my $query = "SELECT 1";
-        my $sth = $dbh->prepare($query);
-        if ($sth && $sth->execute) {
-            $sth->finish;
-            $dbh->disconnect;
-            return 1;  # Connection successful
-        }
-        $sth->finish;
-        $dbh->disconnect;
+        return $dbi_info;
     }
 
+    # If the file does not exist, return undef
+    print $debug . __LINE__ . " File does not exist: $file\n";
+    return undef;
+}
+# Method to test the DB connection using the DBI information
+sub _test_db_connection {
+    my ($self, $c, $dbi_info) = @_;
+
+    print $debug . __LINE__ . " dbi_info: $dbi_info\n";
+
+    # Check if the DBI information is provided
+    if ($dbi_info && $dbi_info->{username} && $dbi_info->{password}) {
+        # Perform the necessary code to test the database connection using the $dbi_info
+        my $dbh = DBI->connect("DBI:mysql:database=$dbi_info->{database};host=$dbi_info->{host}", $dbi_info->{username}, $dbi_info->{password});
+
+        if ($dbh) {
+            my $query = "SELECT 1";
+            my $sth = $dbh->prepare($query);
+            if ($sth && $sth->execute) {
+                $sth->finish;
+                $dbh->disconnect;
+
+                # Store the result in the stash and session
+                $c->stash->{db_connection_successful} = 1;
+                $c->session->{db_connection_successful} = 1;
+
+                print $debug . __LINE__ . " DB connection successful\n";
+                return 1;  # Connection successful
+            }
+            $sth->finish;
+            $dbh->disconnect;
+        } else {
+            # Print the DBI error message
+            print "DBI error: " . DBI->errstr . "\n";
+        }
+    }
+
+    # Store the result in the stash and session
+    $c->stash->{db_connection_successful} = 0;
+    $c->session->{db_connection_successful} = 0;
+
+    print $debug . __LINE__ . " DB connection failed\n";
     return 0;  # Connection failed
 }
-
-# Method to prompt the user for DBI information
 sub _prompt_user_for_dbi_info {
     # [Changed] Add a comment explaining why the user is prompted for DBI information
     # If the encrypted DBI file doesn't exist or the connection test failed, prompt the user to enter DBI information
@@ -238,12 +213,53 @@ sub _prompt_user_for_dbi_info {
 
     # Construct and return the DBI information as a hashref
     my $dbi_info = {
+        host     => 'localhost',
+        port     => 3306,
         username => $username,
         password => $password,
         database => $database,
     };
+     # Save the DBI information to a file
+    open(my $fh, '>', 'dbi_info.dat') or die "Cannot open dbi_info.dat for writing: $!";
+    print $fh encode_json($dbi_info);
+    close($fh);
+    print $debug . __LINE__ . " dbi_info: $dbi_info\n";
+    $c->stash(prompt_dbi_info => $dbi_info);
+}    my ($self, $c) = @_;
+
+    # Open the .dat file
+    open my $fh, '<', 'encrypted_dbi_data.dat' or die "Cannot open encrypted_dbi_data.dat: $!";
+    my @lines = <$fh>;
+    close($fh);
+
+    # Get the encrypted DBI info from the second line of the file
+    my $encrypted_dbi_info = $lines[1];
+    chomp $encrypted_dbi_info;
+
+    # Create an instance of the Encryption module
+    my $encryption = Comserv::Model::Encryption->new();
+
+    # Decrypt the encrypted DBI info
+    my $decrypted_data = $encryption->decrypt($encrypted_dbi_info, $ENV{'MASTER_KEY'});
+
+    # Decode the decrypted data from JSON
+    my $dbi_info = decode_json($decrypted_data);
+
+    # Store the DBI info in the stash and session
+    $c->stash->{dbi_info} = $dbi_info;
+    $c->session->{dbi_info} = $dbi_info;
 
     return $dbi_info;
+}
+# Method to decrypt the DBI information
+sub _decrypt_dbi_info {
+    my ($self, $encrypted_data) = @_;
+
+    # Create an instance of the Encryption module
+    my $encryption = Comserv::Model::Encryption->new();
+
+    # Decrypt the encrypted data
+    return $encryption->decrypt($encrypted_data);
 }
 
 # Method to save the encrypted DBI information to a file

@@ -1,14 +1,20 @@
 package Comserv::Controller::Root;
 use Moose;
 use namespace::autoclean;
-use DateTime;
-use Catalyst qw/-Debug/;
+use Data::Dumper;
 
+BEGIN { extends 'Catalyst::Controller' }
+
+sub stash_dump {
+    my ($self, $c) = @_;
+#    print Dumper($c->stash);
+}
+
+# Rest of your code...
 my $debug = "Comserv::Controller::Root Line #";
 print $debug . __LINE__ . "\n";
 print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
 
-BEGIN { extends 'Catalyst::Controller' }
 my $site_name = 'home';
 __PACKAGE__->config(namespace => '');
 
@@ -20,6 +26,7 @@ sub index :Path :Args(0) {
     $c->stash(template => 'home.tt');
     $c->model('MyDB')->_build_dbi_info($c);
     print $debug. __LINE__. " Site Name: $site_name\n";
+    print stash_dump($c);
     $c->forward($c->view('TT'));
 }
 sub auto :Private {
@@ -30,7 +37,7 @@ sub auto :Private {
     $c->session->{Domain} = $domain;
 
     # Get the site name from the URL
-    my $site_name = $c->req->param('site');
+    my $site_name = $c->req->param('site')||'home';
     $c->stash->{SiteName} = $site_name;
 
     # Set the HostName and SiteName in the stash
@@ -96,15 +103,38 @@ sub setup :Path('/setup') {
     $c->forward($c->view('TT'));
 
 }
-sub new_key :Path('/new_key') {
+sub debug :Path('/debug') :Args(0) {
+    print $debug. __LINE__. " Enter debug\n";
     my ($self, $c) = @_;
-    my $site_name = $c->stash->{SiteName};
-    print $debug. __LINE__. " Site Name: $site_name\n";
-    $c->stash(template => 'newkey.tt');
-    $c->forward($c->view('TT'));
 
-}
-sub generate_new_key :Path('/generate_new_key') :Args(0) {
+    # Get the DBI information
+    my $dbi_info = $c->model('MyDB')->_read_dbi_info_from_file();
+    print $debug. __LINE__. " dbi_info: $dbi_info\n";
+
+    # Print the DBI information using Data::Dumper
+    print Data::Dumper::Dumper($dbi_info);
+
+    # Store the DBI information in the stash
+    print $debug. __LINE__. " Put dbi_info in stash\n";
+    $c->stash->{dbi_info} = $dbi_info;
+    $c->session->{$dbi_info} = $dbi_info;
+
+    # Get the state of the DBI connection
+    my $db_connection_successful = $c->stash->{db_connection_successful};
+
+    # Print the state of the DBI connection
+    if ($db_connection_successful) {
+        print "DB connection successful.\n";
+    } else {
+        print "DB connection failed.\n";
+    }
+
+    # Set the template
+    $c->stash(template => 'debug.tt');
+
+    # Forward to the view to render the template
+    $c->forward($c->view('TT'));
+}sub generate_new_key :Path('/generate_new_key') :Args(0) {
     my ($self, $c) = @_;
 
     # Create an instance of the MyDB model
