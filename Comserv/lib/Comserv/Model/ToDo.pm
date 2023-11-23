@@ -33,19 +33,19 @@ sub save_task_details {
     my $updated_json_data = encode_json($tasks);
     write_file($json_file, $updated_json_data);
 }
+sub get_relevant_tables {
+    my ($self, $c) = @_;
+    # Call the get_schema_info method from the MyDB model
+    my $schema_info = $c->model('MyDB')->dbi_info->get_schema_info($c);
 
+    # Define the table names for the ToDo system
+    my @todo_table_names = ('todos', 'projects', 'logins');
 
+    # Filter the schema information to find the relevant tables
+    my @relevant_tables = grep { my $table_name = $_->{TABLE_NAME}; grep { $_ eq $table_name } @todo_table_names } @{$schema_info};
 
-sub add_new_record {
-    my ($self, $new_record) = @_;
-    my $json_data = read_file($json_file) || '[]';
-    my $tasks = decode_json($json_data);
-    push @{$tasks}, $new_record;
-    my $updated_json_data = encode_json($tasks);
-    write_file($json_file, $updated_json_data);
+    return \@relevant_tables;
 }
-
-
 sub generate_record_id {
     my $uuid = Data::UUID->new;
     my $record_id = $uuid->create_str();

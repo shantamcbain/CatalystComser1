@@ -36,34 +36,160 @@ my $env_master_key = '12345678901234567890123456789012';
 $ENV{MASTER_KEY} = $env_master_key;
 print $debug . __LINE__ . " MASTER_KEY: $ENV{MASTER_KEY}\n";
 # Define the attribute to hold the DBI information
-has 'dbi_info' => (
-    is      => 'ro',
-    lazy    => 1,
-    builder => '_build_dbi_info',
-);
 
+# Define the attribute to hold the DBI handle
+
+
+# Builder method to create the DBI handle
+# Builder method to create the DBI handle
+sub _build_dbh {
+    my $self = @_;
+
+    # Retrieve the DBI information
+    my $dbi_info = $self->dbi_info;
+
+    # Connect to the database
+    my $dbh = DBI->connect("DBI:mysql:database=$dbi_info->{database};host=$dbi_info->{host}", $dbi_info->{username}, $dbi_info->{password});
+
+    # If the connection fails, return the DBI error
+    if (!$dbh) {
+        return "DBI error: " . DBI->errstr;
+    }
+
+    return $dbh;
+}
+sub dbi_info {
+    my ($self, $c) = @_;
+
+    # If dbi_info is already defined in the object, return it
+    if (defined $self->{dbi_info}) {
+        return $self->{dbi_info};
+    }
+
+    # Try to read the DBI information from the .dat file
+    my $dbi_info = $self->_read_dbi_info_from_file();
+
+    # If the DBI information could not be read or is not valid
+    if (!defined $dbi_info || !$self->_test_db_connection($c, $dbi_info)) {
+        $c->stash(error_message => 'DBI information is missing or invalid.');
+        return;
+    }
+
+    # Store the DBI information in the object
+    $self->{dbi_info} = $dbi_info;
+
+    return $self->{dbi_info};
+}
+# Method to get the schema info
+sub get_schema_info {
+    my ($self, $c) = @_;
+
+    # Retrieve the DBI handle
+    my $dbh = $self->dbh;
+
+    # If the DBI handle is an error message, store it in the stash
+    if (!ref $dbh) {
+        $c->stash(error_message => $dbh);
+        return;
+    }
+
+    # Prepare the query to retrieve schema information
+    my $sth = $dbh->prepare('SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ?');
+
+    # If the prepare operation fails, store the DBI error in the stash
+    if (!$sth) {
+        $c->stash(error_message => "DBI error: " . $dbh->errstr);
+        return;
+    }
+
+    # Execute the query
+    my $result = $sth->execute($c->stash->{dbi_info}{database});
+
+    # If the execute operation fails, store the DBI error in the stash
+    if (!$result) {
+        $c->stash(error_message => "DBI error: " . $dbh->errstr);
+        return;
+    }
+
+    # Fetch the results
+    my @schema_info;
+    while (my $row = $sth->fetchrow_hashref) {
+        push @schema_info, $row;
+    }
+
+    return \@schema_info;
+}
 sub retrieve_master_key_from_secrets_manager {
     # Retrieve the MASTER_KEY from an environment variable
     my $master_key = $ENV{'MASTER_KEY'};
     print $debug . __LINE__ . "Retrieved  MASTER_KEY: $master_key\n";
     return $master_key;
 }
+# Define the attribute to hold the DBI information
+
+# Builder method to retrieve or create the DBI information
 sub _build_dbi_info {
     my ($self, $c) = @_;
 
-    # Try to read the DBI information from the file
-    my $dbi_info = $self->_read_dbi_info_from_file();
-
-    # If the DBI information could not be read or is not valid
-    if (!defined $dbi_info || !$self->_test_db_connection($c, $dbi_info)) {
-        # Prompt the user for DBI information
-        $dbi_info = $self->_prompt_user_for_dbi_info();
+    # If dbi_info is already defined in the object, return it
+    if (defined $self->{dbi_info}) {
+        return $self->{dbi_info};
     }
 
-    return $dbi_info;
+
+    # Retrieve the DBI information
+    my $dbi_info = $self->{dbi_info};
+
+   # Connect to the database
+    my $dbh = DBI->connect("DBI:mysql:database=$dbi_info->{database};host=$dbi_info->{host}", $dbi_info->{username}, $dbi_info->{password});
+
+    # If the connection fails, store the DBI error in the stash and session
+    if (!$dbh) {
+        my $error_message = "DBI error: " . DBI->errstr;
+        $c->stash(last_error => $error_message);
+        $c->session(last_error => $error_message);
+        return;
+    }
+
+    # If the connection is successful, store the connection status in the stash and session
+    $c->stash(dbi_connected => 1);
+    $c->session(dbi_connected => 1);
+
+    # If dbi_info is not defined, return undef
+    return undef;
 }
 
-sub _set_master_key_in_env {
+# Method to set the dbi_info
+sub set_dbi_info {
+    my ($self, $c) = @_;
+
+    # Clear the existing dbi_info
+    $self->clear_dbi_info();
+
+    # If dbi_info is already defined in the session, return it
+    if ($c->session->{dbi_info}) {
+        $self->dbi_info($c->session->{dbi_info});
+        $c->session->{dbi_info} = $c->session->{dbi_info};
+        $c->stash->{dbi_info} = $c->session->{dbi_info};
+        return $self->dbi_info;
+    }
+
+    # Try to read the DBI information from the form data
+    my $dbi_info = $c->request->parameters;
+
+    # If the DBI information is not provided in the form data, set an error message in the stash
+    if (!defined $dbi_info || !$self->_test_db_connection($c, $dbi_info)) {
+        $c->stash(error_message => 'DBI information is missing or invalid.');
+        return;
+    }
+
+    # Store the DBI information in the object, session, and stash
+    $self->dbi_info($dbi_info);
+    $c->session->{dbi_info} = $dbi_info;
+    $c->stash->{dbi_info} = $dbi_info;
+
+    return $self->dbi_info;
+}sub _set_master_key_in_env {
     my ($self, $master_key) = @_;
 
     # Set the master key in the environment
@@ -156,7 +282,8 @@ sub _read_dbi_info_from_file {
 }
 # Method to test the DB connection using the DBI information
 sub _test_db_connection {
-    my ($self, $c, $dbi_info) = @_;
+    print $debug . __LINE__ . " in _test_db_connection\n";
+    my ($self,  $dbi_info) = @_;
 
     print $debug . __LINE__ . " dbi_info: $dbi_info\n";
 
@@ -173,8 +300,7 @@ sub _test_db_connection {
                 $dbh->disconnect;
 
                 # Store the result in the stash and session
-                $c->stash->{db_connection_successful} = 1;
-                $c->session->{db_connection_successful} = 1;
+                 #$c->session->{db_connection_successful} = 1;
 
                 print $debug . __LINE__ . " DB connection successful\n";
                 return 1;  # Connection successful
@@ -188,8 +314,8 @@ sub _test_db_connection {
     }
 
     # Store the result in the stash and session
-    $c->stash->{db_connection_successful} = 0;
-    $c->session->{db_connection_successful} = 0;
+    #$c->stash->{db_connection_successful} = 0;
+    #$c->session->{db_connection_successful} = 0;
 
     print $debug . __LINE__ . " DB connection failed\n";
     return 0;  # Connection failed
@@ -261,9 +387,22 @@ sub _decrypt_dbi_info {
     # Decrypt the encrypted data
     return $encryption->decrypt($encrypted_data);
 }
+# Builder method to create the DBI handle
 
-# Method to save the encrypted DBI information to a file
-sub _save_encrypted_dbi_info {
+sub set_dbh {
+    my ($self, $c) = @_;
+
+    # Clear the existing dbh
+    $self->clear_dbh();
+
+    # Build the dbh
+    my $dbh = $self->_build_dbh($c);
+
+    # Store the DBH handle in the object
+    $self->dbh($dbh);
+
+    return $self->dbh;
+}sub _save_encrypted_dbi_info {
     my ($self, $dbi_info, $encryption_key) = @_;
 
     # Create an instance of the Encryption module
@@ -289,6 +428,28 @@ sub _save_encrypted_dbi_info {
     }
 
     close($fh);
+}
+# Method to set the dbi_info
+sub get_schema_info {
+    my ($self, $c) = @_;
+
+    # Retrieve the DBI handle
+    my $dbh = $self->dbh;
+
+    # Retrieve the DBI information from the $c object
+    my $dbi_info = $c->stash->{dbi_info};
+
+    # Prepare and execute the query to retrieve schema information
+    my $sth = $dbh->prepare('SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ?');
+    $sth->execute($dbi_info->{database});
+
+    # Fetch the results
+    my @schema_info;
+    while (my $row = $sth->fetchrow_hashref) {
+        push @schema_info, $row;
+    }
+
+    return \@schema_info;
 }
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);
 

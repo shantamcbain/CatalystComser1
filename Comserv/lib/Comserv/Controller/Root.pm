@@ -78,7 +78,58 @@ sub login :Path('/login') :Args(0) {
     $c->stash(template => 'login.tt');
     $c->forward($c->view('TT'));
 }
+sub display_tables :Path('display_tables') :Args(0) {
+    my ($self, $c) = @_;
 
+    # Get an instance of Comserv::Model::MyDB
+    my $mydb = $c->model('MyDB');
+
+    # Check if $mydb is an instance of Comserv::Model::MyDB
+    if (!blessed($mydb) || !$mydb->isa('Comserv::Model::MyDB')) {
+        die "Error: \$mydb is not an instance of Comserv::Model::MyDB";
+    }
+
+    # Call the get_schema_info method with $c as an argument
+    my $schema_info = $mydb->get_schema_info($c);
+
+    # Call the get_relevant_tables method from the ToDo model
+    my $relevant_tables = $c->model('ToDo')->get_relevant_tables($c, $c->model('MyDB')->dbi_info($c));
+
+    # Store the relevant tables in the stash
+    $c->stash(relevant_tables => $relevant_tables);
+
+    # Set the template
+    $c->stash(template => 'display_tables.tt');
+}
+sub display_schema_info {
+    my ($self, $c) = @_;
+
+    # Get the schema info
+    my $schema_info = $self->get_schema_info($c);
+
+    # Format and print the schema info
+    foreach my $table (@$schema_info) {
+        print "Table: $table->{TABLE_NAME}\n";
+        print "Engine: $table->{ENGINE}\n";
+        print "Version: $table->{VERSION}\n";
+        print "Row format: $table->{ROW_FORMAT}\n";
+        print "Rows: $table->{TABLE_ROWS}\n";
+        print "Avg row length: $table->{AVG_ROW_LENGTH}\n";
+        print "Data length: $table->{DATA_LENGTH}\n";
+        print "Max data length: $table->{MAX_DATA_LENGTH}\n";
+        print "Index length: $table->{INDEX_LENGTH}\n";
+        print "Data free: $table->{DATA_FREE}\n";
+        print "Auto increment: $table->{AUTO_INCREMENT}\n";
+        print "Create time: $table->{CREATE_TIME}\n";
+        print "Update time: $table->{UPDATE_TIME}\n";
+        print "Check time: $table->{CHECK_TIME}\n";
+        print "Table collation: $table->{TABLE_COLLATION}\n";
+        print "Checksum: $table->{CHECKSUM}\n";
+        print "Create options: $table->{CREATE_OPTIONS}\n";
+        print "Table comment: $table->{TABLE_COMMENT}\n";
+        print "\n";
+    }
+}
 sub css_form :Path('/css_form') {
     my ($self, $c) = @_;
     my $site_name = $c->stash->{SiteName};
@@ -90,7 +141,7 @@ sub css_form :Path('/css_form') {
 sub setup :Path('/setup') {
     my ($self, $c) = @_;
        # Get the DBI information
-    my $dbi_info = $c->model('MyDB')->dbi_info;
+    my $dbi_info = $c->model('MyDB')->dbi_info($c);
 
     my $site_name = $c->stash->{SiteName};
     print $debug. __LINE__. " Site Name: $site_name\n";

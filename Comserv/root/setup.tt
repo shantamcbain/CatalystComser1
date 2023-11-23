@@ -11,6 +11,54 @@
     </div>
 [% END %]
 
+<h2>Database Schema</h2>
+
+[% IF schema_info %]
+    <table>
+        <tr>
+            <th>Table Name</th>
+            <th>Engine</th>
+            <th>Version</th>
+            <!-- Add more headers for each piece of schema info you want to display -->
+        </tr>
+        [% FOREACH table IN schema_info %]
+            <tr>
+                <td>[% table.TABLE_NAME %]</td>
+                <td>[% table.ENGINE %]</td>
+                <td>[% table.VERSION %]</td>
+                <!-- Add more cells for each piece of schema info you want to display -->
+            </tr>
+        [% END %]
+    </table>
+[% ELSE %]
+    <p>[% error_message OR 'No schema information available.' %]</p>
+    <ol>
+        <li>Ensure the database connection details are correct.</li>
+          <ol>
+              <li> Check if the host, port, database, user, and password fields are filled out in the form.</li>
+              <li> Validate the input for each field. For example, the host should be a valid hostname or IP address, the port should be a number, etc.
+              <li> If any field is invalid, display an error message and stop the process.
+          </ol>
+        <li>Connect to the database.</li>
+          <ol>
+              <li> Use the DBI module to connect to the database. If the connection fails, display an error message and stop the process.</li>
+              <li>Validate the input for each field. For example, the host should be a valid hostname or IP address, the port should be a number, etc.</li>
+                <li>If any field is invalid, display an error message and stop the process.</li>
+          </ol>
+        <li>Retrieve the schema information from the database.</li>
+         <ol>
+             <li># 1. Execute a query to retrieve the schema information from the database. The query will depend on</li>
+             <li># 2. Store the results of the query in a variable.</li>
+             <li># 3. If the query fails, display an error message and stop the process.</li>
+         </ol>
+
+        <li>Refresh this page.</li>
+         <ol>
+             <li># 1. After successfully retrieving the schema information, refresh the page to display the updated information.</li>
+             <li># 2. If the page refresh fails, display an error message.</li>
+         </ol>
+     </ol>
+[% END %]
 <form method="POST">
     Host: <input type="text" name="host" value="[% dbi_info.host %]" /><br>
     Port: <input type="text" name="port" value="[% dbi_info.port %]" /><br>
