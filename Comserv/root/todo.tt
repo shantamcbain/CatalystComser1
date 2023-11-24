@@ -37,11 +37,10 @@
       <td>[% task.status %]</td>
       <td>[% task.code_needed_for %]</td>
       <td>
-        <form action="/todo/details" method="POST">
-          <input type="hidden" name="record_id" value="[% task.record_id %]">
-          <button type="submit">View Details</button>
-        </form>
-      </td>
+ <form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="[% task.record_id %]">
+  <button type="submit">Add ToDo</button>
+</form>      </td>
     </tr>
   [% END %]
   <!-- Add a new ToDo item for fixing the error -->
@@ -58,11 +57,10 @@
     <td>Not started</td>
     <td>Comserv::Model::MyDB</td>
     <td>
-      <form action="/todo/details" method="POST">
-        <input type="hidden" name="record_id" value="new_task_id">
-        <button type="submit">View Details</button>
-      </form>
-    </td>
+ <form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="[% task.record_id %]">
+  <button type="submit">Add ToDo</button>
+</form>    </td>
    <tr>
     <td>Comserv</td>
     <td>Fix error in Comserv::Model::MyDB</td>
@@ -88,4 +86,77 @@
       </form>
     </td>
   </tr>
+  <tr>
+  <td>Comserv</td>
+  <td>Debug Schema Query</td>
+  <td>None</td>
+  <td>[% date_today %]</td>
+  <td>[% date_due %]</td>
+  <td>Debug the code to find out why it's not querying the schema and reporting it to the browser</td>
+  <td>Ensure to include the ability to report errors into the browser</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::Model::MyDB</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="[% task.record_id %]">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
+<tr>
+  <td>Comserv</td>
+  <td>Fix Connection Status Display</td>
+  <td>None</td>
+  <td>[% date_tomorrow %]</td>
+  <td>[% date_due %]</td>
+  <td>Fix the issue with the connection status not being displayed correctly in the debug.tt template</td>
+  <td>Ensure that the session.dbi_connected variable is being set and saved correctly in the session and stash</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::Model::MyDB</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="[% task.record_id %]">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
+  <tr>
+  <td>Comserv</td>
+  <td>Fix Exception in Comserv::Controller::Root->setup</td>
+  <td>None</td>
+  <td>[% date_tomorrow %]</td>
+  <td>[% date_due %]</td>
+  <td>Fix the exception "Can't call method 'get_schema_info' on unblessed reference at /home/shantam/PycharmProjects/CatalystComser1/Comserv/script/../lib/Comserv/Model/ToDo.pm line 39."</td>
+  <td>Investigate why the 'get_schema_info' method is being called on an unblessed reference and fix the issue</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::Controller::Root</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="[% task.record_id %]">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
+  <tr>
+    <td>Comserv</td>
+    <td>ToDo</td>
+    <td>None</td>
+    <td>[% date_today %]</td>
+    <td>[% date_due %]</td>
+    <td>Create a new git branch/project to handle logging debug errors and print statements into a file/db table</td>
+    <td>This will help us trace errors</td>
+    <td>Developer</td>
+    <td>High</td>
+    <td>Not started</td>
+    <td>Comserv::Controller::Root</td>
+    <td>
+ <form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="[% task.record_id %]">
+  <button type="submit">Add ToDo</button>
+</form>    </td>
+  </tr>
+
 </table>

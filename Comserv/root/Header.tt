@@ -8,8 +8,8 @@
     <meta name="REVISIT-AFTER" content="7 days">
     <meta name="ROBOTS" content="index all, follow all">
     [%# HostName = 'https://computersystemconsulting.ca' %]
-    [% HostName = c.stash.HostName %] [% HostName %]<!-- This is where you access the stashed HostName -->
-    [% SiteName = c.stash.SiteName %] [% SiteName %]<!-- This is where you access the stashed SiteName -->
+    [% HostName = c.stash.HostName %] [%# HostName %]<!-- This is where you access the stashed HostName -->
+    [% SiteName = c.session.SiteName %] [% SiteName %]<!-- This is where you access the stashed SiteName -->
     [% favicon = c.stash.HostName _ "/images/favicon.ico" %]
     [% page_title = "Default Home" %]
     [% ScriptDisplayName = 'Catalyst' %]
@@ -23,7 +23,6 @@
     [%# data.css_view_url ||%]
     [%# css_view_url = HostName _ "/styles/usbmstyle.css"  %]
     <link rel="stylesheet" type="text/css" href="[% css_view_url %]">
-    <style>  [%# INCLUDE css.tt %]</style>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="REVISIT-AFTER" content="7 days">
     <meta name="ROBOTS" content="index all, follow all">
