@@ -26,7 +26,7 @@
                 <div class="options-submenu submenu">
                     <!-- Add other option links here -->
                     <!-- Debug mode toggle link -->
-                    [% IF debug == 0 %]
+                    [% IF debug_mode == 0 %]
                     <a href="[% c.session.return_url %]?debug=1">Toggle Debug Mode ON</a>
                     [% ELSE %]
                     <a href="[% c.session.return_url %]?&debug=0">Toggle Debug Mode OFF</a>

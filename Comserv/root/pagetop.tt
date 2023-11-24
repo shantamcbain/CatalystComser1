@@ -1,9 +1,16 @@
+[% PageVersion	= 'pagetop.tt,v 0.02 2023/08/30 shanta Exp shanta '	%]
+[% IF debug_mode == 1 %]
+ [%	PageVersion %]
+    [% "Debugging HostName: " _ HostName %]
+    [%# INCLUDE 'debug.tt' %]
+[% END %]
 <header>
     <!-- Site Greeting -->
-    <h1>[% welcome_message | html %]</h1>
+    <h1>Welcome to [% welcome_message | html %]</h1>
     <!-- Debug Information -->
+    [%# INCLUDE 'debug.tt' %]
     [% IF debug_mode == 1 %]
-    [% INCLUDE 'debug.tt' %]
+
     <div class="debug-content">
         [% debug_content %]
     </div>
