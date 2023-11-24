@@ -1,5 +1,8 @@
 <h1>Stash Information</h1>
-<table>
+<h2>Last Error</h2>
+<p>[% session.last_error OR 'No errors' %]</p>
+<h2>DBI Connection Status</h2>
+<p>[% session.dbi_connected ? 'Connected' : 'Not connected' %]</p><table>
     <tr>
         <th>Variable</th>
         <th>Value</th>
