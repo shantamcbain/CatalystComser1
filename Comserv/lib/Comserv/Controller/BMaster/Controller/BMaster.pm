@@ -5,6 +5,12 @@ BEGIN {
     extends 'Catalyst::Controller';
 }
 my $debug = "Comserv::Controller::BMaster::Controller::BMaster # " . __LINE__ . "\n";
+sub stash_dump {
+    my ($self, $c) = @_;
+#    print Dumper($c->stash);
+}
+Comserv::debug_log($debug . __LINE__);
+Comserv::debug_log($debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0]);
 
 print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package:
 " . (caller(1))[0] . "\n";

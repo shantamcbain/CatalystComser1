@@ -1,6 +1,7 @@
 [% PageVersion = 'setup.tt,v 0.01 2023/09/01 shanta Exp shanta ' %]
-[% IF debug == 1 %]
+[% IF debug_mode == 1 %]
   [% PageVersion %]
+    [% INCLUDE 'debug.tt' %]
 [% END %]
 
 <h1>Database Setup.pm</h1>
