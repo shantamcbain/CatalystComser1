@@ -158,6 +158,26 @@ sub setup :Path('/setup') {
     $c->forward($c->view('TT'));
 
 }
+sub search_schema :Path('/search_schema') :Args(0) {
+    my ($self, $c) = @_;
+
+    my $debug = "Comserv::Controller::Root Line #";
+    print $debug . __LINE__ . "\n";
+    print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
+
+    if ($c->request->method eq 'POST') {
+        my $table_name = $c->request->params->{table_name};
+
+        # Store the table name in the stash
+        $c->stash(table_name => $table_name);
+
+        print $debug . __LINE__ . " Table Name: $table_name\n";
+    }
+
+    # Set the template
+    $c->stash(template => 'search_schema.tt');
+    $c->forward($c->view('TT'));
+}
 sub debug :Path('/debug') :Args(0) {
     print $debug. __LINE__. " Enter debug\n";
     my ($self, $c) = @_;
