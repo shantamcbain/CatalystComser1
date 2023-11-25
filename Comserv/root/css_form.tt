@@ -1,8 +1,9 @@
 <head>
     [% PageVersion = 'css_form.tt,v 0.01 2023/11/03 shanta Exp shanta ' %]
     <meta charset="utf-8">
-    [% IF debug == 1 %]
+    [% IF debug_mode == 1 %]
         [% PageVersion %]
+        [% INCLUDE 'debug.tt' %]
     [% END %]
 </head>
 <body>

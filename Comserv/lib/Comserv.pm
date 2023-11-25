@@ -1,21 +1,8 @@
 package Comserv;
 use Moose;
 use namespace::autoclean;
-
+use Data::Dumper;
 use Catalyst::Runtime 5.80;
-
-# Set flags and add plugins for the application.  See
-# Catalyst::Plugin::ConfigLoader for more details.
-#
-# Note that ORDERING IS IMPORTANT here as plugins are initialized in order,
-# therefore you almost certainly want to keep ConfigLoader at the head of the
-# list if you're using it.
-#
-#         -Debug: activates the debug mode for very useful log messages
-#   ConfigLoader: will load the configuration from a Config::General file in the
-#                 application's home directory
-# Static::Simple: will serve static files from the application's root
-#                 directory
 
 use Catalyst qw/
     -Debug
@@ -28,22 +15,65 @@ use Catalyst qw/
 /;
 
 extends 'Catalyst';
-
-our $VERSION = '0.01';
 my $debug = "Comserv Line #";
 
-print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package:
-" . (caller
-    (1))[0] . "\n";
+our $VERSION = '0.02';
 
-    # Configure the application.
-#
-# Note that settings in comserv.conf (or other external
-# configuration file that you set up manually) take precedence
-# over this when using ConfigLoader. Thus configuration
-# details given here can function as a default configuration,
-# with an external configuration file acting as an override for
-# local deployment.
+our @debug_log_entries; # Array to store the debug log entries
+
+# Define the debug_log method
+sub debug_log {
+    my ($message) = @_;
+
+    # Check if $message is a hash reference
+    if (ref $message eq 'HASH') {
+        # Convert the hash to a string using Data::Dumper
+        $message = Data::Dumper->Dump([$message], ['*hash']);
+    }
+    # Get the current date
+    my ($sec, $min, $hour, $mday, $mon, $year) = localtime();
+    my $date = sprintf("%04d-%02d-%02d %02d:%02d:%02d", $year + 1900, $mon + 1, $mday, $hour, $min, $sec);
+
+    # Open the debug.log file in append mode
+    open my $fh, '>>', 'debug.log' or die "Could not open debug.log: $!";
+
+    # Write the date and message to the file
+    print $fh "$date $message\n";
+
+    # Close the file
+    close $fh;
+
+    # Store the message in the debug_log_entries array
+    push @debug_log_entries, "$date $message";
+}
+
+# Override the log method to use debug_log
+around 'log' => sub {
+    my $orig = shift;
+    my $self = shift;
+
+    # Call the original log method
+    my $log = $self->$orig(@_);
+
+    # Use debug_log for debug messages
+    if ($log && $log->is_debug) {
+        $self->debug_log(join("\n", @_));
+    }
+
+    return $log;
+};
+# Define a method to retrieve a specific debug log entry
+sub get_debug_entry {
+    my ($index) = @_;
+    return $debug_log_entries[$index];
+}
+# Define a method to retrieve a specific debug log entry
+sub get_debug_log_entry {
+    my ($index) = @_;
+    return $debug_log_entries[$index];
+}
+# Use debug_log instead of print
+Comserv::debug_log($debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0]);
 
 __PACKAGE__->config(
     name => 'Comserv',
@@ -62,7 +92,7 @@ __PACKAGE__->config(
     'Controller::Root' => {
         css_form => '/css_form',
     },
-       'Model::Todo' => {
+    'Model::Todo' => {
         class => 'Comserv::Model::Todo',
     },
     'Plugin::Static::Simple' => {
@@ -73,119 +103,33 @@ __PACKAGE__->config(
         ignore_extensions => [ qw/ tt tt2 / ],
     },
     'Model::CssForm' => {
-           class => 'Comserv::Model::CssForm',
-       },
+        class => 'Comserv::Model::CssForm',
+    },
 );
+
 sub setup {
-    print $debug . __LINE__ . " Enter setup\n";
+    Comserv::debug_log($debug . __LINE__ . " Enter setup");
     my $self = shift;
 
     # Call the parent setup method
     $self->SUPER::setup(@_);
 
     # Get the MyDB model
-    print $debug . __LINE__ . " Enter MyBD model\n";
-#    my $mydb = $self->model('MyDB');
-#    print $debug . __LINE__ . " Value of mydb: " . $mydb . "\n";
+    Comserv::debug_log($debug . __LINE__ . " Enter MyBD model");
 
     # Get the DBI info
-    print $debug . __LINE__ . " Enter dbi_info\n";
-#    my $dbi_info = $mydb->_read_encrypted_dbi_info();
+    Comserv::debug_log($debug . __LINE__ . " Enter dbi_info");
 
     # Print the include path
-    print join("\n", @INC);
+    Comserv::debug_log(join("\n", @INC));
 }
-sub home :Path :Args(0) {
-    print $debug . " Enter home\n";
-    my ($self, $c) = @_;
-       # Call the parent setup method
-    $self->SUPER::setup(@_);
 
-    print $debug . " Value of self: " . $self . "\n";
-    # Get the MyDB model
-    my $mydb = $self->model('MyDB');
+# Other methods...
 
-    # Build the DBI info
-    print $debug . " Enter _build_dbi_info\n";
-    $mydb->_build_dbi_info($c);
-
-    # Get the domain name from the request
-    my $domain = $c->request->uri->host;
-    $c->session->{Domain} = $domain;
-
-    # Get the debug parameter from the URL
-    my $debug_param = $c->req->param('debug');
-    $c->stash->{debug} = $debug_param;
-
-    # Get the site name from the URL
-    my $site_name = $c->req->param('site');
-    $c->stash->{SiteName} = $site_name ;
-    print $debug. " SiteName: ". $site_name. ", Domain: ". $site_name. "\n";
-    # Set the appropriate controller based on the site name
-    my $controller;
-    if ($site_name eq 'CSC') {
-        $controller = 'CSC';
-    } elsif ($site_name eq 'USBM') {
-        $controller = 'USBM';
-    } elsif ($site_name eq 'BMaster') {
-        $controller = 'BMaster';
-    }
-
-    # Set the appropriate template based on the controller
-    my $template;
-    if ($controller) {
-        $c->stash->{controller} = $controller;
-        $template = lc($controller) . '/home.tt';
-    } else {
-        # If the site name is not recognized, do not display the home.tt template
-        $template = '';
-    }
-    $c->stash->{template} = $template;
-
-    # Set the HostName and SiteName in the stash
-    $c->stash->{HostName} = $c->request->base;
-    my $hostName = $c->stash->{HostName};
-        # Print the value of HostName
-    $c->log->debug("HostName: $hostName");
-    print "HostName: $hostName\n";
-    $c->stash->{SiteName} = $site_name;
-
-    # Set the SiteName and Domain in the session
-    $c->session->{SiteName} = $site_name;
-    $c->session->{Domain} = $domain;
-    print $debug. " SiteName: ". $site_name. ", Domain: ". $domain. "\n";
-
-    $c->forward('View::TT');
-}
 __PACKAGE__->setup();
-print join("\n", @INC);
-=encoding utf8
+Comserv::debug_log(join("\n", @INC));
 
-=head1 NAME
-
-Comserv - Catalyst based application
-
-=head1 SYNOPSIS
-
-    script/comserv_server.pl
-
-=head1 DESCRIPTION
-
-[enter your description here]
-
-=head1 SEE ALSO
-
-L<Comserv::Controller::Root>, L<Catalyst>
-
-=head1 AUTHOR
-
-Shanta McBain
-
-=head1 LICENSE
-
-This library is free software. You can redistribute it and/or modify
-it under the same terms as Perl itself.
-
-=cut
+# Make the class immutable after all methods have been added or modified
+__PACKAGE__->meta->make_immutable(inline_constructor => 0);
 
 1;

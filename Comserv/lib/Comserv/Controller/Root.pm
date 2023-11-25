@@ -58,7 +58,8 @@ sub auto :Private {
 
     # Continue processing the rest of the request
     return 1;
-}sub catalyst_help :Path('/catalyst_help') {
+}
+sub catalyst_help :Path('/catalyst_help') {
     my ($self, $c) = @_;
     $c->response->body($c->welcome_message);
 }
@@ -128,7 +129,8 @@ sub display_tables {
 
     # Set the template
     $c->stash(template => 'display_tables.tt');
-}sub css_form :Path('/css_form') {
+}
+sub css_form :Path('/css_form') {
     my ($self, $c) = @_;
     my $site_name = $c->stash->{SiteName};
     print $debug. __LINE__. " Site Name: $site_name\n";
@@ -136,80 +138,46 @@ sub display_tables {
     $c->forward($c->view('TT'));
 
 }
-sub setup :Path('/setup') {
+sub display_schema :Local {
     my ($self, $c) = @_;
-       # Get the DBI information
-    my $dbi_info = $c->model('MyDB')->dbi_info($c);
 
-    my $site_name = $c->stash->{SiteName};
-    print $debug. __LINE__. " Site Name: $site_name\n";
+    # Get the criteria from the request parameters
+    my $criteria = $c->request->parameters->{criteria};
 
-    # Add the DBI information to the stash
-    $c->stash(
-        dbi_info => $dbi_info,
-    );
+    # Get the filtered schema information
+    my $schema_info = $c->model('MyDB')->get_filtered_schema_info($c, $criteria);
 
-    # Call the display_tables method to retrieve and display the schema information
-    print $debug . __LINE__ . " Call display_tables\n";
-
-    $self->display_tables($c);
-
-    $c->stash(template => 'setup.tt');
-    $c->forward($c->view('TT'));
-
+    # Pass the schema information to the view
+    $c->stash(schema_info => $schema_info);
 }
-sub search_schema :Path('/search_schema') :Args(0) {
+sub display_filtered_schema :Local {
+    Comserv::debug_log($debug . __LINE__ . " Enter display_filtered_schema\n");
     my ($self, $c) = @_;
 
-    my $debug = "Comserv::Controller::Root Line #";
-    print $debug . __LINE__ . "\n";
-    print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
+    # Get the criteria from the request parameters
+    my $criteria = $c->request->parameters->{criteria};
 
-    if ($c->request->method eq 'POST') {
-        my $table_name = $c->request->params->{table_name};
+    # Get the filtered schema information
+    Comserv::debug_log($debug . __LINE__ . " Call get_filtered_schema_info\n");
+    my $schema_info = $c->model('MyDB')->get_filtered_schema_info($c, $criteria);
 
-        # Store the table name in the stash
-        $c->stash(table_name => $table_name);
+    # Pass the schema information to the view
+    $c->stash(schema_info => $schema_info);
+    Comserv::debug_log($debug . __LINE__ . " Exit display_filtered_schema $schema_info\n");
 
-        print $debug . __LINE__ . " Table Name: $table_name\n";
-    }
+    # Get the debug log entries
+    my $debug_log_entries = \@Comserv::debug_log_entries;
+
+    # Pass the debug log entries to the view
+    $c->stash(debug_log_entries => $debug_log_entries);
 
     # Set the template
-    $c->stash(template => 'search_schema.tt');
+    $c->stash(template => 'display_schema.tt');
+
+    # Forward to the view
     $c->forward($c->view('TT'));
 }
-sub debug :Path('/debug') :Args(0) {
-    print $debug. __LINE__. " Enter debug\n";
-    my ($self, $c) = @_;
-
-    # Get the DBI information
-    my $dbi_info = $c->model('MyDB')->_read_dbi_info_from_file();
-    print $debug. __LINE__. " dbi_info: $dbi_info\n";
-
-    # Print the DBI information using Data::Dumper
-    print Data::Dumper::Dumper($dbi_info);
-
-    # Store the DBI information in the stash
-    print $debug. __LINE__. " Put dbi_info in stash\n";
-    $c->stash->{dbi_info} = $dbi_info;
-    $c->session->{$dbi_info} = $dbi_info;
-
-    # Get the state of the DBI connection
-    my $db_connection_successful = $c->stash->{db_connection_successful};
-
-    # Print the state of the DBI connection
-    if ($db_connection_successful) {
-        print "DB connection successful.\n";
-    } else {
-        print "DB connection failed.\n";
-    }
-
-    # Set the template
-    $c->stash(template => 'debug.tt');
-
-    # Forward to the view to render the template
-    $c->forward($c->view('TT'));
-}sub generate_new_key :Path('/generate_new_key') :Args(0) {
+sub generate_new_key :Path('/generate_new_key') :Args(0) {
     my ($self, $c) = @_;
 
     # Create an instance of the MyDB model

@@ -144,6 +144,48 @@ print $debug . __LINE__ . " in get_schema_info\n";  # Debug print
 close $log_fh;
     return \@schema_info;
 }
+sub get_filtered_schema_info {
+    my ($self, $c, $criteria) = @_;
+
+    # Retrieve the DBI handle
+    my $dbh = $self->_build_dbh($c);
+
+    # If the DBI handle is an error message, store it in the stash
+    if (!ref $dbh) {
+        $c->stash(error_message => $dbh);
+        return;
+    }
+
+    # Prepare the query to retrieve schema information
+    my $sth = $dbh->prepare('SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ?');
+
+    # Execute the query
+    $sth->execute($c->stash->{dbi_info}{database});
+
+    # Fetch the results
+    my @schema_info;
+    while (my $row = $sth->fetchrow_hashref) {
+        # If the table name matches the criteria
+        if ($row->{TABLE_NAME} =~ /$criteria/) {
+            # Prepare the query to fetch the column information
+            my $sth_columns = $dbh->prepare("SHOW COLUMNS FROM $row->{TABLE_NAME}");
+
+            # Execute the query
+            $sth_columns->execute();
+
+            # Fetch the results
+            my $columns = $sth_columns->fetchall_arrayref({});
+
+            # Add the columns to the row
+            $row->{columns} = $columns;
+
+            push @schema_info, $row;
+        }
+    }
+
+    return \@schema_info;
+}
+
 # Method to set the dbi_info
 sub set_dbi_info {
     my ($self, $c) = @_;
