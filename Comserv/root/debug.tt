@@ -29,16 +29,13 @@
     [% END %]
 </table>
 [% USE Dumper %]
-<h1>Debug Information</h1>
-<table>
-    <tr>
-        <th>Variable</th>
-        <th>Value</th>
-    </tr>
-    [% FOREACH key IN debug_vars.keys.sort %]
-    <tr>
-        <td>[% key %]</td>
-        <td>[% debug_vars.$key | html %]</td>
-    </tr>
-    [% END %]
-</table>
+<h1>Debug Log Entries</h1>
+[% USE JSON %]
+[% FOREACH entry IN debug_log_entries %]
+    <p>
+        <span>[% entry %]</span>
+        [% IF entry.match('HASH') %]
+            <button onclick="alert('[% JSON.dump(entry) | html %]')">Show Hash</button>
+        [% END %]
+    </p>
+[% END %]

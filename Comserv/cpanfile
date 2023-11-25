@@ -8,3 +8,4 @@ requires 'Catalyst'; # Catalyst framework
 requires 'Catalyst::Runtime'; # Catalyst framework
 requires 'Catalyst::Plugin::ConfigLoader'; # Catalyst framework
 requires 'Term::ReadPassword'; # Catalyst framework
+requires 'Template::Plugin::JSON'; # Template Toolkit JSON plugin

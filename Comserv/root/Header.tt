@@ -9,7 +9,7 @@
     <meta name="ROBOTS" content="index all, follow all">
     [%# HostName = 'https://computersystemconsulting.ca' %]
     [% HostName = c.stash.HostName %] [%# HostName %]<!-- This is where you access the stashed HostName -->
-    [% SiteName = c.session.SiteName %] [% SiteName %]<!-- This is where you access the stashed SiteName -->
+    [% SiteName = c.session.SiteName %] [%# SiteName %]<!-- This is where you access the stashed SiteName -->
     [% favicon = c.stash.HostName _ "/images/favicon.ico" %]
     [% page_title = "Default Home" %]
     [% ScriptDisplayName = 'Catalyst' %]
