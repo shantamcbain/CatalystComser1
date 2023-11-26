@@ -231,7 +231,7 @@ sub _read_dbi_info_from_file {
 
         # Read the file content
         my $json_text = do { local $/; <$fh> };
-        print $debug . __LINE__ . " json_text: $json_text\n";
+#        print $debug . __LINE__ . " json_text: $json_text\n";
 
         # Close the file
         print $debug . __LINE__ . " Closed file: $file\n";
@@ -257,17 +257,103 @@ sub _read_dbi_info_from_file {
     $c->session(last_error => "File does not exist: $file");  # Store the error message in the session
     return undef;
 }
+sub get_related_tables {
+    my ($self, $c, $table_name) = @_;
 
+    # Retrieve the DBI handle
+    my $dbh = $self->_build_dbh($c);
+
+    # Prepare the query to retrieve tables that contain the input table name
+    Comserv::debug_log($debug . __LINE__ . " Preparing query to retrieve tables that contain $table_name\n");
+    my $sth = $dbh->prepare("SHOW TABLES FROM shanta_forager LIKE ?");
+    $sth->execute("%" . $table_name . "%");
+
+    # Fetch the results
+    Comserv::debug_log($debug . __LINE__ . " Fetching tables that contain $table_name\n");
+    my $tables = $sth->fetchall_arrayref;
+
+    my @table_structure;
+    for my $table (@$tables) {
+        # Prepare the query to retrieve the table structure for each table
+        Comserv::debug_log($debug . __LINE__ . " Preparing query to retrieve structure for table " . $table->[0] . "\n");
+        $sth = $dbh->prepare("SHOW COLUMNS FROM " . $table->[0]);
+        $sth->execute();
+
+        # Fetch the results
+        Comserv::debug_log($debug . __LINE__ . " Fetching structure for table " . $table->[0] . "\n");
+        my $structure = $sth->fetchall_arrayref({});
+        push @table_structure, @$structure;
+    }
+
+    # Prepare the query to retrieve the table structure for any related tables
+    Comserv::debug_log($debug . __LINE__ . " Preparing query to retrieve related tables for $table_name\n");
+    $sth = $dbh->prepare("SELECT TABLE_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
+                          FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+                          WHERE REFERENCED_TABLE_SCHEMA LIKE ? AND REFERENCED_TABLE_NAME LIKE ?");
+
+    # Execute the query
+    $sth->execute("%" . $c->stash->{dbi_info}{database} . "%", "%" . $table_name . "%");
+
+    # Fetch the results
+    Comserv::debug_log($debug . __LINE__ . " Fetching related tables for $table_name\n");
+    my $related_tables = $sth->fetchall_arrayref({});
+
+    # Combine the table structure and related tables into a single data structure
+    my $result = {
+        table_structure => \@table_structure,
+        related_tables => $related_tables,
+    };
+
+    Comserv::debug_log($debug . __LINE__ . " Returning result\n");
+    return $result;
+}
+sub sort_tables {
+    my ($self, $c, $table_name) = @_;
+
+    # Retrieve the result from get_related_tables
+    my $tables = $self->get_related_tables($c, $table_name);
+
+    # Check if get_related_tables returned the expected structure
+    if (ref $tables eq 'HASH' && ref $tables->{table_structure} eq 'ARRAY') {
+        # Sort the tables based on the table name
+        my @sorted_tables = sort { $a->{table_name} cmp $b->{table_name} } @{$tables->{table_structure}};
+
+        # For each table, sort the related tables based on the table name
+        foreach my $table (@sorted_tables) {
+            my @sorted_related_tables = sort { $a->{table_name} cmp $b->{table_name} } @{$table->{related_tables}};
+            $table->{related_tables} = \@sorted_related_tables;
+        }
+
+        return \@sorted_tables;
+    } else {
+        # get_related_tables did not return the expected structure
+        die "get_related_tables did not return the expected structure";
+    }
+}
+sub get_table_structure {
+    my ($self, $c, $table_name) = @_;
+
+    # Retrieve the DBI handle
+    my $dbh = $self->_build_dbh($c);
+
+    # Prepare the query to retrieve the table structure
+    my $sth = $dbh->prepare("DESCRIBE $table_name");
+
+    # Execute the query
+    $sth->execute();
+
+    # Fetch the results
+    my $table_structure = $sth->fetchall_arrayref({});
+
+    return $table_structure;
+}
 # Method to test the DB connection
-# Method to test the DB connection
+
 sub _test_db_connection {
     my ($self, $c, $dbi_info) = @_;
-
+    Comserv::debug_log($debug . __LINE__ . " Enter search_schema\n");
     print $debug . __LINE__ . " in _test_db_connection\n";
-    print $debug . __LINE__ . " dbi_info: " . Dumper($dbi_info) . "\n";
-    my ($self, $c, $dbi_info) = @_;
-
-    print $debug . __LINE__ . " dbi_info: $dbi_info\n";
+    #print $debug . __LINE__ . " dbi_info: " . Dumper($dbi_info) . "\n";
 
     # Check if the DBI information is provided
     if ($dbi_info && $dbi_info->{username} && $dbi_info->{password}) {
