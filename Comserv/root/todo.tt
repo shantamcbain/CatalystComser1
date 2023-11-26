@@ -339,4 +339,94 @@
   <button type="submit">Add ToDo</button>
 </form>  </td>
 </tr>
+<tr>
+  <td>Comserv</td>
+  <td>ToDo</td>
+  <td>Create ToDo Schema</td>
+  <td>2023-12-01</td>
+  <td>2023-12-02</td>
+  <td>Create a ToDo schema that includes fields for the ToDo title, description, due date, priority, project, and user.</td>
+  <td>Create a ToDo schema that includes fields for the ToDo title, description, due date, priority, project, and user.</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::Model::ToDo</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="1">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
+<tr>
+  <td>Comserv</td>
+  <td>ToDo</td>
+  <td>Create Database Tables</td>
+  <td>2023-12-02</td>
+  <td>2023-12-03</td>
+  <td>Create tables in the database that match the ToDo schema.</td>
+  <td>Create tables in the database that match the ToDo schema.</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::Model::ToDo</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="2">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
+<tr>
+  <td>Comserv</td>
+  <td>ToDo</td>
+  <td>Create Server-Side Route</td>
+  <td>2023-12-03</td>
+  <td>2023-12-04</td>
+  <td>Implement a server-side route that handles the creation of a new ToDo. This route should take the form data, create a new ToDo in the database, and return a response.</td>
+  <td>Implement a server-side route that handles the creation of a new ToDo. This route should take the form data, create a new ToDo in the database, and return a response.</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::Controller::ToDo</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="3">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
+<tr>
+  <td>Comserv</td>
+  <td>ToDo</td>
+  <td>Modify todo.tt</td>
+  <td>2023-12-04</td>
+  <td>2023-12-05</td>
+  <td>Modify the todo.tt file to include a form for adding new ToDos. This form should have fields for the ToDo details and a submit button. The form action should be set to the server-side route that handles the creation of a new ToDo.</td>
+  <td>Modify the todo.tt file to include a form for adding new ToDos. This form should have fields for the ToDo details and a submit button. The form action should be set to the server-side route that handles the creation of a new ToDo.</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::View::TT</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="4">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
+<tr>
+  <td>Comserv</td>
+  <td>ToDo</td>
+  <td>Add Logging</td>
+  <td>2023-12-05</td>
+  <td>2023-12-06</td>
+  <td>Add logging to track the activity in the ToDo system. Log events such as adding, editing, and deleting ToDo items.</td>
+  <td>Add logging to track the activity in the ToDo system. Log events such as adding, editing, and deleting ToDo items.</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::Log</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="5">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
 </table>

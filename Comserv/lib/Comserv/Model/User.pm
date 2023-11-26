@@ -1,7 +1,6 @@
 package Comserv::Model::User;
 use Moose;
 use namespace::autoclean;
-
 extends 'Catalyst::Model';
 
 =head1 NAME
@@ -29,6 +28,8 @@ my $debug = "Comserv::Model::User Line #";
 print $debug . __LINE__ . "\n";
 print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
 
+print $debug . __LINE__ . join("\n", @INC);
+print $debug . __LINE__ . "\n";
 
 
 has 'username' => (is => 'rw', isa => 'Str', default => 'shanta');
