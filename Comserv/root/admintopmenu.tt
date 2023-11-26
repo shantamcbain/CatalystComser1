@@ -11,6 +11,7 @@
         <div class="dropdown-content">
             <a href="/setup">Site Setup</a>
             <a href="/todo" class="dropbtn">ToDo</a>
+            <a href="/todo/display_tables">ToDo Tables</a>
             <a href="/debug">debug</a>
             <div class="submenu-item">
                 <span class="submenu-header">Select Domain</span>

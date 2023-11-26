@@ -1,0 +1,764 @@
+$csc_todo_tb1 = {
+  'csc_todo_tb' => [
+    {
+      'Null' => 'NO',
+      'Default' => undef,
+      'Type' => 'int(11)',
+      'Field' => 'record_id',
+      'Extra' => 'auto_increment',
+      'Key' => 'PRI'
+    },
+    {
+      'Type' => 'varchar(20)',
+      'Field' => 'sitename',
+      'Extra' => '',
+      'Null' => 'NO',
+      'Default' => 'All',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Type' => 'varchar(30)',
+      'Field' => 'owner',
+      'Extra' => '',
+      'Null' => 'NO',
+      'Default' => ''
+    },
+    {
+      'Key' => '',
+      'Null' => 'NO',
+      'Default' => '',
+      'Extra' => '',
+      'Type' => 'varchar(30)',
+      'Field' => 'start_date'
+    },
+    {
+      'Field' => 'due_date',
+      'Type' => 'varchar(30)',
+      'Extra' => '',
+      'Default' => '',
+      'Null' => 'NO',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Type' => 'varchar(80)',
+      'Field' => 'subject',
+      'Extra' => '',
+      'Default' => '',
+      'Null' => 'NO'
+    },
+    {
+      'Default' => '0',
+      'Null' => 'NO',
+      'Extra' => '',
+      'Type' => 'tinyint(4)',
+      'Field' => 'priority',
+      'Key' => ''
+    },
+    {
+      'Default' => '',
+      'Null' => 'NO',
+      'Type' => 'varchar(50)',
+      'Field' => 'reporter',
+      'Extra' => '',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Default' => '',
+      'Null' => 'NO',
+      'Type' => 'varchar(50)',
+      'Field' => 'developer',
+      'Extra' => ''
+    },
+    {
+      'Key' => '',
+      'Default' => undef,
+      'Null' => 'YES',
+      'Type' => 'text',
+      'Field' => 'description',
+      'Extra' => ''
+    },
+    {
+      'Key' => '',
+      'Type' => 'varchar(25)',
+      'Field' => 'status',
+      'Extra' => '',
+      'Null' => 'NO',
+      'Default' => ''
+    },
+    {
+      'Extra' => '',
+      'Type' => 'varchar(30)',
+      'Field' => 'project_code',
+      'Default' => '',
+      'Null' => 'NO',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Extra' => '',
+      'Field' => 'estimated_man_hours',
+      'Type' => 'tinyint(4)',
+      'Null' => 'NO',
+      'Default' => '0'
+    },
+    {
+      'Default' => '0.00',
+      'Null' => 'NO',
+      'Type' => 'decimal(10,2)',
+      'Field' => 'accumulative_time',
+      'Extra' => '',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Null' => 'NO',
+      'Default' => undef,
+      'Type' => 'text',
+      'Field' => 'comments',
+      'Extra' => ''
+    },
+    {
+      'Key' => '',
+      'Type' => 'varchar(30)',
+      'Field' => 'username_of_poster',
+      'Extra' => '',
+      'Default' => '',
+      'Null' => 'NO'
+    },
+    {
+      'Null' => 'NO',
+      'Default' => '',
+      'Extra' => '',
+      'Type' => 'varchar(30)',
+      'Field' => 'company_code',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Extra' => '',
+      'Type' => 'varchar(10)',
+      'Field' => 'share',
+      'Default' => '',
+      'Null' => 'NO'
+    },
+    {
+      'Null' => 'NO',
+      'Default' => '',
+      'Type' => 'varchar(50)',
+      'Field' => 'last_mod_by',
+      'Extra' => '',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Type' => 'varchar(50)',
+      'Field' => 'last_mod_date',
+      'Extra' => '',
+      'Null' => 'NO',
+      'Default' => ''
+    },
+    {
+      'Null' => 'NO',
+      'Default' => '',
+      'Extra' => '',
+      'Field' => 'group_of_poster',
+      'Type' => 'varchar(30)',
+      'Key' => ''
+    },
+    {
+      'Null' => 'NO',
+      'Default' => '',
+      'Extra' => '',
+      'Type' => 'varchar(30)',
+      'Field' => 'date_time_posted',
+      'Key' => ''
+    }
+  ]
+};
+
+$log_tb1 = {
+  'log_tb' => [
+    {
+      'Key' => 'PRI',
+      'Extra' => 'auto_increment',
+      'Field' => 'record_id',
+      'Type' => 'int(11)',
+      'Default' => undef,
+      'Null' => 'NO'
+    },
+    {
+      'Default' => 'All',
+      'Null' => 'NO',
+      'Field' => 'sitename',
+      'Type' => 'varchar(20)',
+      'Extra' => '',
+      'Key' => ''
+    },
+    {
+      'Null' => 'NO',
+      'Default' => '0',
+      'Type' => 'int(11)',
+      'Field' => 'todo_record_id',
+      'Extra' => '',
+      'Key' => ''
+    },
+    {
+      'Extra' => '',
+      'Field' => 'owner',
+      'Type' => 'varchar(30)',
+      'Default' => '',
+      'Null' => 'NO',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Extra' => '',
+      'Field' => 'start_date',
+      'Type' => 'varchar(30)',
+      'Default' => '',
+      'Null' => 'NO'
+    },
+    {
+      'Default' => '',
+      'Null' => 'NO',
+      'Field' => 'due_date',
+      'Type' => 'varchar(30)',
+      'Extra' => '',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Extra' => '',
+      'Field' => 'abstract',
+      'Type' => 'varchar(80)',
+      'Default' => '',
+      'Null' => 'NO'
+    },
+    {
+      'Key' => '',
+      'Field' => 'priority',
+      'Type' => 'tinyint(4)',
+      'Extra' => '',
+      'Null' => 'NO',
+      'Default' => '0'
+    },
+    {
+      'Key' => '',
+      'Default' => '',
+      'Null' => 'NO',
+      'Field' => 'reporter',
+      'Type' => 'varchar(50)',
+      'Extra' => ''
+    },
+    {
+      'Key' => '',
+      'Default' => '',
+      'Null' => 'NO',
+      'Extra' => '',
+      'Field' => 'developer',
+      'Type' => 'varchar(50)'
+    },
+    {
+      'Key' => '',
+      'Default' => undef,
+      'Null' => 'YES',
+      'Type' => 'text',
+      'Field' => 'details',
+      'Extra' => ''
+    },
+    {
+      'Default' => '',
+      'Null' => 'NO',
+      'Extra' => '',
+      'Field' => 'status',
+      'Type' => 'varchar(25)',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Null' => 'NO',
+      'Default' => '',
+      'Field' => 'project_code',
+      'Type' => 'varchar(30)',
+      'Extra' => ''
+    },
+    {
+      'Extra' => '',
+      'Field' => 'start_time',
+      'Type' => 'varchar(50)',
+      'Null' => 'NO',
+      'Default' => '0',
+      'Key' => ''
+    },
+    {
+      'Null' => 'NO',
+      'Default' => '0.00',
+      'Extra' => '',
+      'Type' => 'varchar(10)',
+      'Field' => 'end_time',
+      'Key' => ''
+    },
+    {
+      'Field' => 'time',
+      'Type' => 'decimal(4,2)',
+      'Extra' => '',
+      'Null' => 'NO',
+      'Default' => '0.00',
+      'Key' => ''
+    },
+    {
+      'Extra' => '',
+      'Field' => 'comments',
+      'Type' => 'text',
+      'Default' => undef,
+      'Null' => 'NO',
+      'Key' => ''
+    },
+    {
+      'Extra' => '',
+      'Field' => 'username_of_poster',
+      'Type' => 'varchar(30)',
+      'Null' => 'NO',
+      'Default' => '',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Type' => 'varchar(30)',
+      'Field' => 'company_code',
+      'Extra' => '',
+      'Default' => '',
+      'Null' => 'NO'
+    },
+    {
+      'Key' => '',
+      'Default' => '',
+      'Null' => 'NO',
+      'Field' => 'last_mod_by',
+      'Type' => 'varchar(50)',
+      'Extra' => ''
+    },
+    {
+      'Key' => '',
+      'Extra' => '',
+      'Field' => 'last_mod_date',
+      'Type' => 'varchar(50)',
+      'Null' => 'NO',
+      'Default' => ''
+    },
+    {
+      'Field' => 'group_of_poster',
+      'Type' => 'varchar(30)',
+      'Extra' => '',
+      'Default' => '',
+      'Null' => 'NO',
+      'Key' => ''
+    },
+    {
+      'Null' => 'NO',
+      'Default' => '',
+      'Type' => 'varchar(30)',
+      'Field' => 'date_time_posted',
+      'Extra' => '',
+      'Key' => ''
+    }
+  ]
+};
+
+$log_tb1 = {
+  'log_tb' => [
+    {
+      'Null' => 'NO',
+      'Default' => undef,
+      'Extra' => 'auto_increment',
+      'Type' => 'int(11)',
+      'Field' => 'record_id',
+      'Key' => 'PRI'
+    },
+    {
+      'Type' => 'varchar(20)',
+      'Field' => 'sitename',
+      'Extra' => '',
+      'Default' => 'All',
+      'Null' => 'NO',
+      'Key' => ''
+    },
+    {
+      'Null' => 'NO',
+      'Default' => '0',
+      'Type' => 'int(11)',
+      'Field' => 'todo_record_id',
+      'Extra' => '',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Default' => '',
+      'Null' => 'NO',
+      'Type' => 'varchar(30)',
+      'Field' => 'owner',
+      'Extra' => ''
+    },
+    {
+      'Type' => 'varchar(30)',
+      'Field' => 'start_date',
+      'Extra' => '',
+      'Null' => 'NO',
+      'Default' => '',
+      'Key' => ''
+    },
+    {
+      'Null' => 'NO',
+      'Default' => '',
+      'Field' => 'due_date',
+      'Type' => 'varchar(30)',
+      'Extra' => '',
+      'Key' => ''
+    },
+    {
+      'Null' => 'NO',
+      'Default' => '',
+      'Extra' => '',
+      'Type' => 'varchar(80)',
+      'Field' => 'abstract',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Extra' => '',
+      'Field' => 'priority',
+      'Type' => 'tinyint(4)',
+      'Null' => 'NO',
+      'Default' => '0'
+    },
+    {
+      'Extra' => '',
+      'Field' => 'reporter',
+      'Type' => 'varchar(50)',
+      'Null' => 'NO',
+      'Default' => '',
+      'Key' => ''
+    },
+    {
+      'Extra' => '',
+      'Type' => 'varchar(50)',
+      'Field' => 'developer',
+      'Null' => 'NO',
+      'Default' => '',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Extra' => '',
+      'Type' => 'text',
+      'Field' => 'details',
+      'Default' => undef,
+      'Null' => 'YES'
+    },
+    {
+      'Key' => '',
+      'Null' => 'NO',
+      'Default' => '',
+      'Extra' => '',
+      'Type' => 'varchar(25)',
+      'Field' => 'status'
+    },
+    {
+      'Key' => '',
+      'Default' => '',
+      'Null' => 'NO',
+      'Type' => 'varchar(30)',
+      'Field' => 'project_code',
+      'Extra' => ''
+    },
+    {
+      'Field' => 'start_time',
+      'Type' => 'varchar(50)',
+      'Extra' => '',
+      'Null' => 'NO',
+      'Default' => '0',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Type' => 'varchar(10)',
+      'Field' => 'end_time',
+      'Extra' => '',
+      'Default' => '0.00',
+      'Null' => 'NO'
+    },
+    {
+      'Type' => 'decimal(4,2)',
+      'Field' => 'time',
+      'Extra' => '',
+      'Default' => '0.00',
+      'Null' => 'NO',
+      'Key' => ''
+    },
+    {
+      'Default' => undef,
+      'Null' => 'NO',
+      'Type' => 'text',
+      'Field' => 'comments',
+      'Extra' => '',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Extra' => '',
+      'Type' => 'varchar(30)',
+      'Field' => 'username_of_poster',
+      'Null' => 'NO',
+      'Default' => ''
+    },
+    {
+      'Key' => '',
+      'Extra' => '',
+      'Field' => 'company_code',
+      'Type' => 'varchar(30)',
+      'Null' => 'NO',
+      'Default' => ''
+    },
+    {
+      'Key' => '',
+      'Null' => 'NO',
+      'Default' => '',
+      'Type' => 'varchar(50)',
+      'Field' => 'last_mod_by',
+      'Extra' => ''
+    },
+    {
+      'Extra' => '',
+      'Type' => 'varchar(50)',
+      'Field' => 'last_mod_date',
+      'Default' => '',
+      'Null' => 'NO',
+      'Key' => ''
+    },
+    {
+      'Default' => '',
+      'Null' => 'NO',
+      'Type' => 'varchar(30)',
+      'Field' => 'group_of_poster',
+      'Extra' => '',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Default' => '',
+      'Null' => 'NO',
+      'Extra' => '',
+      'Type' => 'varchar(30)',
+      'Field' => 'date_time_posted'
+    }
+  ]
+};
+
+$todo_tb1 = {
+  'todo_tb' => [
+    {
+      'Default' => undef,
+      'Null' => 'NO',
+      'Type' => 'int(11)',
+      'Field' => 'record_id',
+      'Extra' => 'auto_increment',
+      'Key' => 'PRI'
+    },
+    {
+      'Key' => '',
+      'Null' => 'NO',
+      'Default' => 'All',
+      'Type' => 'varchar(20)',
+      'Field' => 'sitename',
+      'Extra' => ''
+    },
+    {
+      'Default' => undef,
+      'Null' => 'NO',
+      'Type' => 'varchar(20)',
+      'Field' => 'owner',
+      'Extra' => '',
+      'Key' => ''
+    },
+    {
+      'Type' => 'varchar(30)',
+      'Field' => 'status',
+      'Extra' => '',
+      'Default' => '',
+      'Null' => 'NO',
+      'Key' => ''
+    },
+    {
+      'Extra' => '',
+      'Field' => 'project_code',
+      'Type' => 'varchar(30)',
+      'Null' => 'NO',
+      'Default' => '',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Null' => 'NO',
+      'Default' => '',
+      'Field' => 'todo_code',
+      'Type' => 'varchar(30)',
+      'Extra' => ''
+    },
+    {
+      'Field' => 'task_name',
+      'Type' => 'varchar(100)',
+      'Extra' => '',
+      'Null' => 'NO',
+      'Default' => '',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Type' => 'varchar(150)',
+      'Field' => 'task_description',
+      'Extra' => '',
+      'Default' => '',
+      'Null' => 'NO'
+    },
+    {
+      'Extra' => '',
+      'Field' => 'priority',
+      'Type' => 'tinyint(4)',
+      'Default' => '3',
+      'Null' => 'NO',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Default' => '0',
+      'Null' => 'NO',
+      'Extra' => '',
+      'Type' => 'tinyint(4)',
+      'Field' => 'estimated_man_hours'
+    },
+    {
+      'Key' => '',
+      'Type' => 'tinyint(4)',
+      'Field' => 'accumulative_time',
+      'Extra' => '',
+      'Null' => 'NO',
+      'Default' => '0'
+    },
+    {
+      'Null' => 'NO',
+      'Default' => '',
+      'Type' => 'varchar(50)',
+      'Field' => 'developer_name',
+      'Extra' => '',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Extra' => '',
+      'Type' => 'date',
+      'Field' => 'start_date',
+      'Null' => 'NO',
+      'Default' => undef
+    },
+    {
+      'Default' => '0000-00-00',
+      'Null' => 'NO',
+      'Type' => 'date',
+      'Field' => 'due_date',
+      'Extra' => '',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Null' => 'NO',
+      'Default' => '0000-00-00',
+      'Field' => 'completion_date',
+      'Type' => 'date',
+      'Extra' => ''
+    },
+    {
+      'Field' => 'client_name',
+      'Type' => 'tinyint(4)',
+      'Extra' => '',
+      'Default' => '0',
+      'Null' => 'NO',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Null' => 'NO',
+      'Default' => undef,
+      'Type' => 'varchar(100)',
+      'Field' => 'abstract',
+      'Extra' => ''
+    },
+    {
+      'Key' => '',
+      'Extra' => '',
+      'Type' => 'tinyint(4)',
+      'Field' => 'spare3',
+      'Default' => '0',
+      'Null' => 'NO'
+    },
+    {
+      'Key' => '',
+      'Null' => 'NO',
+      'Default' => undef,
+      'Field' => 'details',
+      'Type' => 'varchar(100)',
+      'Extra' => ''
+    },
+    {
+      'Default' => undef,
+      'Null' => 'YES',
+      'Field' => 'comments',
+      'Type' => 'text',
+      'Extra' => '',
+      'Key' => ''
+    },
+    {
+      'Default' => '',
+      'Null' => 'NO',
+      'Extra' => '',
+      'Type' => 'varchar(30)',
+      'Field' => 'username_of_poster',
+      'Key' => ''
+    },
+    {
+      'Null' => 'NO',
+      'Default' => undef,
+      'Field' => 'last_mod_by',
+      'Type' => 'varchar(20)',
+      'Extra' => '',
+      'Key' => ''
+    },
+    {
+      'Null' => 'NO',
+      'Default' => '',
+      'Type' => 'varchar(30)',
+      'Field' => 'group_of_poster',
+      'Extra' => '',
+      'Key' => ''
+    },
+    {
+      'Key' => '',
+      'Null' => 'NO',
+      'Default' => undef,
+      'Type' => 'date',
+      'Field' => 'last_mod_date',
+      'Extra' => ''
+    },
+    {
+      'Key' => '',
+      'Null' => 'NO',
+      'Default' => '',
+      'Type' => 'varchar(30)',
+      'Field' => 'date_time_posted',
+      'Extra' => ''
+    }
+  ]
+};
+

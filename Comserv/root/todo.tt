@@ -159,4 +159,184 @@
 </form>    </td>
   </tr>
 
+<tr>
+  <td>Comserv</td>
+  <td>DataBaseSetup</td>
+  <td>None</td>
+  <td>2023-11-25</td>
+  <td>2023-11-27</td>
+  <td>Create a form in the setup.tt template that takes a table name as input. This form will be used to search the old schema for tables related to the input table name.</td>
+  <td>Create a form in the setup.tt template that takes a table name as input. This form will be used to search the old schema for tables related to the input table name.</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::Controller::Root</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="1">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
+<tr>
+  <td>Comserv</td>
+  <td>DataBaseSetup</td>
+  <td>Search for schema</td>
+  <td>2023-12-02</td>
+  <td>2023-12-03</td>
+  <td>In the Comserv::Controller::Root module, implement a method to handle the form submission. This method should retrieve the input table name from the form data.</td>
+  <td>In the Comserv::Controller::Root module, implement a method to handle the form submission. This method should retrieve the input table name from the form data.</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::Controller::Root</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="2">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
+<tr>
+  <td>Comserv</td>
+  <td>DataBaseSetup</td>
+  <td>Search for schema</td>
+  <td>2023-12-03</td>
+  <td>2023-12-04</td>
+  <td>In the Comserv::Model::MyDB module, implement a method to search the old schema for tables related to the input table name. This method should execute a query to retrieve the table structure for the input table name and any related tables.</td>
+  <td>In the Comserv::Model::MyDB module, implement a method to search the old schema for tables related to the input table name. This method should execute a query to retrieve the table structure for the input table name and any related tables.</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::Model::MyDB</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="3">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
+<tr>
+  <td>Comserv</td>
+  <td>DataBaseSetup</td>
+  <td>Search for schema</td>
+  <td>2023-12-04</td>
+  <td>2023-12-05</td>
+  <td>In the Comserv::Model::MyDB module, implement a method to search for tables that are related to a field or link table. This method should execute a query to retrieve the table structure for each related table.</td>
+  <td>In the Comserv::Model::MyDB module, implement a method to search for tables that are related to a field or link table. This method should execute a query to retrieve the table structure for each related table.</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::Model::MyDB</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="4">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
+<tr>
+  <td>Comserv</td>
+  <td>DataBaseSetup</td>
+  <td>Search for schema</td>
+  <td>2023-12-05</td>
+  <td>2023-12-06</td>
+  <td>In the Comserv::Model::MyDB module, implement a method to sort the list of tables by table name and the tables that are directly related to that table.</td>
+  <td>In the Comserv::Model::MyDB module, implement a method to sort the list of tables by table name and the tables that are directly related to that table.</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::Model::MyDB</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="5">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
+<tr>
+  <td>Comserv</td>
+  <td>DataBaseSetup</td>
+  <td>Search for schema</td>
+  <td>2023-12-06</td>
+  <td>2023-12-07</td>
+  <td>In the Comserv::Controller::Root module, implement a method to display the sorted list of tables and their related tables. This method should pass the sorted list to the setup.tt template for rendering.</td>
+  <td>In the Comserv::Controller::Root module, implement a method to display the sorted list of tables and their related tables. This method should pass the sorted list to the setup.tt template for rendering.</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::Controller::Root</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="6">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
+<tr>
+  <td>Comserv</td>
+  <td>DataBaseSetup</td>
+  <td>Search for schema</td>
+  <td>2023-12-07</td>
+  <td>2023-12-08</td>
+  <td>Update the setup.tt template to display the sorted list of tables and their related tables. This update should include a new section for displaying the search results.</td>
+  <td>Update the setup.tt template to display the sorted list of tables and their related tables. This update should include a new section for displaying the search results.</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::Controller::Root</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="7">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
+<tr>
+  <td>Comserv</td>
+  <td>DataBaseSetup</td>
+  <td>Search for schema</td>
+  <td>2023-12-08</td>
+  <td>2023-12-09</td>
+  <td>Test the feature by searching for tables related to the "todo" table. Verify that the search results are displayed correctly and that the tables are sorted as expected.</td>
+  <td>Test the feature by searching for tables related to the "todo" table. Verify that the search results are displayed correctly and that the tables are sorted as expected.</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::Controller::Root</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="8">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
+<tr>
+  <td>Comserv</td>
+  <td>DataBaseSetup</td>
+  <td>Search for schema</td>
+  <td>2023-12-09</td>
+  <td>2023-12-10</td>
+  <td>Document the feature in the project's documentation. This documentation should include a description of the feature, instructions for how to use it, and examples of the expected output.</td>
+  <td>Document the feature in the project's documentation. This documentation should include a description of the feature, instructions for how to use it, and examples of the expected output.</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::Controller::Root</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="9">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
+<tr>
+  <td>Comserv</td>
+  <td>DataBaseSetup</td>
+  <td>Search for schema</td>
+  <td>2023-12-10</td>
+  <td>2023-12-11</td>
+  <td>Commit the changes to the project's version control system and push the changes to the remote repository.</td>
+  <td>Commit the changes to the project's version control system and push the changes to the remote repository.</td>
+  <td>Developer</td>
+  <td>High</td>
+  <td>Not started</td>
+  <td>Comserv::Controller::Root</td>
+  <td>
+<form action="/todo/add" method="POST">
+  <input type="hidden" name="record_id" value="10">
+  <button type="submit">Add ToDo</button>
+</form>  </td>
+</tr>
 </table>

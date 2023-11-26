@@ -12,6 +12,47 @@
     </div>
 [% END %]
 
+<h2>Database Schema</h2>
+
+<button id="showSchemaBtn">Show Schema</button>
+
+<div id="schemaPopup" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        [% IF schema_info %]
+            <table>
+                <tr>
+                    <th>Table Name</th>
+                    <th>Engine</th>
+                    <th>Version</th>
+                </tr>
+[% FOREACH table IN schema_info %]
+    <tr>
+        <td>[% table.TABLE_NAME %]</td>
+        <td>[% table.ENGINE %]</td>
+        <td>[% table.VERSION %]</td>
+        <td>
+            <button onclick="showTableStructure('[% table.TABLE_NAME %]')">Show Structure</button>
+        </td>
+        <td>
+            <!-- The Modal -->
+            <div id="myModal_[% table.TABLE_NAME %]" class="modal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <p id="modal-text_[% table.TABLE_NAME %]">Some text in the Modal..</p>
+                </div>
+            </div>
+        </td>
+    </tr>
+[% END %]            </table>
+        [% END %]
+        [% IF NOT schema_info %]
+            <p>No schema information available.</p>
+        [% END %]
+    </div>
+</div>
+
 <form method="POST">
     Host: <input type="text" name="host" value="[% dbi_info.host %]" /><br>
     Port: <input type="text" name="port" value="[% dbi_info.port %]" /><br>
@@ -20,3 +61,164 @@
     Password: <input type="password" name="password" value="[% dbi_info.password %]" /><br>
     <input type="submit" value="Submit" />
 </form>
+
+<h2>Search Schema for a table and tables related to it</h2>
+<form method="POST" action="/search_schema">
+    Table Name: <input type="text" name="table_name" /><br>
+    <input type="submit" value="Search" />
+</form>
+
+[% IF sorted_tables %]
+    <h2>Sorted Tables and Their Related Tables</h2>
+    [% FOREACH table IN sorted_tables %]
+        <h3>[% table.table_name %]</h3>
+        <table>
+            <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Action</th>
+            </tr>
+            [% FOREACH column IN table.columns %]
+                <tr>
+                    <td>[% column.Field %]</td>
+                    <td>[% column.Type %]</td>
+                    <td>
+                        <form method="POST" action="/search_schema">
+                            <input type="hidden" name="table_name" value="[% column.Field %]" />
+                            <input type="submit" value="Search" />
+                        </form>
+                    </td>
+                </tr>
+            [% END %]
+        </table>
+        <h4>Related Tables</h4>
+        <ul>
+            [% FOREACH related_table IN table.related_tables %]
+                <li>[% related_table.TABLE_NAME %]</li>
+            [% END %]
+        </ul>
+    [% END %]
+[% ELSE %]
+    <p>No sorted tables available.</p>
+[% END %]
+
+<script>
+    var modal = document.getElementById('schemaPopup');
+    var btn = document.getElementById('showSchemaBtn');
+    var span = document.getElementsByClassName('close')[0];
+
+    btn.onclick = function() {
+        modal.style.display = 'block';
+    }
+
+    span.onclick = function() {
+        modal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
+<script>
+    var modal = document.getElementById('schemaPopup');
+    var btn = document.getElementById('showSchemaBtn');
+    var span = document.getElementsByClassName('close')[0];
+
+    btn.onclick = function() {
+        modal.style.display = 'block';
+    }
+
+    span.onclick = function() {
+        modal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
+<script>/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+</script>
+<script>
+function showTableStructure(tableName) {
+    // Make an AJAX request to the server to fetch the table structure
+    fetch('/get_table_structure/' + tableName)
+    .then(response => {
+        console.log('Response:', response);
+        return response.text();  // Use the text() method instead of json() to get the raw response text
+    })
+    .then(text => {
+        console.log('Response text:', text);
+        var data = JSON.parse(text);  // Parse the response text into a JavaScript object
+
+        // Get the modal and the element in the modal where the text should be inserted
+        var modal = document.getElementById("myModal_" + tableName);
+        var modalText = document.getElementById("modal-text_" + tableName);
+
+
+        // Start the HTML table
+        var html = '<table>';
+
+        // Add table headers
+        html += '<tr><th>Field</th><th>Type</th></tr>';
+
+        // Loop through the data and add each row to the table
+        for (var i = 0; i < data.length; i++) {
+            html += '<tr><td>' + data[i].Field + '</td><td>' + data[i].Type + '</td></tr>';
+        }
+
+        // End the HTML table
+        html += '</table>';
+
+        // Insert the table into the modal
+        modalText.innerHTML = html;
+
+        // Display the modal
+        modal.style.display = "block";
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
