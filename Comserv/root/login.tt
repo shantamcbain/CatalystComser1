@@ -1,8 +1,10 @@
 
 [% PageVersion = 'login.tt,v 0.01 2023/09/01 shanta Exp shanta ' %]
-[% IF debug == 1 %]
+[% IF debug_mode == 1 %]
   [% PageVersion %]
+    [% INCLUDE 'debug.tt' %]
 [% END %]
+[% debug_mode %]
 <!-- root/src/login.tt2 -->
 <form method="post" action="/login">
     <label for="username">Username</label>

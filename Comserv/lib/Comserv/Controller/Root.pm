@@ -41,14 +41,22 @@ sub auto :Private {
     my $site_name = $c->req->param('site')||'home';
     $c->stash->{SiteName} = $site_name;
 
-    # Get the debug parameter from the URL
-    my $debug_param = $c->req->param('debug');
-    # If the debug parameter is defined, store it in the session
-    if (defined $debug_param) {
+# Get the debug parameter from the URL
+my $debug_param = $c->req->param('debug');
+
+# If the debug parameter is defined
+if (defined $debug_param) {
+    # If the debug parameter is different from the session value
+    if ($c->session->{debug_mode} ne $debug_param) {
+        # Store the new debug parameter in the session and stash
         $c->session->{debug_mode} = $debug_param;
         $c->stash->{debug_mode} = $debug_param;
     }
-
+} elsif (defined $c->session->{debug_mode}) {
+    # If the debug parameter is not defined but there is a value in the session
+    # Store the session value in the stash
+    $c->stash->{debug_mode} = $c->session->{debug_mode};
+}
     # Set the HostName and SiteName in the stash
     $c->stash->{HostName} = $c->request->base;
     $c->stash->{SiteName} = $site_name;
@@ -136,6 +144,14 @@ sub css_form :Path('/css_form') {
     my $site_name = $c->stash->{SiteName};
     print $debug. __LINE__. " Site Name: $site_name\n";
      $c->stash(template => 'css_form.tt');
+    $c->forward($c->view('TT'));
+
+}
+sub debug :Path('/debug') {
+    my ($self, $c) = @_;
+    my $site_name = $c->stash->{SiteName};
+    print $debug. __LINE__. " Site Name: $site_name\n";
+     $c->stash(template => 'debug.tt');
     $c->forward($c->view('TT'));
 
 }
