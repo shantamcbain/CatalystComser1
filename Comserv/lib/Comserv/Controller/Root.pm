@@ -72,29 +72,7 @@ sub catalyst_help :Path('/catalyst_help') {
     my ($self, $c) = @_;
     $c->response->body($c->welcome_message);
 }
-sub login :Path('/login') :Args(0) {
-    my ($self, $c) = @_;
 
-    if ($c->request->method eq 'POST') {
-        my $username = $c->request->params->{username};
-        my $password = $c->request->params->{password};
-
-        # Retrieve the user from the database
-        my $user = $c->model('User')->get_user($username);
-
-        # Check the password
-        if ($user && $user->check_password($password)) {
-            # The username and password are correct
-            # Create a user session...
-        } else {
-            # The username or password is incorrect
-            # Handle the error...
-        }
-    }
-
-    $c->stash(template => 'login.tt');
-    $c->forward($c->view('TT'));
-}
 sub display_tables {
     my ($self, $c) = @_;
 
