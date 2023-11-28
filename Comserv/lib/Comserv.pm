@@ -95,6 +95,12 @@ __PACKAGE__->config(
     'Model::Todo' => {
         class => 'Comserv::Model::Todo',
     },
+     'Model::MyDB' => {
+        class => 'Comserv::Model::MyDB',
+     },
+     'Model::User' => {
+        class => 'Comserv::Model::User',
+    },
     'Plugin::Static::Simple' => {
         dirs => [
             'static',

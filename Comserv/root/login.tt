@@ -1,7 +1,10 @@
-
 [% PageVersion = 'login.tt,v 0.01 2023/09/01 shanta Exp shanta ' %]
-[% IF debug == 1 %]
+[% IF debug_mode == 1 %]
   [% PageVersion %]
+    [% INCLUDE 'debug.tt' %]
+[% END %]
+[% IF c.session.success_msg %]
+    <p>[% c.session.success_msg %]</p>
 [% END %]
 <!-- root/src/login.tt2 -->
 <form method="post" action="/login">
@@ -13,3 +16,6 @@
 
     <input type="submit" value="Login">
 </form>
+
+<!-- Add a Register button that links to the register page -->
+<a href="/register" class="register-button">Register</a>

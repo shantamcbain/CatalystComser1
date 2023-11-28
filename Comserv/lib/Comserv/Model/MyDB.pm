@@ -8,6 +8,10 @@ use Term::ReadPassword;
 use Data::Dumper;
 extends 'Catalyst::Model';
 
+__PACKAGE__->config(
+    schema_class => 'Comserv::Model::Schema',
+);
+
 my $debug = "Comserv::Model::MyDB Line #";
 print $debug . __LINE__ . "\n";
 print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
