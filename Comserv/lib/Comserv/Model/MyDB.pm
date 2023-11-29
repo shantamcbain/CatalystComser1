@@ -6,7 +6,7 @@ use DBI;
 use JSON::MaybeXS qw(decode_json encode_json);
 use Term::ReadPassword;
 use Data::Dumper;
-extends 'Catalyst::Model';
+extends 'Catalyst::Model::DBIC::Schema';
 
 __PACKAGE__->config(
     schema_class => 'Comserv::Model::Schema',
@@ -352,7 +352,19 @@ sub get_table_structure {
     return $table_structure;
 }
 # Method to test the DB connection
+sub connect_info {
+    my $self = shift;
 
+    # Read the DBI information from dbi_info.dat
+    my $dbi_info = $self->_read_dbi_info_from_file();
+
+    return {
+        dsn => "dbi:mysql:database=$dbi_info->{database};host=$dbi_info->{host}",
+        user => $dbi_info->{username},
+        password => $dbi_info->{password},
+        AutoCommit => 1,
+    };
+}
 sub _test_db_connection {
     my ($self, $c, $dbi_info) = @_;
     Comserv::debug_log($debug . __LINE__ . " Enter search_schema\n");

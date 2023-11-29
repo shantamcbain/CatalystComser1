@@ -6,6 +6,7 @@ use Catalyst::Runtime 5.80;
 
 use Catalyst qw/
     -Debug
+    Authentication
     ConfigLoader
     Static::Simple
     StackTrace
@@ -95,10 +96,10 @@ __PACKAGE__->config(
     'Model::Todo' => {
         class => 'Comserv::Model::Todo',
     },
-     'Model::MyDB' => {
+    'Model::MyDB' => {
         class => 'Comserv::Model::MyDB',
-     },
-     'Model::User' => {
+    },
+    'Model::User' => {
         class => 'Comserv::Model::User',
     },
     'Plugin::Static::Simple' => {
@@ -111,8 +112,21 @@ __PACKAGE__->config(
     'Model::CssForm' => {
         class => 'Comserv::Model::CssForm',
     },
+    'Plugin::Authentication' => {
+        default => {
+            credential => {
+                class => 'Password',
+                password_field => 'password',
+                password_type => 'self_check',
+            },
+            store => {
+                class => 'DBIx::Class',
+                user_model => 'DB::User',
+                use_userdata_from_session => '1',
+            },
+        },
+    },
 );
-
 sub setup {
     Comserv::debug_log($debug . __LINE__ . " Enter setup");
     my $self = shift;
@@ -134,6 +148,7 @@ sub setup {
 
 __PACKAGE__->setup();
 Comserv::debug_log(join("\n", @INC));
+# Set the default group in the session
 
 # Make the class immutable after all methods have been added or modified
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);

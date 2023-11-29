@@ -3,41 +3,7 @@ use Moose;
 use namespace::autoclean;
 extends 'Catalyst::Model';
 
-=head1 NAME
 
-Comserv::Model::User - Catalyst Model
-
-my $debug = "Comserv::Model::User Line #";
-print $debug . __LINE__ . "\n";
-print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
-
-print $debug . __LINE__ . join("\n", @INC);
-print $debug . __LINE__ . "\n";
-
-
-has 'username' => (is => 'rw', isa => 'Str', default => 'shanta');
-has 'password' => (is => 'rw', isa => 'Str');  # This should be a hashed password
-has 'roles' => (is => 'rw', isa => 'ArrayRef[Str]', default => sub { ['admin'] });
-
-
-
-# Hash a password
-sub hash_password {
-    my ($self, $password) = @_;
-    return sha256_hex($password);
-}
-# Check a password against a hashed password
-sub check_password {
-    my ($self, $password, $hashed_password) = @_;
-    return $self->hash_password($password) eq $hashed_password;
-}
-
-# Check if a user has a certain role
-sub has_role {
-    my ($self, $role) = @_;
-    return grep { $_ eq $role } @{$self->roles};
-}
-# Method to find a user by username
 sub find_user {
     my ($self, $c, $username) = @_;
 
@@ -81,6 +47,20 @@ sub create {
     my $user = $self->find_user($c, $user_data->{username});
 
     return $user;
-}__PACKAGE__->meta->make_immutable;
+}
+sub check_password {
+    my ($self, $password, $hashed_password) = @_;
+
+    # Use Digest::SHA for SHA-256 hashing
+    use Digest::SHA qw(sha256_hex);
+
+    # Hash the provided password
+    my $hashed_input_password = sha256_hex($password);
+
+    # Compare the hashed input password with the stored hashed password
+    return $hashed_input_password eq $hashed_password;
+}
+
+__PACKAGE__->meta->make_immutable;
 
 1;

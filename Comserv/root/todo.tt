@@ -370,7 +370,7 @@
   <td>Not started</td>
   <td>Comserv::Model::ToDo</td>
   <td>
-<form action="/todo/add" method="POST">
+<form action="/add" method="POST">
   <input type="hidden" name="record_id" value="2">
   <button type="submit">Add ToDo</button>
 </form>  </td>
@@ -388,10 +388,21 @@
   <td>Not started</td>
   <td>Comserv::Controller::ToDo</td>
   <td>
-<form action="/todo/add" method="POST">
-  <input type="hidden" name="record_id" value="3">
+<form action="/todo/create" method="POST">
+  <input type="hidden" name="record_id" value="5">
+  <input type="text" name="sitename" value="Comserv">
+  <input type="text" name="subject" value="Add Logging">
+  <input type="text" name="description" value="Add logging to track the activity in the ToDo system. Log events such as adding, editing, and deleting ToDo items.">
+  <input type="date" name="start_date" value="2023-12-05">
+  <input type="date" name="due_date" value="2023-12-06">
+  <input type="number" name="priority" value="High">
+  <input type="text" name="status" value="Not started">
+  <input type="text" name="last_mod_by" value="Developer">
+  <input type="date" name="last_mod_date" value="2023-12-05">
+  <input type="text" name="group_of_poster" value="Comserv::Log">
+  <!-- Add the rest of your fields here -->
   <button type="submit">Add ToDo</button>
-</form>  </td>
+</form> </td>
 </tr>
 <tr>
   <td>Comserv</td>
@@ -406,8 +417,19 @@
   <td>Not started</td>
   <td>Comserv::View::TT</td>
   <td>
-<form action="/todo/add" method="POST">
-  <input type="hidden" name="record_id" value="4">
+<form action="/todo/create" method="POST">
+  <input type="hidden" name="record_id" value="5">
+  <input type="text" name="sitename" value="Comserv">
+  <input type="text" name="subject" value="Add Logging">
+  <input type="text" name="description" value="Add logging to track the activity in the ToDo system. Log events such as adding, editing, and deleting ToDo items.">
+  <input type="date" name="start_date" value="2023-12-05">
+  <input type="date" name="due_date" value="2023-12-06">
+  <input type="number" name="priority" value="High">
+  <input type="text" name="status" value="Not started">
+  <input type="text" name="last_mod_by" value="Developer">
+  <input type="date" name="last_mod_date" value="2023-12-05">
+  <input type="text" name="group_of_poster" value="Comserv::Log">
+  <!-- Add the rest of your fields here -->
   <button type="submit">Add ToDo</button>
 </form>  </td>
 </tr>
@@ -424,9 +446,19 @@
   <td>Not started</td>
   <td>Comserv::Log</td>
   <td>
-<form action="/todo/add" method="POST">
-  <input type="hidden" name="record_id" value="5">
+ <form action="/todo/add" method="POST">
+  <input type="text" name="sitename" value="Comserv">
+  <input type="text" name="subject" value="Add Logging">
+  <input type="text" name="description" value="Add logging to track the activity in the ToDo system. Log events such as adding, editing, and deleting ToDo items.">
+  <input type="date" name="start_date" value="2023-12-05">
+  <input type="date" name="due_date" value="2023-12-06">
+  <input type="number" name="priority" value="10">
+  <input type="text" name="status" value="Not started">
+  <input type="text" name="last_mod_by" value="Developer">
+  <input type="date" name="last_mod_date" value="2023-12-05">
+  <input type="text" name="group_of_poster" value="Comserv::Log">
+  <!-- Add the rest of your fields here -->
   <button type="submit">Add ToDo</button>
-</form>  </td>
+</form> </td>
 </tr>
 </table>

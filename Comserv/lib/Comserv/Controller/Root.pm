@@ -33,6 +33,9 @@ sub index :Path :Args(0) {
 sub auto :Private {
     my ($self, $c) = @_;
 
+    # Set the default group in the session if it's not already set
+    $c->session->{group} ||= 'normal';
+
     # Get the domain name from the request
     my $domain = $c->request->uri->host;
     $c->session->{Domain} = $domain;
@@ -72,7 +75,6 @@ sub catalyst_help :Path('/catalyst_help') {
     my ($self, $c) = @_;
     $c->response->body($c->welcome_message);
 }
-
 sub display_tables {
     my ($self, $c) = @_;
 

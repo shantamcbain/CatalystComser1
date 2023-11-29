@@ -27,13 +27,16 @@
                     <!-- Add more main menu options -->
                 </div>
             </li>
-            <li class="horizontal-dropdown">
-                <a href="#" class="dropbtn">Login</a>
-                <div class="dropdown-content">
-                    <a href="/login">Login</a>
-                    <!-- Add more login options if needed -->
-                </div>
-            </li>
+        <li class="horizontal-dropdown">
+            <a href="#" class="dropbtn">Login</a>
+            <div class="dropdown-content">
+                <a href="/login">Login</a>
+                <a href="/logout">Logout</a>
+                <a href="/register">Register</a>
+                <!-- Add more login options if needed -->
+            </div>
+        </li>
+        <!-- Other menu items... -->
             <li class="horizontal-dropdown">
                 <a href="#" class="dropbtn">Global</a>
                 <div class="dropdown-content">
@@ -85,7 +88,9 @@ tions -->
                     <!-- Add more member options -->
                 </div>
             </li>
+        [% IF c.session.user_id == 1 %]
             [% INCLUDE 'admintopmenu.tt' %]
+        [% END %]
             [% INCLUDE 'TopDropListHelpDesk.tt' %]
         </ul>
     </nav>

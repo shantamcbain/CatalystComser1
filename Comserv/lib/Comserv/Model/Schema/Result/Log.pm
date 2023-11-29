@@ -1,9 +1,9 @@
-package Comserv::Model::Schema::Result::Todo;
+package Comserv::Model::Schema::Result::Log;
 use base 'DBIx::Class::Core';
 
-__PACKAGE__->table('todos');
+__PACKAGE__->table('log');
 __PACKAGE__->add_columns(
-    id => { data_type => 'int', is_auto_increment => 1 },
+    record_id => { data_type => 'int', is_auto_increment => 1 },
     todo_record_id => { data_type => 'int' },
     owner => { data_type => 'varchar', size => 255 },
     sitename => { data_type => 'varchar', size => 255 },
@@ -21,11 +21,7 @@ __PACKAGE__->add_columns(
     last_mod_by => { data_type => 'varchar', size => 255 },
     last_mod_date => { data_type => 'date' },
     comments => { data_type => 'text' },
-    user_id => { data_type => 'int' },
-    project_id => { data_type => 'int' },
 );
-__PACKAGE__->set_primary_key('id');
-__PACKAGE__->belongs_to(user => 'Comserv::Model::Schema::Result::User', 'user_id');
-__PACKAGE__->belongs_to(project => 'Comserv::Model::Schema::Result::Project', 'project_id');
+__PACKAGE__->set_primary_key('record_id');
 
 1;

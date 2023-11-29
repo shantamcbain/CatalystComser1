@@ -26,6 +26,17 @@ sub index :Path : Args(0) {
 sub login :Path('/login') :Args(0) {
     my ($self, $c) = @_;
 
+    # Print the current working directory
+    print "Current working directory: " . Cwd::getcwd() . "\n";
+
+    # Print the configured template directory
+    print "Configured template directory: " . $c->config->{'View::TT'}->{INCLUDE_PATH} . "\n";
+
+    # Check if the template file exists
+    if (!-e $c->config->{'View::TT'}->{INCLUDE_PATH} . '/login.tt') {
+        print "Template file login.tt does not exist.\n";
+    }
+
     if ($c->request->method eq 'POST') {
         my $username = $c->request->params->{username};
         my $password = $c->request->params->{password};
@@ -57,7 +68,6 @@ sub register :Path('/register') Args(0) {
     # Stop further processing and display the template
     $c->detach($c->view('TT'));
 }
-
 sub create :Path('/create') Args(0) {
     my ($self, $c) = @_;
 
@@ -112,34 +122,43 @@ sub create :Path('/create') Args(0) {
     }
 }
 # In Comserv::Controller::User
-sub login :Path('/login') Args(0) {
-    my ($self, $c) = @_;
+sub login :Path('/login') Args(0) { my ($self, $c) = @_;
+# Check if the request method is POST
+if ($c->request->method eq 'POST') {
+    # Retrieve the form data
+    my $username = $c->request->params->{username};
+    my $password = $c->request->params->{password};
 
-    # Check if the request method is POST
-    if ($c->request->method eq 'POST') {
-        # Retrieve the form data
-        my $username = $c->request->params->{username};
-        my $password = $c->request->params->{password};
+    # Find the user by username
+    my $user = $c->model('User')->find_user($c, $username);
 
-        # Find the user by username
-        my $user = $c->model('User')->find_user($c, $username);
-
-        # If the user is not found or the password is incorrect
-        if (!$user || !$c->model('User')->check_password($password, $user->{password})) {
-            # Set an error message and redirect back to the login page
-            $c->stash(error_msg => 'Invalid username or password.');
-            $c->stash(template => 'login.tt');
-            $c->detach($c->view('TT'));
-        }
-
-        # If the username and password are correct, log in the user and redirect to the page the login was called from
-        $c->session->{user_id} = $user->{id};
-        $c->response->redirect($c->uri_for('/'));
-    } else {
-        # If the request method is not POST, display the login page
+    # If the user is not found or the password is incorrect
+    if (!$user || !$c->model('User')->check_password($password, $user->{password})) {
+        # Set an error message and redirect back to the login page
+        $c->stash(error_msg => 'Invalid username or password.');
         $c->stash(template => 'login.tt');
+        $c->detach($c->view('TT'));
     }
-   # Forward to the view
-    $c->forward($c->view('TT'));
+
+    # If the username and password are correct, log in the user and redirect to the original page
+    $c->session->{user_id} = $user->{id};
+    $c->response->redirect($c->session->{original_path} || $c->uri_for('/'));
+} else {
+    # If the request method is not POST, display the login page
+    $c->stash(template => 'login.tt');
+}
+#Forward to the view
+$c->forward($c->view('TT'));
+}
+sub logout :Path('/logout') :Args(0) { my ($self, $c) = @_;
+# Clear the user session
+$c->logout;
+
+# Remove user_id and user flag from the session
+delete $c->session->{user_id};
+delete $c->session->{user_flag};
+
+# Redirect to the home page
+$c->response->redirect($c->uri_for('/'));
 }
 1;
