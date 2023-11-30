@@ -460,5 +460,24 @@
   <!-- Add the rest of your fields here -->
   <button type="submit">Add ToDo</button>
 </form> </td>
+<tr><form action="/todo/create" method="POST">
+  <input type="text" name="sitename" value="Comserv">
+  <input type="text" name="subject" value="Setup Schema for ToDo System">
+  <textarea name="description">Start the process of development for creating the schema for the ToDo system. This includes creating the necessary tables (Group, Log, Project, ProjectSite, Site, Todo) and relationships in the database, updating the DBIx::Class schema classes, and testing the schema to ensure it works as expected. The tables are related as follows: A Todo will list the sitename gotten from Site. If the Site is deleted so is the Todo. The Todo has the same relationship with Project. Projects are tied to a Site. Logs are linked to Site, User, and Project. There will be more relationships as we develop it. The files that will be worked on to access the schema by the application include: Comserv::Model::Schema::Result::Group, Comserv::Model::Schema::Result::Log, Comserv::Model::Schema::Result::Project, Comserv::Model::Schema::Result::ProjectSite, Comserv::Model::Schema::Result::Site, Comserv::Model::Schema::Result::Todo.</textarea>
+  <input type="date" name="start_date" value="2023-12-05">
+  <input type="date" name="due_date" value="2023-12-10">
+  <input type="number" name="estimated_man_hours" value="40">
+  <input type="number" name="accumulative_time" value="0">
+  <input type="text" name="project_code" value="DB_SETUP">
+  <input type="text" name="status" value="Not started">
+  <input type="number" name="priority" value="1">
+  <input type="number" name="share" value="1">
+  <input type="text" name="last_mod_by" value="Developer">
+  <input type="date" name="last_mod_date" value="2023-12-05">
+  <input type="text" name="group_of_poster" value="Comserv::Schema">
+  <input type="number" name="user_id" value="1">
+  <input type="number" name="project_id" value="1">
+  <button type="submit">Add ToDo</button>
+</form>
 </tr>
 </table>

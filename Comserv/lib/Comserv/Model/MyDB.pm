@@ -398,6 +398,21 @@ sub _test_db_connection {
     print $debug . __LINE__ . " DB connection failed\n";
     return 0;  # Connection failed
 }
+sub create_table_from_schema {
+    my ($c, $table_schema_class) = @_;
+
+    # Get the schema object
+    my $schema = $c->model('DB')->schema;
+
+    # Get the source object for the table
+    my $source = $schema->source($table_schema_class);
+
+    # Get a table object from the source object
+    my $table = DBIx::Class::ResultSource::Table->from_source($source);
+
+    # Create the table in the database
+    $table->deploy;
+}
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);
 
 1;

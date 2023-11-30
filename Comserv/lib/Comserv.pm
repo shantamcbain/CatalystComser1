@@ -109,6 +109,9 @@ __PACKAGE__->config(
         ],
         ignore_extensions => [ qw/ tt tt2 / ],
     },
+    'Model::DB' => {
+        schema_class => 'Comserv::Model::Schema',
+    },
     'Model::CssForm' => {
         class => 'Comserv::Model::CssForm',
     },

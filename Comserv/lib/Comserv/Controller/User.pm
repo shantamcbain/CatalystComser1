@@ -54,7 +54,7 @@ sub login :Path('/login') :Args(0) {
         }
     }
 
-    $c->stash(template => 'login.tt');
+    $c->stash(template => 'user/login.tt');
     $c->forward($c->view('TT'));
 }
 sub register :Path('/register') Args(0) {
@@ -145,7 +145,7 @@ if ($c->request->method eq 'POST') {
     $c->response->redirect($c->session->{original_path} || $c->uri_for('/'));
 } else {
     # If the request method is not POST, display the login page
-    $c->stash(template => 'login.tt');
+    $c->stash(template => 'user/login.tt');
 }
 #Forward to the view
 $c->forward($c->view('TT'));

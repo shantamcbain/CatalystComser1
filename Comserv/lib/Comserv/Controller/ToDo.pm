@@ -11,7 +11,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->stash(template => 'todo.tt');
+    $c->stash(template => 'todo/todo.tt');
     $c->forward($c->view('TT'));
 }
 sub auto :Private {
@@ -32,7 +32,8 @@ sub auto :Private {
 
     # If a user exists in the session or the action is not a private action, continue processing the request
     return 1;
-}sub add :Path('add') :Args(0) {
+}
+sub add :Path('add') :Args(0) {
     my ( $self, $c ) = @_;
 
     # Retrieve the submitted form data
@@ -41,7 +42,7 @@ sub auto :Private {
     # Stash the form data so it can be accessed in the addtodo.tt form
     $c->stash(todo => $params);
 
-    $c->stash(template => 'addtodo.tt');
+    $c->stash(template => 'todo/addtodo.tt');
     $c->forward($c->view('TT'));
 }
 sub check_password {
@@ -91,7 +92,7 @@ sub add_project :Path(/add_project) :Args(0) {
     my ($self, $c) = @_;
 
     # Set the TT template to use
-    $c->stash(template => 'add_project.tt');
+    $c->stash(template => 'todo/add_project.tt');
     $c->forward($c->view('TT'));
 }
 sub insert_into_project_table :Private {
@@ -114,17 +115,80 @@ sub insert_into_project_table :Private {
         $c->log->error("Failed to insert new project");
     }
 }__PACKAGE__->meta->make_immutable;
+use Try::Tiny;
+
 sub add_site :Path(/add_site) :Args(0) {
     my ($self, $c) = @_;
 
-    # Retrieve all the sites from the database
-    my @sites = $c->model('Site')->all;
+    # Try to retrieve all the sites from the database
+    my @sites;
+    try {
+        @sites = $c->model('Site')->all;
+    } catch {
+        # If an error occurs (e.g., the table does not exist), log the error and handle it
+        $c->log->error("Failed to retrieve sites: $_");
+
+        # Check if the user is an admin
+        if ($c->user_exists && $c->user->is_admin) {
+            # If the user is an admin, set a flag in the stash to show the "Add Table" button in the template
+            $c->stash(show_add_table_button => 1);
+        }
+    };
 
     # Pass the sites to the template
     $c->stash(sites => \@sites);
 
     # Set the TT template to use
-    $c->stash(template => 'add_site.tt');
+    $c->stash(template => 'todo/add_site.tt');
     $c->forward($c->view('TT'));
 }
-1;
+sub create_site :Path('/create_site') :Args(0) {
+    my ($self, $c) = @_;
+
+    # Try to get the Site source
+    my $site_source;
+    try {
+        $site_source = $c->model('Schema::Result::Site')->result_source;
+    } catch {
+        # If an error occurs (e.g., the Site source does not exist), handle it
+        $c->log->error("Failed to retrieve Site source: $_");
+    };
+
+    if (!defined $site_source) {
+        # If the Site source does not exist, create it
+        $self->create_table_from_schema($c, 'Schema::Result::Site');
+    }
+
+    # Retrieve the submitted site name
+    my $site_name = $c->request->params->{site_name};
+
+    # Check if a site with the submitted name already exists
+    my $existing_site = $c->model('Schema::Result::Site')->find({ name => $site_name });
+    if ($existing_site) {
+        # If a site with the submitted name already exists, set an error message and redirect back to the add_site page
+        $c->stash(error_msg => 'A site with this name already exists.');
+        $c->response->redirect($c->uri_for('/add_site'));
+        return;
+    }
+
+    # Create a new site record with the submitted name
+    $c->model('Schema::Result::Site')->create({ name => $site_name });
+
+    # Redirect back to the add_site page
+    $c->response->redirect($c->uri_for('/add_site'));
+}
+sub create_table_from_schema {
+    my ($self, $c, $table_schema_class) = @_;
+
+    # Get the schema object
+    my $schema = $c->model('Schema');
+
+    # Get the source name from the table schema class
+    my ($source_name) = $table_schema_class =~ /::(\w+)$/;
+
+    # Get the source object for the table
+    my $source = $schema->source($source_name);
+
+    # Deploy the source object to create the table
+    $source->deploy;
+}
