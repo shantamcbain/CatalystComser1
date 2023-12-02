@@ -3,7 +3,7 @@ package Comserv::Controller::User;
 use Moose;
 use namespace::autoclean;
 BEGIN { push @INC, '/home/shantam/PycharmProjects/CatalystComser1/Comserv/lib'; }
-use Comserv::Model::User;
+
 BEGIN { extends 'Catalyst::Controller'; }
 
 my $debug = "Comserv::Controller::Root Line #";
@@ -72,7 +72,7 @@ sub create :Path('/create') Args(0) {
     my ($self, $c) = @_;
 
     # Check if a database connection has been established
-    my $dbh = $c->model('MyDB')->_build_dbh($c);
+    my $dbh = $c->model('DB')->_build_dbh($c);
     if (!$dbh) {
         $c->stash(error_msg => 'Could not connect to the database.');
         $c->stash(template => 'register.tt');

@@ -1,4 +1,4 @@
-package Comserv::Model::Schema::Result::Log;
+package Comserv::Model::Schema::Ency::Result::Log;
 use base 'DBIx::Class::Core';
 
 __PACKAGE__->table('log');

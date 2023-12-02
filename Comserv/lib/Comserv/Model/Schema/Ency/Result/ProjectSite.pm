@@ -1,4 +1,4 @@
-package Comserv::Model::Schema::Result::ProjectSite;
+package Comserv::Model::Schema::Ency::Result::ProjectSite;
 use base 'DBIx::Class::Core';
 
 __PACKAGE__->table('project_sites');
@@ -11,7 +11,7 @@ __PACKAGE__->add_columns(
     },
 );
 __PACKAGE__->set_primary_key('project_id', 'site_id');
-__PACKAGE__->belongs_to(project => 'Comserv::Model::Schema::Result::Project', 'project_id');
-__PACKAGE__->belongs_to(site => 'Comserv::Model::Schema::Result::Site', 'site_id');
+__PACKAGE__->belongs_to(project => 'Comserv::Model::Schema::Ency::Result::Project', 'project_id');
+__PACKAGE__->belongs_to(site => 'Comserv::Model::Schema::Ency::Result::Project', 'site_id');
 
 1;

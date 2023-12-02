@@ -5,16 +5,52 @@
     [% "Debugging HostName: " _ HostName %]
     [% INCLUDE 'debug.tt' %]
 [% END %]
-<p>This is the landing page for the ComServ Application.</p>
-<p>Here is a list of the modules and sites available for this application.</p>
-<p>Check out our BMaster Module:</p>
+<p>This is the landing page for the ComServ Application. </p>
+<p>Here is a list of the sites available for this application.</p>
+
 <ul>
-    <li><a href="https://beemaster.ca">Beemaster.ca</a> - Our old site</li>
-    <li><a href="https://catalyst.computersystemconsulting.ca/index.html" target="_blank">dev</a> - Our new
+
+    <li><a href="https://shanta.computersystemconsulting.ca/" target="_blank">dev</a> - Our new
         development</li>
     <li><a href="/BMaster">The new beemaster.ca site</a></li>
-    <li><a href="/Queens">Queens</a> - Our Queen rearing system.</li>
-    <li><a href="/USBM">Universal School of Biological Life</a></li> <!-- Add this line -->
+    <li><a href="/CSC">Computer System Consulting</a> - Our Hosting and development.</li>
+    <li><a href="/USBM">Universal School of Biological Life</a></li>
 
 </ul>
-<p>Feel free to explore other sections of the application.</p>
+<h2> Soon to be added!</h2>
+<ul>
+
+    <li><a href="/Sunfire" >Sunfire Systems</a> Main site for Sunfire Systems. Primary focus is the solar system
+        monitoring system.</li>
+        development</li>
+    <li><a href="/Forager">The new forager.com site</a></li>
+    <li><a href="/WeaverBeck">weaverbeck.com</a> - the weaver beck geological site.</li>
+    <li><a href="/VE7TIT">ve7tit.com site.</a> My Ham Radio site.</li>
+
+</ul>
+<h2> What is current under development.</h2>
+<ol>
+    <li>Login </li>
+    <li>Registration</li>
+    <li>Forgot Password</li>
+    <li>Forgot Username</li>
+    <li>Change Password</li>
+    <li>CSS system for site styling by user</li>
+    <li>Site Admin</li>
+    <li>Site Admin - User Management</li>
+    <li>Site Admin - Site Management</li>
+    <li>Site Admin - Site Page Management</li>
+    <li>Site Admin - Site Page Content Management</li>
+    <li>Site Admin - Site Page Content Management - Add Content</li>
+    <li>Site Admin - Site Page Content Management - Edit Content</li>
+    <li>Site Admin - Site Page Content Management - Delete Content</li>
+    <li>Site Admin - Site Page Content Management - View Content</li>
+    <li>ToDo system</li>
+    <li>Schema ability of admin users to create and modify Database schema</li>
+    <li>Solar Management system.</li>
+    <li>Weather Management system.</li>
+    <li>Documentation and HelpDesk</li>
+
+</ol>
+
+

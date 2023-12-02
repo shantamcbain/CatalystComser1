@@ -1,0 +1,10 @@
+<head>
+    [% PageVersion = 'Table_structure.tt,v 0.01 2023/12/01 shanta Exp shanta ' %]
+    <meta charset="utf-8">
+    [% IF debug_mode == 1 %]
+        [% PageVersion %]
+        [% INCLUDE 'debug.tt' %]
+    [% END %]
+</head><h1>Structure of [% table %]</h1>
+
+<!-- Display the table structure here -->

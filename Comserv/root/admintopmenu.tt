@@ -32,9 +32,10 @@
                     [% ELSE %]
                     <a href="[% c.session.return_url %]?&debug=0">Toggle Debug Mode OFF</a>
                     [% END %]
-                    <a href="/admin/settings">Settings</a>
+                    <a href="/setup">Settings</a>
                     <a href="/css_form">CSS Settings</a>
                     <a href="/admin/users">Users</a>
+                    <a href="/display_schema">Schema</a>
                     <a href="#">Option 3</a>
                 </div>
             </div>

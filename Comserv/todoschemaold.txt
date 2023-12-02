@@ -762,3 +762,48 @@ $todo_tb1 = {
   ]
 };
 
+$users1 = {
+  'users' => [
+    {
+      'Field' => 'id',
+      'Type' => 'int(11)',
+      'Null' => 'NO',
+      'Default' => undef,
+      'Extra' => 'auto_increment',
+      'Key' => 'PRI'
+    },
+    {
+      'Key' => 'UNI',
+      'Field' => 'username',
+      'Null' => 'YES',
+      'Extra' => '',
+      'Type' => 'varchar(255)',
+      'Default' => undef
+    },
+    {
+      'Key' => '',
+      'Field' => 'password',
+      'Null' => 'YES',
+      'Type' => 'varchar(255)',
+      'Default' => undef,
+      'Extra' => ''
+    },
+    {
+      'Key' => '',
+      'Field' => 'roles',
+      'Type' => 'text',
+      'Null' => 'YES',
+      'Extra' => '',
+      'Default' => undef
+    },
+    {
+      'Key' => '',
+      'Default' => undef,
+      'Null' => 'YES',
+      'Type' => 'varchar(50)',
+      'Extra' => '',
+      'Field' => 'email'
+    }
+  ]
+};
+

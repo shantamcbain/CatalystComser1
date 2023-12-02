@@ -1,4 +1,4 @@
-package Comserv::Model::Schema::Result::User;
+package Comserv::Model::Schema::Ency::Result::User;
 
 use strict;
 use warnings;

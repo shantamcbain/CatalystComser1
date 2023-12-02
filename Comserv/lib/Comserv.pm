@@ -96,8 +96,8 @@ __PACKAGE__->config(
     'Model::Todo' => {
         class => 'Comserv::Model::Todo',
     },
-    'Model::MyDB' => {
-        class => 'Comserv::Model::MyDB',
+    'Model::DB' => {
+        class => 'Comserv::Model::DB',
     },
     'Model::User' => {
         class => 'Comserv::Model::User',
@@ -137,7 +137,7 @@ sub setup {
     # Call the parent setup method
     $self->SUPER::setup(@_);
 
-    # Get the MyDB model
+    # Get the DB model
     Comserv::debug_log($debug . __LINE__ . " Enter MyBD model");
 
     # Get the DBI info

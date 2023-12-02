@@ -25,7 +25,7 @@ sub index :Path :Args(0) {
     my $site_name = $c->stash->{SiteName};
     print $debug . __LINE__ . " Site Name: $site_name\n";
     $c->stash(template => 'home.tt');
-    $c->model('MyDB')->_build_dbi_info($c);
+    $c->model('DB')->_build_dbi_info($c);
     print $debug. __LINE__. " Site Name: $site_name\n";
     print stash_dump($c);
     $c->forward($c->view('TT'));
@@ -80,13 +80,13 @@ sub display_tables {
 
     print $debug . __LINE__ . " in display_tables\n";  # Debug print
     Comserv::debug_log($debug . __LINE__ . " Enter display_tables\n");
-    # Get an instance of Comserv::Model::MyDB
-    my $mydb = $c->model('MyDB');
-    print ref $mydb;
+    # Get an instance of Comserv::Model::DB
+    my $DB = $c->model('DB');
+    print ref $DB;
 
-    # Check if $mydb is an instance of Comserv::Model::MyDB
-    if (!blessed($mydb) || !$mydb->isa('Comserv::Model::MyDB')) {
-        my $error_message = "Error: \$mydb is not an instance of Comserv::Model::MyDB";
+    # Check if $DB is an instance of Comserv::Model::DB
+    if (!blessed($DB) || !$DB->isa('Comserv::Model::DB')) {
+        my $error_message = "Error: \$DB is not an instance of Comserv::Model::DB";
 
         # Store the error message in the stash and session
         $c->stash(last_error => $error_message);
@@ -106,12 +106,12 @@ sub display_tables {
     }
 
     # Call the get_schema_info method with $c as an argument
-    my $schema_info = $mydb->get_schema_info($c);
+    my $schema_info = $DB->get_schema_info($c);
 
     print $debug . __LINE__ . " schema_info: " . Dumper($schema_info) . "\n";  # Debug print
 
     # Call the get_relevant_tables method from the ToDo model
-    my $relevant_tables = $c->model('ToDo')->get_relevant_tables($c, $c->model('MyDB')->dbi_info($c));
+    my $relevant_tables = $c->model('ToDo')->get_relevant_tables($c, $c->model('DB')->dbi_info($c));
 
     # Store the relevant tables in the stash
     $c->stash(relevant_tables => $relevant_tables);
@@ -137,17 +137,65 @@ sub debug :Path('/debug') {
 }
 sub display_schema :Local {
     my ($self, $c) = @_;
-    Comserv::debug_log($debug . __LINE__ . " Enter display_schema\n");
-    # Get the criteria from the request parameters
-    my $criteria = $c->request->parameters->{criteria};
 
-    # Get the filtered schema information
-    my $schema_info = $c->model('MyDB')->get_filtered_schema_info($c, $criteria);
+    # Call the create_or_update_schema method to create or update the schema
+    $c->model('DB')->create_or_update_schema($c);  # Ensure $c is being passed here
 
-    # Pass the schema information to the view
+    # Retrieve the schema information
+    my $schema_info = $c->model('DB')->shanta_forager_schema->get_schema_info($c);
+
+    # Store the schema information in the stash
     $c->stash(schema_info => $schema_info);
+
+    # Set the template
+    $c->stash(template => 'setup/display_schema.tt');
+
+    # Forward to the view
+    $c->forward($c->view('TT'));
 }
-sub display_filtered_schema :Local {
+sub show_tables :Path('/show_tables') :Args(0) {
+    my ($self, $c) = @_;
+
+    # Retrieve the selected database from the query parameters
+    my $database = $c->request->query_parameters->{database};
+
+    # Retrieve the list of tables for the selected database
+    my $tables = $c->model('DB')->get_tables($database);
+
+    # Store the list of tables in the stash
+    $c->stash(tables => $tables);
+
+    # Set the template
+    $c->stash(template => 'setup/tables.tt');
+
+    # Forward to the view
+    $c->forward($c->view('TT'));
+}
+sub show_tables :Path('/show_tables') :Args(0) {
+    my ($self, $c) = @_;
+
+    # Retrieve the selected database from the form submission
+    my $database = $c->request->body_parameters->{database};
+
+    # Check if the database is defined
+    if (!defined $database) {
+        $c->stash(error_message => 'No database specified.');
+        return;
+    }
+
+    # Retrieve the list of tables for the selected database
+    my $tables = $c->model('DB')->get_tables($c, $database);
+
+    # Store the selected database and list of tables in the stash
+    $c->stash(database => $database);
+    $c->stash(tables => $tables);
+
+    # Set the template
+    $c->stash(template => 'setup/tables.tt');
+
+    # Forward to the view
+    $c->forward($c->view('TT'));
+}sub display_filtered_schema :Local {
     Comserv::debug_log($debug . __LINE__ . " Enter display_filtered_schema\n");
     my ($self, $c) = @_;
 
@@ -156,7 +204,7 @@ sub display_filtered_schema :Local {
 
     # Get the filtered schema information
     Comserv::debug_log($debug . __LINE__ . " Call get_filtered_schema_info\n");
-    my $schema_info = $c->model('MyDB')->get_filtered_schema_info($c, $criteria);
+    my $schema_info = $c->model('DB')->get_filtered_schema_info($c, $criteria);
 
     # Pass the schema information to the view
     $c->stash(schema_info => $schema_info);
@@ -188,8 +236,8 @@ sub search_schema :Path('/search_schema') :Args(0) {
     # Get the table name from the request parameters
     my $table_name = $c->request->params->{table_name};
 
-    # Get the sorted tables from the MyDB model
-    my $sorted_tables = $c->model('MyDB')->sort_tables($c, $table_name);
+    # Get the sorted tables from the DB model
+    my $sorted_tables = $c->model('DB')->sort_tables($c, $table_name);
 
     # Store the sorted tables in the stash
     $c->stash(sorted_tables => $sorted_tables);
@@ -203,14 +251,14 @@ sub search_schema :Path('/search_schema') :Args(0) {
 sub generate_new_key :Path('/generate_new_key') :Args(0) {
     my ($self, $c) = @_;
 
-    # Create an instance of the MyDB model
-    my $mydb = $c->model('MyDB');
+    # Create an instance of the DB model
+    my $DB = $c->model('DB');
 
     # Generate a new encryption key
-    my $new_key = $mydb->_generate_random_key();
+    my $new_key = $DB->_generate_random_key();
     print $debug. __LINE__. " env Masterkey Key: $ENV{MASTER_KEY}\n";
     # Save the new key to the encrypted_dbi_data.dat file
-    $mydb->_save_encrypted_dbi_info($new_key, $ENV{MASTER_KEY});
+    $DB->_save_encrypted_dbi_info($new_key, $ENV{MASTER_KEY});
 
     # Redirect the user back to the original page
     $c->response->redirect($c->uri_for('/'));
@@ -224,30 +272,26 @@ sub setup :Path('/setup') :Args(0) {
     my ($self, $c) = @_;
 
     # Retrieve the DBI information
-    my $dbi_info = $c->model('MyDB')->dbi_info($c);
+    my $dbi_info = $c->model('DB')->dbi_info($c);
 
-    # Store the DBI information in the stash
-    $c->stash(dbi_info => $dbi_info);
+    # Retrieve the list of databases
+    my $databases = $c->model('DB')->get_databases($c);  # Pass $c as an argument
 
-    # Retrieve the schema information
-    my $schema_info = $c->model('MyDB')->get_schema_info($c);
-
-    # Store the schema information in the stash
-    $c->stash(schema_info => $schema_info);
+    # Store the list of databases in the stash
+    $c->stash(databases => $databases);
 
     # Set the template
     $c->stash(template => 'setup.tt');
 
     # Forward to the view
     $c->forward($c->view('TT'));
-}
-sub get_table_structure :Path('/get_table_structure') :Args(1) {
+}sub get_table_structure :Path('/get_table_structure') :Args(1) {
     my ($self, $c, $table_name) = @_;
     Comserv::debug_log($debug . __LINE__ . " Enter get_table_structure\n");
 
-    # Get the table structure from the MyDB model
+    # Get the table structure from the DB model
     Comserv::debug_log($debug . __LINE__ . " Call get_table_structure\n");
-    my $table_structure = $c->model('MyDB')->get_table_structure($c, $table_name);
+    my $table_structure = $c->model('DB')->get_table_structure($c, $table_name);
    if ($c->request->method eq 'POST') {
         sub sort_tables {
     my ($self, $c, $table_name) = @_;
@@ -269,8 +313,8 @@ sub get_table_structure :Path('/get_table_structure') :Args(1) {
 }
 my $table_name = $c->request->params->{table_name};
 
-        # Get the sorted tables from the MyDB model
-        my $new_sorted_tables = $c->model('MyDB')->sort_tables($c, $table_name);
+        # Get the sorted tables from the DB model
+        my $new_sorted_tables = $c->model('DB')->sort_tables($c, $table_name);
 
         # Get the existing sorted tables from the stash
         my $existing_sorted_tables = $c->stash->{sorted_tables} || [];

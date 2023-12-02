@@ -35,8 +35,8 @@ sub save_task_details {
 }
 sub get_relevant_tables {
     my ($self, $c) = @_;
-    # Call the get_schema_info method from the MyDB model
-    my $schema_info = $c->model('MyDB')->dbi_info->get_schema_info($c);
+    # Call the get_schema_info method from the DB model
+    my $schema_info = $c->model('DB')->dbi_info->get_schema_info($c);
 
     # Define the table names for the ToDo system
     my @todo_table_names = ('todos', 'projects', 'logins');

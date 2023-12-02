@@ -1,4 +1,4 @@
-package Comserv::Model::Schema::Result::Todo;
+package Comserv::Model::Schema::Ency::Result::Todo;
 use base 'DBIx::Class::Core';
 
 __PACKAGE__->table('todos');
@@ -67,7 +67,7 @@ __PACKAGE__->add_columns(
 );
 
 __PACKAGE__->set_primary_key('record_id');
-__PACKAGE__->belongs_to(user => 'Comserv::Model::Schema::Result::User', 'user_id');
-__PACKAGE__->belongs_to(project => 'Comserv::Model::Schema::Result::Project', 'project_id');
+__PACKAGE__->belongs_to(user => 'Comserv::Model::Schema::Ency::Result::User', 'user_id');
+__PACKAGE__->belongs_to(project => 'Comserv::Model::Schema::Ency::Result::Project', 'project_id');
 
 1;

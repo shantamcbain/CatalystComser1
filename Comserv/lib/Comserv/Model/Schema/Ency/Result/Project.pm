@@ -1,4 +1,4 @@
-package Comserv::Model::Schema::Result::Project;
+package Comserv::Model::Schema::Ency::Result::Project;
 use base 'DBIx::Class::Core';
 
 __PACKAGE__->table('projects');
@@ -65,7 +65,7 @@ __PACKAGE__->add_columns(
     },
 );
 __PACKAGE__->set_primary_key('id');
-__PACKAGE__->has_many(todos => 'Comserv::Model::Schema::Result::Todo', 'project_id', { cascade_delete => 1 });
-__PACKAGE__->has_many(project_sites => 'Comserv::Model::Schema::Result::ProjectSite', 'project_id');
+__PACKAGE__->has_many(todos => 'Comserv::Model::Schema::Ency::Result::Todo', 'project_id', { cascade_delete => 1 });
+__PACKAGE__->has_many(project_sites => 'Comserv::Model::Schema::EncyEncy::Result::ProjectSite', 'project_id');
 __PACKAGE__->many_to_many(sites => 'project_sites', 'site');
 1;
