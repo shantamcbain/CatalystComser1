@@ -86,13 +86,13 @@ __PACKAGE__->config(
         WRAPPER => 'layout.tt',
         TEMPLATE_EXTENSION => '.tt',
     },
-    'Controller::BMaster' => { path => '/BMaster' },
-    'Controller::CSC' => { path => '/CSC' },
-    'Controller::USBM' => { path => '/USBM' },
-    'Controller::ToDo' => { path => '/todo' },
-    'Controller::Root' => {
-        css_form => '/css_form',
-    },
+#    'Controller::BMaster' => { path => '/BMaster' },
+#    'Controller::CSC' => { path => '/CSC' },
+#    'Controller::USBM' => { path => '/USBM' },
+#    'Controller::ToDo' => { path => '/todo' },
+#    'Controller::Root' => {
+#        css_form => '/css_form',
+#    },
     'Model::Todo' => {
         class => 'Comserv::Model::Todo',
     },

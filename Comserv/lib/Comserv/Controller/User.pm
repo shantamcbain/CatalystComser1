@@ -23,6 +23,7 @@ sub index :Path : Args(0) {
     # Set the TT template to use
     $c->stash(template => 'users/list.tt');
 }
+
 sub login :Path('/login') :Args(0) {
     my ($self, $c) = @_;
 
@@ -31,8 +32,6 @@ sub login :Path('/login') :Args(0) {
 
     # Print the configured template directory
     print "Configured template directory: " . $c->config->{'View::TT'}->{INCLUDE_PATH} . "\n";
-
-    # Check if the template file exists
     if (!-e $c->config->{'View::TT'}->{INCLUDE_PATH} . '/login.tt') {
         print "Template file login.tt does not exist.\n";
     }
@@ -57,17 +56,63 @@ sub login :Path('/login') :Args(0) {
     $c->stash(template => 'user/login.tt');
     $c->forward($c->view('TT'));
 }
+sub get_user {
+    my ($self, $username) = @_;
+
+    # Print debug information
+    print $debug . __LINE__ . " Enter get_user\n";
+    Comserv::debug_log($debug . __LINE__ . " Enter get_user\n");
+    print $debug . __LINE__ . " Username: $username\n";
+    Comserv::debug_log($debug . __LINE__ . " Username: $username\n");
+
+    # Retrieve the user from the database
+    my $user = $self->resultset('User')->find({ username => $username });
+
+    # Check if the user was found
+    if ($user) {
+        print $debug . __LINE__ . " User found: " . Dumper($user) . "\n";
+        Comserv::debug_log($debug . __LINE__ . " User found: " . Dumper($user) . "\n");
+    } else {
+        print $debug . __LINE__ . " User not found\n";
+        Comserv::debug_log($debug . __LINE__ . " User not found\n");
+    }
+
+    return $user;
+}
+sub check_password {
+    my ($self, $c, $username, $password) = @_;
+
+    # Retrieve the user from the database
+    my $user = $self->find_user($username);
+
+    # If the user doesn't exist, return false
+    if (!$user) {
+        $c->stash(error_msg => 'User not found.');
+        return 0;
+    }
+
+    # Compare the passwords
+    if ($password eq $user->password) {
+        # The passwords match
+        return 1;
+    } else {
+        # The passwords don't match
+        $c->stash(error_msg => 'Invalid password.');
+        return 0;
+    }
+}
 sub register :Path('/register') Args(0) {
     print $debug . __LINE__ . " in register\n";
     Comserv::debug_log($debug . __LINE__ . " in register\n");
     my ($self, $c) = @_;
-
+    $c->session->{return_url} = $c->req->uri;
     # Set the template to use
     $c->stash(template => 'register.tt');
 
     # Stop further processing and display the template
     $c->detach($c->view('TT'));
 }
+
 sub create :Path('/create') Args(0) {
     my ($self, $c) = @_;
 
@@ -121,35 +166,7 @@ sub create :Path('/create') Args(0) {
         $c->response->redirect($c->uri_for('/register'));
     }
 }
-# In Comserv::Controller::User
-sub login :Path('/login') Args(0) { my ($self, $c) = @_;
-# Check if the request method is POST
-if ($c->request->method eq 'POST') {
-    # Retrieve the form data
-    my $username = $c->request->params->{username};
-    my $password = $c->request->params->{password};
 
-    # Find the user by username
-    my $user = $c->model('User')->find_user($c, $username);
-
-    # If the user is not found or the password is incorrect
-    if (!$user || !$c->model('User')->check_password($password, $user->{password})) {
-        # Set an error message and redirect back to the login page
-        $c->stash(error_msg => 'Invalid username or password.');
-        $c->stash(template => 'login.tt');
-        $c->detach($c->view('TT'));
-    }
-
-    # If the username and password are correct, log in the user and redirect to the original page
-    $c->session->{user_id} = $user->{id};
-    $c->response->redirect($c->session->{original_path} || $c->uri_for('/'));
-} else {
-    # If the request method is not POST, display the login page
-    $c->stash(template => 'user/login.tt');
-}
-#Forward to the view
-$c->forward($c->view('TT'));
-}
 sub logout :Path('/logout') :Args(0) { my ($self, $c) = @_;
 # Clear the user session
 $c->logout;

@@ -195,7 +195,8 @@ sub show_tables :Path('/show_tables') :Args(0) {
 
     # Forward to the view
     $c->forward($c->view('TT'));
-}sub display_filtered_schema :Local {
+}
+sub display_filtered_schema :Local {
     Comserv::debug_log($debug . __LINE__ . " Enter display_filtered_schema\n");
     my ($self, $c) = @_;
 

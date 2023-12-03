@@ -8,10 +8,10 @@ BEGIN { extends 'Catalyst::Controller'; }
         'namespace' => '',
     );
 
-sub index :Path :Args(0) {
+sub index :Path('todo/todo'):Args(0) {
     my ( $self, $c ) = @_;
-
-    $c->stash(template => 'todo/todo.tt');
+    $c->session->{return_url} = $c->req->uri;
+    $c->stash(template => 'todo.tt');
     $c->forward($c->view('TT'));
 }
 sub auto :Private {
@@ -41,7 +41,7 @@ sub add :Path('add') :Args(0) {
 
     # Stash the form data so it can be accessed in the addtodo.tt form
     $c->stash(todo => $params);
-
+    $c->session->{return_url} = $c->req->uri;
     $c->stash(template => 'todo/addtodo.tt');
     $c->forward($c->view('TT'));
 }
@@ -90,7 +90,7 @@ sub create :Path('create') :Args(0) {
 }
 sub add_project :Path(/add_project) :Args(0) {
     my ($self, $c) = @_;
-
+    $c->session->{return_url} = $c->req->uri;
     # Set the TT template to use
     $c->stash(template => 'todo/add_project.tt');
     $c->forward($c->view('TT'));
@@ -137,7 +137,7 @@ sub add_site :Path(/add_site) :Args(0) {
 
     # Pass the sites to the template
     $c->stash(sites => \@sites);
-
+    $c->session->{return_url} = $c->req->uri;
     # Set the TT template to use
     $c->stash(template => 'todo/add_site.tt');
     $c->forward($c->view('TT'));

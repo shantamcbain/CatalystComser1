@@ -20,6 +20,9 @@
     <nav>
         <ul class="horizontal-menu">
             <li class="horizontal-dropdown">
+                <a href="[% c.session.return_url %]"class="dropbtn">Back</a>
+            </li>
+        <li class="horizontal-dropdown">
                 <a href="#" class="dropbtn">Main</a>
                 <div class="dropdown-content">
                     <a href="[% c.uri_for('/' _ c.session.SiteName)%]" onclick="activateSite('Home')">Home</a>

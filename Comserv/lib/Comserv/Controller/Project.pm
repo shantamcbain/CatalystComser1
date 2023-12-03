@@ -15,6 +15,7 @@ sub auto :Private {
 }
 sub add :Path(/project/add) :Args(0) {
     my ($self, $c) = @_;
+$c->session->{return_url} = $c->req->uri;
 
     # Set the TT template to use
     $c->stash(template => 'add_project.tt');
