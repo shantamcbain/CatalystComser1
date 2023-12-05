@@ -1,6 +1,11 @@
 package Comserv::Controller::ToDo;
 use Moose;
 use namespace::autoclean;
+my $debug = "Comserv::Controller::ToDo Line #";
+print $debug . __LINE__ . "\n";
+print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
+
+print $debug . __LINE__ . " Enter auto\n";  # Add this linedebug_log($debug . __LINE__ . " Enter Root\n");
 
 BEGIN { extends 'Catalyst::Controller'; }
     __PACKAGE__->config(
@@ -14,8 +19,9 @@ sub index :Path('todo/todo'):Args(0) {
     $c->stash(template => 'todo.tt');
     $c->forward($c->view('TT'));
 }
-sub auto :Private {
+sub aauto :Private {
     my ($self, $c) = @_;
+    print $debug . __LINE__ . " Enter auto\n";  # Add this line
 
     # Define the private actions
     my @private_actions = ('todo', 'add', 'create');
@@ -27,7 +33,7 @@ sub auto :Private {
     if (grep { $_ eq $action_name } @private_actions && !$c->user_exists) {
         $c->session->{original_path} = $c->request->uri;
         $c->response->redirect($c->uri_for('/login'));
-        return 0;
+        $c->detach();  # Detach instead of returning false
     }
 
     # If a user exists in the session or the action is not a private action, continue processing the request

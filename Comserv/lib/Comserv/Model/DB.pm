@@ -6,6 +6,7 @@ use DBI;
 use JSON::MaybeXS qw(decode_json encode_json);
 use Term::ReadPassword;
 use Data::Dumper;
+use Digest::SHA;
 extends 'Catalyst::Model::DBIC::Schema';
 
 __PACKAGE__->config(
@@ -107,7 +108,8 @@ sub connect_info {
         password => $dbi_info->{password},
         AutoCommit => 1,
     };
-}sub _test_db_connection {
+}
+sub _test_db_connection {
     my ($self, $c, $dbi_info) = @_;
     Comserv::debug_log($debug . __LINE__ . " Enter search_schema\n");
     print $debug . __LINE__ . " in _test_db_connection\n";
@@ -128,36 +130,6 @@ sub connect_info {
     $c->session(dbi_connected => 1);
                $sth->finish;
 #                $dbh->disconnect;
-                return 1;  # Connection successful
-            }
-            $sth->finish;
-        } else {
-            # Print the DBI error message
-            print $debug . __LINE__ . " DBI error: " . DBI->errstr . "\n";
-        }
-    }
-
-    print $debug . __LINE__ . " DB connection failed\n";
-    return 0;  # Connection failed
-}
-sub _test_db_connection {
-    my ($self, $c, $dbi_info) = @_;
-
-    # Check if the DBI information is provided
-    if ($dbi_info && $dbi_info->{username} && $dbi_info->{password}) {
-        # Perform the necessary code to test the database connection using the $dbi_info
-        my $dbh = DBI->connect("DBI:mysql:database=$dbi_info->{database};host=$dbi_info->{host}", $dbi_info->{username}, $dbi_info->{password});
-
-        if ($dbh) {
-            my $query = "SELECT 1";
-            my $sth = $dbh->prepare($query);
-            if ($sth && $sth->execute) {
-                # If the connection is successful and $c is defined, store the connection status in the stash and session
-                if (defined $c) {
-                    $c->stash(dbi_connected => 1);
-                    $c->session(dbi_connected => 1);
-                }
-                $sth->finish;
                 return 1;  # Connection successful
             }
             $sth->finish;
@@ -349,7 +321,8 @@ sub get_databases {
     }
 
     return \@databases;
-}sub create_result_classes {
+}
+sub create_result_classes {
     my ($self, $c) = @_;
 
     # Connect to the shanta_forager database
@@ -394,8 +367,116 @@ sub get_databases {
         print "Created Result class for table $table->[0]\n";
     }
 }
+sub get_user_by_username {
+    my ($self, $username) = @_;
 
-sub create_or_update_schema {
+    # Print debug information
+    print $debug . __LINE__ . " Enter get_user_by_username\n";
+    Comserv::debug_log($debug . __LINE__ . " Enter get_user_by_username\n");
+    print $debug . __LINE__ . " Username: $username\n";
+    $username = 'Shanta';
+    Comserv::debug_log($debug . __LINE__ . " Username: $username\n");
+
+    # Retrieve the DBI handle
+    my $dbh = $self->_build_dbh();
+    if (!$dbh) {
+        print $debug . __LINE__ . " DBI handle not retrieved\n";
+        Comserv::debug_log($debug . __LINE__ . " DBI handle not retrieved\n");
+        return;
+    }
+
+    # Prepare the SQL query
+    my $sth = $dbh->prepare('SELECT * FROM users WHERE username = ?');
+    if (!$sth) {
+        print $debug . __LINE__ . " DBI error: " . $dbh->errstr . "\n";
+        Comserv::debug_log($debug . __LINE__ . " DBI error: " . $dbh->errstr . "\n");
+        return;
+    }
+
+    # Execute the query
+    my $result = $sth->execute($username);
+    if (!$result) {
+        print $debug . __LINE__ . " DBI error: " . $sth->errstr . "\n";
+        Comserv::debug_log($debug . __LINE__ . " DBI error: " . $sth->errstr . "\n");
+        return;
+    }
+
+    # Fetch the user data
+    my $user = $sth->fetchrow_hashref;
+    if (!$user) {
+        print $debug . __LINE__ . " User not found\n";
+        Comserv::debug_log($debug . __LINE__ . " User not found\n");
+    } else {
+        print $debug . __LINE__ . " User found: " . Dumper($user) . "\n";
+        Comserv::debug_log($debug . __LINE__ . " User found: " . Dumper($user) . "\n");
+    }
+
+    return $user;
+}
+sub check_password {
+    my ($self, $c, $username, $password) = @_;
+    print $debug . __LINE__ . " Enter check_password\n";
+    # Retrieve the user from the database
+    my $user = $self->get_user_by_username($username);
+    print $debug . __LINE__ . " User: " . Dumper($user) . "\n";
+    # If the user doesn't exist, return false
+    if (!$user) {
+        $c->stash(error_msg => 'User not found.');
+        return 0;
+    }
+
+    # Hash the provided password
+    my $hashed_password = $self->hash_password($password);
+
+    # Compare the hashed password with the stored password
+    if ($hashed_password eq $user->{password}) {
+        # The passwords match
+        return 1;
+    } else {
+        # The passwords don't match
+        $c->stash(error_msg => 'Invalid password.');
+        return 0;
+    }
+}
+sub hash_password {
+    my ($self, $password) = @_;
+
+    # Hash the password using the Catalyst hashing system
+    my $hashed_password = Digest::SHA::sha256_hex($password);
+
+    return $hashed_password;
+}
+sub change_password {
+    my ($self, $c, $username, $new_password) = @_;
+
+    print $debug . __LINE__ . " Enter change_password\n";  # Debug print
+
+    # Retrieve the user from the database
+    my $user = $c->model('DB::User')->find({ username => $username });
+
+    if ($user) {
+        print $debug . __LINE__ . " User found: " . Dumper($user) . "\n";  # Debug print
+
+        # Hash the new password
+        my $hashed_password = $c->model('DB')->hash_password($new_password);
+
+        print $debug . __LINE__ . " Hashed password: $hashed_password\n";  # Debug print
+
+        # Update the password in the database
+        $user->update({ password => $hashed_password });
+
+        print $debug . __LINE__ . " Password updated successfully\n";  # Debug print
+
+        $c->stash(success_msg => 'Password changed successfully.');
+    } else {
+        print $debug . __LINE__ . " User not found\n";  # Debug print
+
+        $c->stash(error_msg => 'User not found.');
+    }
+
+    $c->stash(template => 'user/change_password.tt');
+    $c->forward($c->view('TT'));
+}sub create_or_update_schema {
     my ($self, $c) = @_;
 
     # Get the ShantaForager schema

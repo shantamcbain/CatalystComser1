@@ -6,6 +6,10 @@
 [% IF c.session.success_msg %]
     <p>[% c.session.success_msg %]</p>
 [% END %]
+<!-- Display error message if it exists -->
+[% IF c.stash.error_msg %]
+    <p class="error">[% c.stash.error_msg %]</p>
+[% END %]
 <!-- root/src/login.tt2 -->
 <form method="post" action="/login">
     <label for="username">Username</label>
@@ -19,3 +23,6 @@
 
 <!-- Add a Register button that links to the register page -->
 <a href="/register" class="register-button">Register</a>
+
+<!-- Add a Change Password button that links to the change_password page -->
+<a href="/change_password" class="change-password-button">Change Password</a>

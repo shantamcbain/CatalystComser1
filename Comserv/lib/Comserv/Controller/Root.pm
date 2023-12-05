@@ -20,9 +20,12 @@ my $site_name = 'home';
 __PACKAGE__->config(namespace => '');
 
 sub index :Path :Args(0) {
-    print $debug. __LINE__. " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
+
+    # Print the inheritance chain of this controller
+    print "Inheritance chain of " . __PACKAGE__ . ": @Comserv::Controller::Root::ISA\n";
+print $debug. __LINE__. " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
     my ($self, $c) = @_;
-    my $site_name = $c->stash->{SiteName};
+    my $site_name = $c->stash->{SiteName}||'home';
     print $debug . __LINE__ . " Site Name: $site_name\n";
     $c->stash(template => 'home.tt');
     $c->model('DB')->_build_dbi_info($c);
@@ -33,45 +36,56 @@ sub index :Path :Args(0) {
 sub auto :Private {
     my ($self, $c) = @_;
 
-    # Set the default group in the session if it's not already set
-    $c->session->{group} ||= 'normal';
+    # Use eval to catch any errors
+    eval {
+        print $debug . __LINE__ . " Enter auto\n";  # Add this line
 
-    # Get the domain name from the request
-    my $domain = $c->request->uri->host;
-    $c->session->{Domain} = $domain;
+        # Set the default group in the session if it's not already set
+        $c->session->{group} ||= 'normal';
 
-    # Get the site name from the URL
-    my $site_name = $c->req->param('site')||'home';
-    $c->stash->{SiteName} = $site_name;
+        # Get the domain name from the request
+        my $domain = $c->request->uri->host;
+        $c->session->{Domain} = $domain;
 
-# Get the debug parameter from the URL
-my $debug_param = $c->req->param('debug');
+        # Get the site name from the URL
+        my $site_name = $c->req->param('site')||'home';
+        $c->stash->{SiteName} = $site_name;
 
-# If the debug parameter is defined
-if (defined $debug_param) {
-    # If the debug parameter is different from the session value
-    if ($c->session->{debug_mode} ne $debug_param) {
-        # Store the new debug parameter in the session and stash
-        $c->session->{debug_mode} = $debug_param;
-        $c->stash->{debug_mode} = $debug_param;
-    }
-} elsif (defined $c->session->{debug_mode}) {
-    # If the debug parameter is not defined but there is a value in the session
-    # Store the session value in the stash
-    $c->stash->{debug_mode} = $c->session->{debug_mode};
-}
-    # Set the HostName and SiteName in the stash
-    $c->stash->{HostName} = $c->request->base;
-    $c->stash->{SiteName} = $site_name;
+        # Get the debug parameter from the URL
+        my $debug_param = $c->req->param('debug');
 
-    # Set the SiteName and Domain in the session
-    $c->session->{SiteName} = $site_name;
-    $c->session->{Domain} = $domain;
+        # If the debug parameter is defined
+        if (defined $debug_param) {
+            # If the debug parameter is different from the session value
+            if ($c->session->{debug_mode} ne $debug_param) {
+                # Store the new debug parameter in the session and stash
+                $c->session->{debug_mode} = $debug_param;
+                $c->stash->{debug_mode} = $debug_param;
+            }
+        } elsif (defined $c->session->{debug_mode}) {
+            # If the debug parameter is not defined but there is a value in the session
+            # Store the session value in the stash
+            $c->stash->{debug_mode} = $c->session->{debug_mode};
+        }
+
+        # Set the HostName and SiteName in the stash
+        $c->stash->{HostName} = $c->request->base;
+        $c->stash->{SiteName} = $site_name;
+
+        # Set the SiteName and Domain in the session
+        $c->session->{SiteName} = $site_name;
+        $c->session->{Domain} = $domain;
+
+        1;  # Ensure the eval block returns a true value
+    } or do {
+        # If there's an error, print it
+        print $debug . __LINE__ . " Error in auto: $@\n";
+        $c->stash(error_msg => "Error in auto: $@");
+    };
 
     # Continue processing the rest of the request
     return 1;
-}
-sub catalyst_help :Path('/catalyst_help') {
+}sub catalyst_help :Path('/catalyst_help') {
     my ($self, $c) = @_;
     $c->response->body($c->welcome_message);
 }
