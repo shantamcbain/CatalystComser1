@@ -13,10 +13,10 @@ BEGIN { extends 'Catalyst::Controller'; }
         'namespace' => '',
     );
 
-sub index :Path('todo/todo'):Args(0) {
+sub index :Path('todo'):Args(0) {
     my ( $self, $c ) = @_;
     $c->session->{return_url} = $c->req->uri;
-    $c->stash(template => 'todo.tt');
+    $c->stash(template => 'todo/todo.tt');
     $c->forward($c->view('TT'));
 }
 sub aauto :Private {
@@ -39,7 +39,7 @@ sub aauto :Private {
     # If a user exists in the session or the action is not a private action, continue processing the request
     return 1;
 }
-sub add :Path('add') :Args(0) {
+sub add :Path('todo/add') :Args(0) {
     my ( $self, $c ) = @_;
 
     # Retrieve the submitted form data
@@ -50,18 +50,7 @@ sub add :Path('add') :Args(0) {
     $c->session->{return_url} = $c->req->uri;
     $c->stash(template => 'todo/addtodo.tt');
     $c->forward($c->view('TT'));
-}
-sub check_password {
-    my ($self, $password, $hashed_password) = @_;
-
-    # Use a password hashing module to check the password
-    # This is just an example, replace it with your actual password checking logic
-    use Authen::Passphrase::BlowfishCrypt;
-    my $ppr = Authen::Passphrase::BlowfishCrypt->from_crypt($hashed_password);
-
-    return $ppr->match($password);
-}
-sub create :Path('create') :Args(0) {
+}sub create :Path('todo/create') :Args(0) {
     my ( $self, $c ) = @_;
 
     # Retrieve the submitted form data
@@ -88,11 +77,31 @@ sub create :Path('create') :Args(0) {
         project_id          => $params->{project_id},
     };
 
-    # Call the model method to save the new record
-    $c->model('Model::Todo')->add_new_record($new_record);
+    # Call the create_record method to save the new record
+    $self->create_record($c, 'Model::Todo', $new_record);
 
-    # Redirect to the todo.tt template or any other desired page
-    $c->response->redirect($c->uri_for('/todo'));
+    # Redirect to the addtodo.tt template or any other desired page
+    $c->response->redirect($c->uri_for('/addtodo'));
+}
+
+sub create_record :Private {
+    my ($self, $c, $table_name, $record_data) = @_;
+
+    # Check if the model for the table exists
+    if (!$c->model($table_name)) {
+        $c->log->error("Model for table '$table_name' does not exist");
+        return;
+    }
+
+    # Call the model method to save the new record
+    my $new_record = $c->model($table_name)->create($record_data);
+
+    # Check if the insertion was successful
+    if ($new_record->in_storage) {
+        $c->log->info("New record inserted successfully in table '$table_name'");
+    } else {
+        $c->log->error("Failed to insert new record in table '$table_name'");
+    }
 }
 sub add_project :Path(/add_project) :Args(0) {
     my ($self, $c) = @_;

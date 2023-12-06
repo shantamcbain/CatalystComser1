@@ -388,7 +388,7 @@
   <td>Not started</td>
   <td>Comserv::Controller::ToDo</td>
   <td>
-<form action="/todo/create" method="POST">
+<form action="/todo/add" method="POST">
   <input type="hidden" name="record_id" value="5">
   <input type="text" name="sitename" value="Comserv">
   <input type="text" name="subject" value="Add Logging">
@@ -417,7 +417,7 @@
   <td>Not started</td>
   <td>Comserv::View::TT</td>
   <td>
-<form action="/todo/create" method="POST">
+<form action="/todo/add" method="POST">
   <input type="hidden" name="record_id" value="5">
   <input type="text" name="sitename" value="Comserv">
   <input type="text" name="subject" value="Add Logging">
@@ -460,7 +460,7 @@
   <!-- Add the rest of your fields here -->
   <button type="submit">Add ToDo</button>
 </form> </td>
-<tr><form action="/todo/create" method="POST">
+<tr><form action="/todo/add" method="POST">
   <input type="text" name="sitename" value="Comserv">
   <input type="text" name="subject" value="Setup Schema for ToDo System">
   <textarea name="description">Start the process of development for creating the schema for the ToDo system. This includes creating the necessary tables (Group, Log, Project, ProjectSite, Site, Todo) and relationships in the database, updating the DBIx::Class schema classes, and testing the schema to ensure it works as expected. The tables are related as follows: A Todo will list the sitename gotten from Site. If the Site is deleted so is the Todo. The Todo has the same relationship with Project. Projects are tied to a Site. Logs are linked to Site, User, and Project. There will be more relationships as we develop it. The files that will be worked on to access the schema by the application include: Comserv::Model::Schema::Ency::Result::Group, Comserv::Model::Schema::Ency::Result::Log, Comserv::Model::Schema::Ency::Result::Project, Comserv::Model::Schema::Ency::Result::ProjectSite, Comserv::Model::Schema::Ency::Result::Site, Comserv::Model::Schema::Ency::Result::Todo.</textarea>
