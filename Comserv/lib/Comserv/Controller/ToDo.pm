@@ -1,6 +1,8 @@
 package Comserv::Controller::ToDo;
 use Moose;
 use namespace::autoclean;
+use DateTime;
+use Try::Tiny;
 my $debug = "Comserv::Controller::ToDo Line #";
 print $debug . __LINE__ . "\n";
 print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
@@ -50,58 +52,60 @@ sub add :Path('todo/add') :Args(0) {
     $c->session->{return_url} = $c->req->uri;
     $c->stash(template => 'todo/addtodo.tt');
     $c->forward($c->view('TT'));
-}sub create :Path('todo/create') :Args(0) {
-    my ( $self, $c ) = @_;
-
-    # Retrieve the submitted form data
-    my $params = $c->req->params;
-
-    # Create a new record with the submitted data
-    my $new_record = {
-        record_id           => $params->{record_id},
-        sitename            => $params->{sitename},
-        start_date          => $params->{start_date},
-        due_date            => $params->{due_date},
-        subject             => $params->{subject},
-        description         => $params->{description},
-        estimated_man_hours => $params->{estimated_man_hours},
-        accumulative_time   => $params->{accumulative_time},
-        project_code        => $params->{project_code},
-        status              => $params->{status},
-        priority            => $params->{priority},
-        share               => $params->{share},
-        last_mod_by         => $params->{last_mod_by},
-        last_mod_date       => $params->{last_mod_date},
-        group_of_poster     => $params->{group_of_poster},
-        user_id             => $params->{user_id},
-        project_id          => $params->{project_id},
-    };
-
-    # Call the create_record method to save the new record
-    $self->create_record($c, 'Model::Todo', $new_record);
-
-    # Redirect to the addtodo.tt template or any other desired page
-    $c->response->redirect($c->uri_for('/addtodo'));
 }
+use Try::Tiny;
 
-sub create_record :Private {
-    my ($self, $c, $table_name, $record_data) = @_;
+sub create :Path('create') :Args(2) {
+    my ($self, $c, $database, $table) = @_;
 
-    # Check if the model for the table exists
-    if (!$c->model($table_name)) {
-        $c->log->error("Model for table '$table_name' does not exist");
-        return;
+    my $debug = "Comserv::Model::DB Line #";
+    print $debug . __LINE__ . " Enter create\n";
+    Comserv::debug_log($debug . __LINE__ . " Enter create\n");
+
+    # Construct the model name from the database and table names
+    my $model = 'DB::' . ucfirst($database) . '::' . ucfirst($table);
+
+    try {
+        print $debug . __LINE__ . " Trying to create record\n";
+        Comserv::debug_log($debug . __LINE__ . " Trying to create record\n");
+
+        # Check if the table exists
+        my $source = $c->model($model)->result_source;
+
+        # If the table doesn't exist, create it
+        if (!$source) {
+            $c->model('DB')->schema->source($model)->deploy({ add_drop_table => 0 });
+        }
+
+        # Retrieve the submitted form data
+        my $params = $c->req->params;
+
+        # Create a new record with the submitted data
+        my $new_record = $c->model($model)->create($params);
+
+        # Redirect to the old_todo route
+        $c->response->redirect($c->uri_for("/old_todo"));
     }
+    catch {
+        my $error = $_;
 
-    # Call the model method to save the new record
-    my $new_record = $c->model($table_name)->create($record_data);
+        # Log the error to the command line
+        warn $error;
 
-    # Check if the insertion was successful
-    if ($new_record->in_storage) {
-        $c->log->info("New record inserted successfully in table '$table_name'");
-    } else {
-        $c->log->error("Failed to insert new record in table '$table_name'");
-    }
+        # Log the error to the debug file
+        open my $fh, '>>', 'debug.log' or die "Could not open debug.log: $!";
+        print $fh $error;
+        close $fh;
+
+        # Pass the error message to the template
+        $c->stash(error_msg => $error);
+
+        # Set the template
+        $c->stash(template => 'error.tt');
+
+        # Forward to the view
+        $c->forward($c->view('TT'));
+    };
 }
 sub add_project :Path(/add_project) :Args(0) {
     my ($self, $c) = @_;
@@ -129,81 +133,145 @@ sub insert_into_project_table :Private {
     } else {
         $c->log->error("Failed to insert new project");
     }
-}__PACKAGE__->meta->make_immutable;
-use Try::Tiny;
-
-sub add_site :Path(/add_site) :Args(0) {
-    my ($self, $c) = @_;
-
-    # Try to retrieve all the sites from the database
-    my @sites;
-    try {
-        @sites = $c->model('Site')->all;
-    } catch {
-        # If an error occurs (e.g., the table does not exist), log the error and handle it
-        $c->log->error("Failed to retrieve sites: $_");
-
-        # Check if the user is an admin
-        if ($c->user_exists && $c->user->is_admin) {
-            # If the user is an admin, set a flag in the stash to show the "Add Table" button in the template
-            $c->stash(show_add_table_button => 1);
-        }
-    };
-
-    # Pass the sites to the template
-    $c->stash(sites => \@sites);
-    $c->session->{return_url} = $c->req->uri;
-    # Set the TT template to use
-    $c->stash(template => 'todo/add_site.tt');
-    $c->forward($c->view('TT'));
 }
-sub create_site :Path('/create_site') :Args(0) {
+sub select_tables :Path('select_tables') :Args(0) {
     my ($self, $c) = @_;
 
-    # Try to get the Site source
-    my $site_source;
-    try {
-        $site_source = $c->model('Schema::Result::Site')->result_source;
-    } catch {
-        # If an error occurs (e.g., the Site source does not exist), handle it
-        $c->log->error("Failed to retrieve Site source: $_");
-    };
+    print $debug . __LINE__ . " Enter select_tables\n";  # Debug print
 
-    if (!defined $site_source) {
-        # If the Site source does not exist, create it
-        $self->create_table_from_schema($c, 'Schema::Result::Site');
-    }
+    # Retrieve the selected databases from the form data
+    my @selected_databases = $c->req->param('databases');
 
-    # Retrieve the submitted site name
-    my $site_name = $c->request->params->{site_name};
-
-    # Check if a site with the submitted name already exists
-    my $existing_site = $c->model('Schema::Result::Site')->find({ name => $site_name });
-    if ($existing_site) {
-        # If a site with the submitted name already exists, set an error message and redirect back to the add_site page
-        $c->stash(error_msg => 'A site with this name already exists.');
-        $c->response->redirect($c->uri_for('/add_site'));
+    # Check if any databases were selected
+    if (!@selected_databases) {
+        print $debug . __LINE__ . " No databases selected\n";  # Debug print
+        Comserv::debug_log($debug . __LINE__ . " No databases selected\n");  # Debug log
+        $c->stash(error_msg => "No databases selected");
         return;
     }
 
-    # Create a new site record with the submitted name
-    $c->model('Schema::Result::Site')->create({ name => $site_name });
+    print $debug . __LINE__ . " Retrieved " . scalar(@selected_databases) . " selected databases\n";  # Debug print
 
-    # Redirect back to the add_site page
-    $c->response->redirect($c->uri_for('/add_site'));
+    # Retrieve the list of tables for each selected database
+    my %tables;
+    foreach my $database (@selected_databases) {
+        my $tables_ref = eval { $c->model('DB')->get_tables($c, $database) };
+        if ($@ || !defined $tables_ref) {
+            print $debug . __LINE__ . " Error retrieving tables for database $database: $@\n";  # Debug print
+            Comserv::debug_log($debug . __LINE__ . " Error retrieving tables for database $database: $@\n");  # Debug log
+            $c->stash(error_msg => "Error retrieving tables for database $database: $@");
+            return;
+        }
+        my @tables = @{$tables_ref};
+        $tables{$database} = \@tables;
+
+        print $debug . __LINE__ . " Retrieved " . scalar(@tables) . " tables for database $database\n";  # Debug print
+        Comserv::debug_log($debug . __LINE__ . " Retrieved " . scalar(@tables) . " tables for database $database\n");  # Debug log
+    }
+
+    # Stash the list of tables so it can be accessed in the template
+    $c->stash(tables => \%tables);
+
+    # Set the template to use
+    $c->stash(template => 'todo/select_tables.tt');
+
+    # Forward processing to the TT view
+    $c->forward($c->view('TT'));
 }
-sub create_table_from_schema {
-    my ($self, $c, $table_schema_class) = @_;
+sub old_todo_add :Path('old_todo_add') :Args(2) {
+    my ($self, $c, $database, $table) = @_;
 
-    # Get the schema object
-    my $schema = $c->model('Schema');
+    # Construct the model name from the database and table names
+    my $model = 'DB::' . ucfirst($database) . '::' . ucfirst($table);
 
-    # Get the source name from the table schema class
-    my ($source_name) = $table_schema_class =~ /::(\w+)$/;
+    # Get the result source for the table
+    my $source = $c->model($model)->result_source;
 
-    # Get the source object for the table
-    my $source = $schema->source($source_name);
+    # Get the column names of the table
+    my @columns = $source->columns;
 
-    # Deploy the source object to create the table
-    $source->deploy;
+    # Retrieve the distinct company_code values from the cscclienttb table
+    my @company_codes = $c->model('DB::ShantaForager::Cscclienttb')->search(
+        {},  # No search conditions
+        {
+            select   => ['company_code'],  # Select only the company_code column
+            distinct => 1,  # Remove duplicates
+        }
+    )->get_column('company_code')->all;
+
+    # Retrieve the distinct sitename values from the ency_site table
+    my @sites = $c->model('DB::ShantaForager::Cscclienttb')->search(
+        {},  # No search conditions
+        {
+            select   => ['company_code'],  # Select only the sitename column
+            distinct => 1,  # Remove duplicates
+        }
+    )->get_column('company_code')->all;
+
+    # Retrieve the distinct project_code values from the appropriate table
+    my @project_codes = $c->model('DB::ShantaForager::CscProjectTb')->search(
+        {},  # No search conditions
+        {
+            select   => ['project_code'],  # Select only the project_code column
+            distinct => 1,  # Remove duplicates
+        }
+    )->get_column('project_code')->all;
+
+    # Define the status and priority hashes
+    my %status = ( 1 => 'NEW', 2 => 'IN PROGRESS', 3 => 'DONE', );
+    my %priority = (
+        1 => 'LOW',
+        2 => 'MODERATE',
+        3 => 'CONSIDERABLE',
+        4 => 'HIGH',
+        5 => 'EXTREME',
+    );
+    my %share = (
+       'pub'		=> 'Every Body',
+       'priv'		=> 'This is personal.',
+   );
+
+    # Pass the column names, company_code values, sitename values, project_code values, status, and priority to the template
+    $c->stash(columns => \@columns);
+    $c->stash(company_codes => \@company_codes);
+    $c->stash(sites => \@sites);
+    $c->stash(project_codes => \@project_codes);
+    $c->stash(status => \%status);
+    $c->stash(priority => \%priority);
+    $c->stash(share => \%share);
+
+    # Set the template
+    $c->stash(template => 'todo/old_todo_add.tt');
+
+    # Forward to the view
+    $c->forward($c->view('TT'));
+}
+sub list_databases :Path('list_databases') :Args(0) {
+    my ($self, $c) = @_;
+    print $debug . __LINE__ . " Enter list_databases\n";  # Debug
+
+        my $databases = $c->model('DB')->get_databases($c);
+    print $debug . __LINE__ . " Retrieved " . scalar(@{$databases}) . " databases\n";  # Debug print
+    $c->stash(databases => $databases);
+    $c->stash(template => 'todo/list_databases.tt');
+    $c->response->content_type('text/html');
+    $c->forward($c->view('TT'));
+}
+sub old_todo :Path('old_todo') :Args(0) {
+    my ($self, $c) = @_;
+
+    # Retrieve the todos from the csc_todo table
+    my @todos = $c->model('DB::ShantaForager::CscTodoTb')->search(
+        { status =>  { '!=' => '3' } },  # Filter out the completed tasks
+        { order_by => { -desc => ['priority', 'due_date'] } }  # Sort by priority and due date
+    );
+
+    # Pass the todos to the template
+    $c->stash(todos => \@todos);
+
+    # Set the template
+    $c->stash(template => 'todo/old_todo.tt');
+
+    # Forward to the view
+    $c->forward($c->view('TT'));
 }

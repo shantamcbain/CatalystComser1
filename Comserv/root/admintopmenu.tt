@@ -13,7 +13,8 @@
             <a href="/todo" class="dropbtn">ToDo</a>
             <a href="/todo/display_tables">ToDo Tables</a>
             <a href="/debug">debug</a>
-            <div class="submenu-item">
+            <a href="/list_databases">Synchronise databases.</a>
+        <div class="submenu-item">
                 <span class="submenu-header">Select Domain</span>
                 <div class="domain-submenu submenu">
                     <!-- Add domain options here -->

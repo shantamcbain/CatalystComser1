@@ -10,7 +10,7 @@ print $debug . __LINE__ . "\n";
 print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
 print $debug . __LINE__ . " Enter auto\n";  # Add this linedebug_log($debug . __LINE__ . " Enter Root\n");
 
-sub auto :Private {
+sub aauto :Private {
     my ($self, $c) = @_;
 print $debug . __LINE__ . " Enter auto\n";
     # Add this line

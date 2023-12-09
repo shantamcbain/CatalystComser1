@@ -59,20 +59,34 @@ sub _read_dbi_info_from_file {
 }
 sub _build_dbh {
     my ($self) = @_;
+    print $debug . __LINE__ . " Enter _build_dbh\n";
+        # If the DBI handle is already stored in the object, return it
+    if (defined $self->{dbh}) {
+        return $self->{dbh};
+    }
 
     # Retrieve the DBI information
     my $dbi_info = $self->_read_dbi_info_from_file();
-
+    print $debug . __LINE__ . " dbi_info: " . Dumper($dbi_info) . "\n";
     # If the DBI information could not be read or is not valid, return
     if (!defined $dbi_info) {
+        print $debug . __LINE__ . " DBI information is missing or invalid\n";
         return;
     }
 
     # Connect to the database
     my $dbh = DBI->connect("DBI:mysql:database=$dbi_info->{database};host=$dbi_info->{host}", $dbi_info->{username}, $dbi_info->{password});
 
+    if (!defined $dbh) {
+        print $debug . __LINE__ . "Failed to connect to the database: " . DBI->errstr . "\n"; # Debug print
+    }else {
+        # Store the DBI handle in the object
+        $self->{dbh} = $dbh;
+    }
+
     return $dbh;
-}# Method to get the dbi_info
+}
+# Method to get the dbi_info
 sub dbi_info {
     my ($self, $c) = @_;
 
@@ -83,7 +97,7 @@ sub dbi_info {
 
     # Try to read the DBI information from the .dat file
     my $dbi_info = $self->_read_dbi_info_from_file($c);
-
+    print $debug . __LINE__ . " dbi_info: " . Dumper($dbi_info) . "\n";
     # If the DBI information could not be read or is not valid
     if (!defined $dbi_info || !$self->_test_db_connection($c, $dbi_info)) {
         $c->stash(error_message => 'DBI information is missing or invalid.');
@@ -160,64 +174,73 @@ sub _build_dbi_info {
     return $self->{dbi_info};
 }
 # Method to get the schema info
-sub get_schema_info {
-    my ($self, $c) = @_;
+sub get_tables {
+    my ($self, $c, $database) = @_;
 
-    print $debug . __LINE__ . " in get_schema_info\n";  # Debug print
-# Open the log file for writing
-open my $log_fh, '>', 'debug.log' or die "Could not open debug.log: $!";
+    # Check if the database is defined
+    if (!defined $database) {
+        print $debug . __LINE__ . " Error: No database specified\n";
+        Comserv::debug_log($debug . __LINE__ . " Error: No database specified\n");
+        return;
+    }
 
-# Redirect standard output to the log file
-select $log_fh;
-
-# Now all print statements will write to the log file
-print $debug . __LINE__ . " in get_schema_info\n";  # Debug print
     # Retrieve the DBI handle
     my $dbh = $self->_build_dbh($c);
 
-    # If the DBI handle is an error message, store it in the stash
+    # If the DBI handle is an error message, return it
     if (!ref $dbh) {
-        $c->stash(error_message => $dbh);
-        return;
+        print $debug . __LINE__ . " DBI handle is not a reference. Error: $dbh\n";
+        Comserv::debug_log($debug . __LINE__ . " DBI handle is not a reference. Error: $dbh\n");
+        return { error => $dbh };
     }
 
-    # Prepare the query to retrieve schema information
-    my $sth = $dbh->prepare('SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ?');
-
-    # If the prepare operation fails, store the DBI error in the stash
+    # Prepare the query to retrieve tables for the given database
+    my $sth = $dbh->prepare("SHOW TABLES IN `$database`");
     if (!$sth) {
-        $c->stash(error_message => "DBI error: " . $dbh->errstr);
+        print $debug . __LINE__ . " Failed to prepare statement. DBI error: " . $dbh->errstr . "\n";
+        Comserv::debug_log($debug . __LINE__ . " Failed to prepare statement. DBI error: " . $dbh->errstr . "\n");
         return;
     }
 
-    # Execute the query
-    my $result = $sth->execute($c->stash->{dbi_info}{database});
-
-    # If the execute operation fails, store the DBI error in the stash
-    if (!$result) {
-        $c->stash(error_message => "DBI error: " . $dbh->errstr);
-        return;
-    }
+    $sth->execute();
 
     # Fetch the results
-    my @schema_info;
-    while (my $row = $sth->fetchrow_hashref) {
-        push @schema_info, $row;
+    my @tables;
+    while (my $row = $sth->fetchrow_arrayref) {
+        push @tables, $row->[0];
     }
 
-    # Open a file for writing
-    open my $fh, '>', 'schema.txt' or die "Could not open file 'schema.txt' $!";
+    # If no tables were found, log an error message
+    if (!@tables) {
+        print $debug . __LINE__ . " Error: No tables found for database $database\n";
+        Comserv::debug_log($debug . __LINE__ . " Error: No tables found for database $database\n");
+    }
 
-    # Write the schema information to the file
-    print $fh Dumper(\@schema_info);
+    # Log each table
+    foreach my $table (@tables) {
+        print $debug . __LINE__ . " Table: $table\n";
+        Comserv::debug_log($debug . __LINE__ . " Table: $table\n");
+    }
 
-    # Close the file
-    close $fh;
+    return \@tables;
+}
+sub get_fields {
+    my ($self, $c, $database, $table) = @_;
 
-    print $debug . __LINE__ . " schema_info written to schema.txt\n";  # Debug print
-# Close the log file
-close $log_fh;
-    return \@schema_info;
+    # Retrieve the DBI handle
+    my $dbh = $self->_build_dbh($c);
+
+    # Prepare the query to retrieve fields for the given table
+    my $sth = $dbh->prepare("SHOW COLUMNS FROM `$table` IN `$database`");
+    $sth->execute();
+
+    # Fetch the results
+    my @fields;
+    while (my $row = $sth->fetchrow_arrayref) {
+        push @fields, $row->[0];
+    }
+
+    return \@fields;
 }
 sub get_filtered_schema_info {
     my ($self, $c, $criteria) = @_;
@@ -242,17 +265,15 @@ sub get_filtered_schema_info {
     while (my $row = $sth->fetchrow_hashref) {
         # If the table name matches the criteria
         if ($row->{TABLE_NAME} =~ /$criteria/) {
-            # Prepare the query to fetch the column information
-            my $sth_columns = $dbh->prepare("SHOW COLUMNS FROM $row->{TABLE_NAME}");
+            # Retrieve the fields for this table using the new get_fields method
+            my $fields_ref = $self->get_fields($c, $c->stash->{dbi_info}{database}, $row->{TABLE_NAME});
+            if ($@ || !defined $fields_ref) {
+                # Handle error
+            }
+            my @fields = @{$fields_ref};
 
-            # Execute the query
-            $sth_columns->execute();
-
-            # Fetch the results
-            my $columns = $sth_columns->fetchall_arrayref({});
-
-            # Add the columns to the row
-            $row->{columns} = $columns;
+            # Add the fields to the row
+            $row->{fields} = \@fields;
 
             push @schema_info, $row;
         }
@@ -260,7 +281,7 @@ sub get_filtered_schema_info {
 
     return \@schema_info;
 }
-sub get_tables {
+sub get_database_contents {
     my ($self, $c, $database) = @_;
 
     # Check if the database is defined
@@ -292,33 +313,63 @@ sub get_tables {
         print "Error: No tables found for database $database\n";
     }
 
-    # Log each table
+    my %database_contents;
+
+    # For each table, retrieve its contents
     foreach my $table (@tables) {
-        print "Table: $table\n";
+        my $sth = $dbh->prepare("SELECT * FROM `$table`");
+        $sth->execute();
+
+        my @table_contents;
+        while (my $row = $sth->fetchrow_hashref) {
+            push @table_contents, $row;
+        }
+
+        $database_contents{$table} = \@table_contents;
     }
 
-    return \@tables;
-}# Method to test the DB connection
+    return \%database_contents;
+}
 sub get_databases {
     my ($self, $c, $schema) = @_;
+
+    # Print debug information
+    print $debug . __LINE__ . " Enter get_databases\n";
+    Comserv::debug_log($debug . __LINE__ . " Enter get_databases\n");
 
     # Retrieve the DBI handle
     my $dbh = $self->_build_dbh($c);
 
     # If the DBI handle is an error message, return it
     if (!ref $dbh) {
+        print $debug . __LINE__ . " DBI handle is not a reference. Error: $dbh\n";
+        Comserv::debug_log($debug . __LINE__ . " DBI handle is not a reference. Error: $dbh\n");
         return { error => $dbh };
     }
 
+    print $debug . __LINE__ . " DBI handle retrieved successfully\n";
+    Comserv::debug_log($debug . __LINE__ . " DBI handle retrieved successfully\n");
+
     # Prepare the query to retrieve databases for the given schema
-    my $sth = $dbh->prepare('SHOW DATABASES LIKE ?');
-    $sth->execute($schema);
+    my $sth = $dbh->prepare('SHOW DATABASES');
+    $sth->execute();
+    if (!$sth) {
+        print $debug . __LINE__ . " Failed to prepare statement. DBI error: " . $dbh->errstr . "\n";
+        Comserv::debug_log($debug . __LINE__ . " Failed to prepare statement. DBI error: " . $dbh->errstr . "\n");
+        $c->stash(error_msg => $dbh->errstr);
+        return;
+    }
+    print $debug . __LINE__ . " Statement executed successfully\n";
+    Comserv::debug_log($debug . __LINE__ . " Statement executed successfully\n");
 
     # Fetch the results
     my @databases;
     while (my $row = $sth->fetchrow_arrayref) {
         push @databases, $row->[0];
     }
+
+    print $debug . __LINE__ . " Fetched " . scalar(@databases) . " databases\n";
+    Comserv::debug_log($debug . __LINE__ . " Fetched " . scalar(@databases) . " databases\n");
 
     return \@databases;
 }
@@ -412,8 +463,7 @@ sub get_user_by_username {
     }
 
     return $user;
-}
-sub check_password {
+}sub check_password {
     my ($self, $c, $username, $password) = @_;
     print $debug . __LINE__ . " Enter check_password\n";
     # Retrieve the user from the database
@@ -476,7 +526,8 @@ sub change_password {
 
     $c->stash(template => 'user/change_password.tt');
     $c->forward($c->view('TT'));
-}sub create_or_update_schema {
+}
+sub create_or_update_schema {
     my ($self, $c) = @_;
 
     # Get the ShantaForager schema

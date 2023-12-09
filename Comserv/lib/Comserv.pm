@@ -3,7 +3,8 @@ use Moose;
 use namespace::autoclean;
 use Data::Dumper;
 use Catalyst::Runtime 5.80;
-
+use JSON::MaybeXS qw(decode_json);
+use Path::Class;
 use Catalyst qw/
     -Debug
     Authentication
@@ -19,6 +20,12 @@ extends 'Catalyst';
 my $debug = "Comserv Line #";
 
 our $VERSION = '0.02';
+# Load the JSON file
+my $file = file(__PACKAGE__->path_to('shantaforager.dat'));
+my $content = $file->slurp;
+
+# Decode the JSON content
+my $shantaforager = decode_json($content);
 
 our @debug_log_entries; # Array to store the debug log entries
 
@@ -99,6 +106,17 @@ __PACKAGE__->config(
     'Model::DB' => {
         class => 'Comserv::Model::DB',
     },
+    # Other configuration options...
+    'Model::DB::ShantaForager' => {
+        schema_class => 'Comserv::Model::Schema::ShantaForager',
+        connect_info => {
+            dsn => 'dbi:mysql:database=' . $shantaforager->{database} . ';host=' . $shantaforager->{host} . ';port='
+                . $shantaforager->{port},
+            user => $shantaforager->{username},
+            password => $shantaforager->{password},
+        },
+    },
+
     'Model::User' => {
         class => 'Comserv::Model::User',
     },

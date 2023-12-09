@@ -167,7 +167,7 @@ sub display_schema :Local {
     # Forward to the view
     $c->forward($c->view('TT'));
 }
-sub show_tables :Path('/show_tables') :Args(0) {
+sub ashow_tables :Path('/show_tables') :Args(0) {
     my ($self, $c) = @_;
 
     # Retrieve the selected database from the query parameters
@@ -185,7 +185,7 @@ sub show_tables :Path('/show_tables') :Args(0) {
     # Forward to the view
     $c->forward($c->view('TT'));
 }
-sub show_tables :Path('/show_tables') :Args(0) {
+sub ashow_tables :Path('/show_tables') :Args(0) {
     my ($self, $c) = @_;
 
     # Retrieve the selected database from the form submission
@@ -245,7 +245,8 @@ sub search_schema :Path('/search_schema') :Args(0) {
 
     # Redirect to the setup method
     $c->detach('setup');
-}sub display_sorted_tables :Path('/display_sorted_tables') :Args(0) {
+}
+sub display_sorted_tables :Path('/display_sorted_tables') :Args(0) {
     my ($self, $c) = @_;
 
     # Get the table name from the request parameters
