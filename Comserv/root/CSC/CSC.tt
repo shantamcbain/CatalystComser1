@@ -1,6 +1,6 @@
 [% PageVersion	= 'CSC.tt,v 0.01 2023/08/30 shanta Exp shanta '	%]
 [% debug %]
-[% IF debug == 1 %]
+[% IF debug_mode == 1 %]
  [%	PageVersion %]
     [% "Debugging HostName: " _ HostName %]
 	[% INCLUDE 'debug.tt' %]
@@ -22,7 +22,7 @@
 <p> Services provided: Click The product link in the main links group.
 <ul>
 <li><a href='http://www.computersystemconsulting.ca/whmcs/cart.php'>Website hosting</a> </li>
-<li> <a href='http://www.computersystemconsulting.ca/whmcs/cart.php?a=add&amp;domain=register' target=''_blank''>Register your domain with us.</a></li>
+<li> <a href='http://www.computersystemconsulting.ca/whmcs/cart.php?a=add&amp;domain=register' target='_blank'>Register your domain with us.</a></li>
 <li> Check out our <a href='http://demo.computersystemconsulting.ca' target='_blank'>Demo</a> </li>
 <li>
 <h1>Join our VOIP services</h1>

@@ -48,12 +48,20 @@ sub auto :Private {
         $c->session->{Domain} = $domain;
 
         # Get the site name from the URL
-        my $site_name = $c->req->param('site')||'home';
-        $c->stash->{SiteName} = $site_name;
+        my $site_name = $c->req->param('site');
+        if (defined $site_name) {
+            # If site name is defined in the URL, update the session and stash
+            $c->stash->{SiteName} = $site_name;
+            $c->session->{SiteName} = $site_name;
+        } else {
+            # If site name is not defined in the URL, use the session or stash value, or default to 'home'
+            $site_name = $c->session->{SiteName} || $c->stash->{SiteName} || 'home';
+            $c->stash->{SiteName} = $site_name;
+            $c->session->{SiteName} = $site_name;
+        }
 
         # Get the debug parameter from the URL
         my $debug_param = $c->req->param('debug');
-
         # If the debug parameter is defined
         if (defined $debug_param) {
             # If the debug parameter is different from the session value
@@ -70,10 +78,8 @@ sub auto :Private {
 
         # Set the HostName and SiteName in the stash
         $c->stash->{HostName} = $c->request->base;
-        $c->stash->{SiteName} = $site_name;
 
-        # Set the SiteName and Domain in the session
-        $c->session->{SiteName} = $site_name;
+        # Set the Domain in the session
         $c->session->{Domain} = $domain;
 
         1;  # Ensure the eval block returns a true value
