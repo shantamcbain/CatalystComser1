@@ -1,7 +1,7 @@
 package Comserv::Model::Schema::Ency::Result::Todo;
 use base 'DBIx::Class::Core';
 
-__PACKAGE__->table('todos');
+__PACKAGE__->table('todo');
 __PACKAGE__->add_columns(
     record_id => {
         data_type => 'integer',
@@ -30,13 +30,26 @@ __PACKAGE__->add_columns(
     estimated_man_hours => {
         data_type => 'integer',
     },
+  "comments",
+  { data_type => "text", is_nullable => 0 },
     accumulative_time => {
         data_type => 'integer',
     },
+    "reporter",
+      { data_type => "varchar", default_value => "", is_nullable => 0, size => 50 },
+    "company_code",
+      { data_type => "varchar", default_value => "", is_nullable => 0, size => 30 },
+    "owner",
+     { data_type => "varchar", default_value => "", is_nullable => 0, size => 30 },
+
     project_code => {
         data_type => 'varchar',
         size => 255,
     },
+  "developer",
+  { data_type => "varchar", default_value => "", is_nullable => 0, size => 50 },
+  "username_of_poster",
+  { data_type => "varchar", default_value => "", is_nullable => 0, size => 30 },
     status => {
         data_type => 'varchar',
         size => 255,
@@ -64,6 +77,9 @@ __PACKAGE__->add_columns(
     project_id => {
         data_type => 'integer',
     },
+      "date_time_posted",
+  { data_type => "varchar", default_value => "", is_nullable => 0, size => 30 },
+
 );
 
 __PACKAGE__->set_primary_key('record_id');

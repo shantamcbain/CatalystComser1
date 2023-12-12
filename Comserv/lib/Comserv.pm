@@ -103,19 +103,19 @@ __PACKAGE__->config(
     'Model::Todo' => {
         class => 'Comserv::Model::Todo',
     },
-    'Model::DB' => {
-        class => 'Comserv::Model::DB',
-    },
+#     'Model::DB' => {
+#         class => 'Comserv::Model::DB',
+#     },
     # Other configuration options...
-    'Model::DB::ShantaForager' => {
-        schema_class => 'Comserv::Model::Schema::ShantaForager',
-        connect_info => {
-            dsn => 'dbi:mysql:database=' . $shantaforager->{database} . ';host=' . $shantaforager->{host} . ';port='
-                . $shantaforager->{port},
-            user => $shantaforager->{username},
-            password => $shantaforager->{password},
-        },
-    },
+#    'Model::DB::ShantaForager' => {
+#        schema_class => 'Comserv::Model::Schema::ShantaForager',
+#         connect_info => {
+#             dsn => 'dbi:mysql:database=' . $shantaforager->{database} . ';host=' . $shantaforager->{host} . ';port='
+#                 . $shantaforager->{port},
+ #            user => $shantaforager->{username},
+#             password => $shantaforager->{password},
+#         },
+#     },
 
     'Model::User' => {
         class => 'Comserv::Model::User',

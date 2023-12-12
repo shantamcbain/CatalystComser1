@@ -7,6 +7,7 @@
     [% INCLUDE 'debug.tt' %]
 [% END %]
 <h1>Old todo add form.</h1>
+[% database = 'ency' %][% table = 'todo'%]
 <form action="/create/[% database %]/[% table %]" method="post">
     [% FOREACH column IN columns %]
         <label for="[% column %]">[% column %]:</label>

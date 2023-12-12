@@ -7,13 +7,33 @@ use JSON::MaybeXS qw(decode_json encode_json);
 use Term::ReadPassword;
 use Data::Dumper;
 use Digest::SHA;
+use Path::Tiny 'path';  # Add this line
+use File::Slurp;
+use Digest::SHA 'sha256_hex';
 extends 'Catalyst::Model::DBIC::Schema';
+# Add a class attribute to store the DBI information
+has 'dbi_info' => (
+    is => 'ro',
+    isa => 'HashRef',
+    lazy => 1,
+    default => sub {
+        # Read the DBI information from the JSON file
+        return decode_json(path('dbi_info.json')->slurp_utf8);
+    },
+);
+# Declare the $shantaforager variable
+my $shantaforager;
+# Add a class attribute to store the connection information
 
 __PACKAGE__->config(
     schema_class => 'Comserv::Model::Schema::Ency',
-    schema_class => 'Comserv::Model::Schema::ShantaForager',
-);
+    connect_info => sub { $_[0]->dbi_info->{ency} }
+    );
 
+__PACKAGE__->config(
+    schema_class => 'Comserv::Model::Schema::ShantaForager',
+    connect_info => sub { $_[0]->dbi_info->{shanta_forager} }
+);
 my $debug = "Comserv::Model::DB Line #";
 print $debug . __LINE__ . "\n";
 print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
@@ -24,11 +44,11 @@ print $debug . __LINE__ . " MASTER_KEY: $ENV{MASTER_KEY}\n";
 
 # Builder method to create the DBI handle
 # Builder method to create the DBI handle
-sub _read_dbi_info_from_file {
+sub a_read_dbi_info_from_file {
     my ($self) = @_;
 
     # Path to the DBI information file
-    my $file = 'dbi_info.dat';
+    my $file = 'dbi_info.json';
 
     # Check if the file exists
     if (-e $file && -r $file) {
@@ -57,7 +77,7 @@ sub _read_dbi_info_from_file {
     # If the file does not exist, return undef
     return undef;
 }
-sub _build_dbh {
+sub a_build_dbh {
     my ($self) = @_;
     print $debug . __LINE__ . " Enter _build_dbh\n";
         # If the DBI handle is already stored in the object, return it
@@ -87,7 +107,7 @@ sub _build_dbh {
     return $dbh;
 }
 # Method to get the dbi_info
-sub dbi_info {
+sub adbi_info {
     my ($self, $c) = @_;
 
     # If dbi_info is already defined in the object, return it
@@ -110,10 +130,10 @@ sub dbi_info {
     return $self->{dbi_info};
 }
 # Builder method to retrieve or create the DBI information
-sub connect_info {
+sub aconnect_info {
     my $self = shift;
 
-    # Read the DBI information from dbi_info.dat
+    # Read the DBI information from dbi_info.json
     my $dbi_info = $self->_read_dbi_info_from_file();
 
     return {
@@ -123,7 +143,7 @@ sub connect_info {
         AutoCommit => 1,
     };
 }
-sub _test_db_connection {
+sub a_test_db_connection {
     my ($self, $c, $dbi_info) = @_;
     Comserv::debug_log($debug . __LINE__ . " Enter search_schema\n");
     print $debug . __LINE__ . " in _test_db_connection\n";
@@ -156,7 +176,7 @@ sub _test_db_connection {
     print $debug . __LINE__ . " DB connection failed\n";
     return 0;  # Connection failed
 }
-sub _build_dbi_info {
+sub a_build_dbi_info {
     my ($self, $c) = @_;
 
     # Try to read the DBI information from the .dat file
@@ -242,6 +262,7 @@ sub get_fields {
 
     return \@fields;
 }
+
 sub get_filtered_schema_info {
     my ($self, $c, $criteria) = @_;
 
@@ -419,59 +440,31 @@ sub create_result_classes {
     }
 }
 sub get_user_by_username {
-    my ($self, $username) = @_;
+    my ($self, $c, $username) = @_;
 
-    # Print debug information
-    print $debug . __LINE__ . " Enter get_user_by_username\n";
-    Comserv::debug_log($debug . __LINE__ . " Enter get_user_by_username\n");
-    print $debug . __LINE__ . " Username: $username\n";
-    $username = 'Shanta';
-    Comserv::debug_log($debug . __LINE__ . " Username: $username\n");
-
-    # Retrieve the DBI handle
-    my $dbh = $self->_build_dbh();
-    if (!$dbh) {
-        print $debug . __LINE__ . " DBI handle not retrieved\n";
-        Comserv::debug_log($debug . __LINE__ . " DBI handle not retrieved\n");
-        return;
-    }
+    # Retrieve the DBIx::Class::Schema object
+    my $schema = $c->model('DB::Ency')->schema;
 
     # Prepare the SQL query
-    my $sth = $dbh->prepare('SELECT * FROM users WHERE username = ?');
-    if (!$sth) {
-        print $debug . __LINE__ . " DBI error: " . $dbh->errstr . "\n";
-        Comserv::debug_log($debug . __LINE__ . " DBI error: " . $dbh->errstr . "\n");
-        return;
-    }
-
-    # Execute the query
-    my $result = $sth->execute($username);
-    if (!$result) {
-        print $debug . __LINE__ . " DBI error: " . $sth->errstr . "\n";
-        Comserv::debug_log($debug . __LINE__ . " DBI error: " . $sth->errstr . "\n");
-        return;
-    }
-
+    my $user_rs = $schema->resultset('User')->search({ username => $username });
     # Fetch the user data
-    my $user = $sth->fetchrow_hashref;
-    if (!$user) {
-        print $debug . __LINE__ . " User not found\n";
-        Comserv::debug_log($debug . __LINE__ . " User not found\n");
-    } else {
-        print $debug . __LINE__ . " User found: " . Dumper($user) . "\n";
-        Comserv::debug_log($debug . __LINE__ . " User found: " . Dumper($user) . "\n");
-    }
-
+    my $user = $user_rs->first;
+    my $username = $user->username;
+    print $debug . __LINE__ . " username: $username\n";  # Debug print
+    my $password = $user->password;
+    print $debug . __LINE__ . " password: $password\n";  # Debug print
+   # print $debug . __LINE__ . " user: " . Dumper($user) . "\n";  # Debug print
     return $user;
-}sub check_password {
+}
+
+sub acheck_password {
     my ($self, $c, $username, $password) = @_;
-    print $debug . __LINE__ . " Enter check_password\n";
+
     # Retrieve the user from the database
-    my $user = $self->get_user_by_username($username);
-    print $debug . __LINE__ . " User: " . Dumper($user) . "\n";
+    my $user = $self->get_user_by_username($c, $username);
+
     # If the user doesn't exist, return false
     if (!$user) {
-        $c->stash(error_msg => 'User not found.');
         return 0;
     }
 
@@ -484,11 +477,41 @@ sub get_user_by_username {
         return 1;
     } else {
         # The passwords don't match
-        $c->stash(error_msg => 'Invalid password.');
         return 0;
     }
 }
+sub ahash_password {
+    my ($self, $password) = @_;
+
+    # Define the salt
+    my $salt = 'your_salt_here';  # Replace 'your_salt_here' with your actual salt
+
+    # Use the same hash function as was used when the password was stored
+    my $hashed_password = crypt($password, $salt);
+
+    return $hashed_password;
+}
 sub hash_password {
+    my ($self, $password) = @_;
+    return sha256_hex($password);
+}
+# Check a password against a hashed password
+sub check_password {
+    my ($self, $hashed_provided_password, $hashed_password_from_db) = @_;
+    print $debug . __LINE__ . " Enter check_password\n";  # Debug print
+    print $debug . __LINE__ . " hashed_provided_password: $hashed_provided_password\n";  # Debug print
+    print $debug . __LINE__ . " hashed_password_from_db: $hashed_password_from_db\n";  # Debug print
+
+    # Compare the hashed provided password with the stored hashed password
+    if ($hashed_provided_password eq $hashed_password_from_db) {
+        # The passwords match
+        return 1;
+    } else {
+        # The passwords don't match
+        return 0;
+    }
+}
+sub ahash_password {
     my ($self, $password) = @_;
 
     # Hash the password using the Catalyst hashing system

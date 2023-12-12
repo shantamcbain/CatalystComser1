@@ -62,6 +62,9 @@ sub create :Path('create') :Args(2) {
     print $debug . __LINE__ . " Enter create\n";
     Comserv::debug_log($debug . __LINE__ . " Enter create\n");
 
+    # Retrieve the DBI handle from Comserv::Model::DB
+    my $dbh = $c->model('DB')->_build_dbh();
+
     # Construct the model name from the database and table names
     my $model = 'DB::' . ucfirst($database) . '::' . ucfirst($table);
 
@@ -69,12 +72,19 @@ sub create :Path('create') :Args(2) {
         print $debug . __LINE__ . " Trying to create record\n";
         Comserv::debug_log($debug . __LINE__ . " Trying to create record\n");
 
-        # Check if the table exists
-        my $source = $c->model($model)->result_source;
+        # Check if the table exists in the database
+        my $sth = $dbh->table_info(undef, $database, $table, 'TABLE');
+        my $info = $sth->fetchrow_hashref;
 
-        # If the table doesn't exist, create it
-        if (!$source) {
-            $c->model('DB')->schema->source($model)->deploy({ add_drop_table => 0 });
+        # If the table doesn't exist in the database, create it
+        if (!$info) {
+            my $deploy_result = $c->model('DB')->schema->source($model)->deploy({ add_drop_table => 0 });
+
+            if (!$deploy_result) {
+                print $debug . __LINE__ . " Failed to create table\n";
+                die "Failed to create table";
+            }
+            print $debug . __LINE__ . " Created table\n";
         }
 
         # Retrieve the submitted form data
@@ -106,15 +116,7 @@ sub create :Path('create') :Args(2) {
         # Forward to the view
         $c->forward($c->view('TT'));
     };
-}
-sub add_project :Path(/add_project) :Args(0) {
-    my ($self, $c) = @_;
-    $c->session->{return_url} = $c->req->uri;
-    # Set the TT template to use
-    $c->stash(template => 'todo/add_project.tt');
-    $c->forward($c->view('TT'));
-}
-sub insert_into_project_table :Private {
+}sub insert_into_project_table :Private {
     my ($self, $c, $project_details) = @_;
 
     # Retrieve the username_of_poster and group_of_poster from the session

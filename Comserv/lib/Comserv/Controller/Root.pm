@@ -28,7 +28,8 @@ print $debug. __LINE__. " Caller line: " . (caller(1))[2] . ", Caller sub: " . (
     my $site_name = $c->stash->{SiteName}||'home';
     print $debug . __LINE__ . " Site Name: $site_name\n";
     $c->stash(template => 'home.tt');
-    $c->model('DB')->_build_dbi_info($c);
+my $dbi_info_ency = $c->model('DB::Ency')->connect_info;
+my $dbi_info_shanta_forager = $c->model('DB::ShantaForager')->connect_info;
     print $debug. __LINE__. " Site Name: $site_name\n";
     print stash_dump($c);
     $c->forward($c->view('TT'));
