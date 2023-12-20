@@ -103,4 +103,33 @@ delete $c->session->{user_flag};
 # Redirect to the home page
 $c->response->redirect($c->uri_for('/'));
 }
+sub register :Path('/register') :Args(0) {
+    my ($self, $c) = @_;
+
+    if ($c->request->method eq 'POST') {
+        my $username = $c->request->params->{username};
+        my $password = $c->request->params->{password};
+        my $email = $c->request->params->{email};
+
+        # Create a new user
+        my $user = $self->create($c, {
+            username => $username,
+            password => $password,
+            email => $email
+        });
+
+        if ($user) {
+            # If the user was successfully created, redirect to the login page
+            $c->response->redirect($c->uri_for('/login'));
+        } else {
+            # If there was an error creating the user, display an error message
+            $c->stash(error_msg => 'There was an error creating your account.');
+            $c->stash(template => 'user/register.tt');
+            $c->forward($c->view('TT'));
+        }
+    } else {
+        $c->stash(template => 'user/register.tt');
+        $c->forward($c->view('TT'));
+    }
+}
 1;
