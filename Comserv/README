@@ -1,1 +1,228 @@
-Run script/comserv_server.pl to test the application.
+## Comserv Package
+
+The `Comserv` package is the main package of the project. It is built using the Catalyst framework, a Perl-based web application framework. The package extends the `Catalyst` class and is responsible for the overall configuration and setup of the application.
+
+Key features of the `Comserv` package include:
+
+- **Debug Logging**: The package includes a custom debug logging system. It provides a `debug_log` method that writes debug messages to a log file and stores them in an array for later retrieval. The `log` method is overridden to use this custom debug logging system for debug messages.
+
+- **Configuration**: The package configures the application, including setting the application's name, root directory, and encoding. It also configures the view to use the Template Toolkit with a specific layout and template extension.
+
+- **Models**: The package configures several models for the application, including `Todo`, `User`, `DB`, and `CssForm`. These models are used to interact with the application's data.
+
+- **Authentication**: The package configures the application's authentication system, using the `DBIx::Class` module for the storage and the `Password` module for the credential.
+
+- **Setup**: The package includes a `setup` method that is responsible for setting up the application. This includes calling the parent setup method and logging debug information.
+## Comserv::Model::DB Package
+
+The `Comserv::Model::DB` package is a part of the project that handles database interactions. It extends the `Catalyst::Model::DBIC::Schema` class, which is a part of the Catalyst framework, a Perl-based web application framework.
+
+### Key Features
+
+- **DBI Information**: The package includes a class attribute `dbi_info` that stores the Database Interface (DBI) information. This information is read from a JSON file and includes details necessary for connecting to the database.
+
+- **Database Connection**: The package provides methods for establishing a connection to the database (`a_build_dbh`), reading DBI information from a file (`a_read_dbi_info_from_file`), and testing the database connection (`a_test_db_connection`).
+
+- **Database Interaction**: The package provides methods for interacting with the database. These include methods for retrieving tables (`get_tables`), retrieving fields of a table (`get_fields`), retrieving filtered schema information (`get_filtered_schema_info`), and retrieving the contents of a database (`get_database_contents`).
+
+- **User Authentication**: The package provides methods for user authentication, including retrieving a user by username (`get_user_by_username`), checking a password (`check_password`), hashing a password (`hash_password`), and changing a user's password (`change_password`).
+
+- **Schema Management**: The package provides methods for managing the database schema, including creating or updating the schema (`create_or_update_schema`), and creating result classes for each table in the database (`create_result_classes`).
+
+### Coding and Naming Considerations
+
+- The package uses a mix of naming conventions for methods, with some methods using snake_case (e.g., `get_user_by_username`) and others using a combination of snake_case and camelCase (e.g., `a_build_dbh`). It would be beneficial to stick to one naming convention for consistency.
+
+- The package uses a debug print statement (`print $debug . __LINE__ . "\n";`) frequently. Consider using a dedicated logging module for better control over logging levels and outputs.
+
+- The package uses a hardcoded salt for password hashing in the `ahash_password` method. It's recommended to use a unique salt for each user for better security.
+
+- The package uses the `die` function when it can't open a file. Consider using a more user-friendly way to handle errors, such as returning an error message to the user.
+
+- The package uses the `DBI->connect` method for connecting to the database. Consider using `DBI->connect_cached` for efficiency, as it reuses database handles for the same connection details.
+
+- The package uses the `DBI->prepare` method for preparing SQL statements. Consider using placeholders in SQL statements to prevent SQL injection attacks.
+
+- The package uses the `DBI->execute` method for executing SQL statements. Consider checking the return value of `execute` to handle any errors that may occur during execution.
+## Comserv::Model::User Package
+
+The `Comserv::Model::User` package is a part of the project that handles database interactions. It extends the
+`Catalyst::Model::DBIC::Schema` class, which is a part of the Catalyst framework, a Perl-based web application framework.
+### Key Features
+
+- **User Creation**: The `create` method creates a new user in the database. It hashes the user's password before storing it in the database.
+
+- **User Listing**: The `index` method retrieves all user records from the database and stores them in the stash for display.
+
+- **User Login**: The `login` method handles user login. It retrieves the user from the database, hashes the provided password, and checks it against the stored hashed password. If the username and password are correct, it creates a user session and redirects to the home page.
+
+- **User Logout**: The `logout` method handles user logout. It clears the user session and redirects to the home page.
+
+- **User Registration**: The `register` method handles user registration. It creates a new user and redirects to the login page if the user was successfully created.
+
+### Coding and Naming Considerations
+
+- The package uses a debug print statement (`print $debug . __LINE__ . "\n";`) frequently. Consider using a dedicated logging module for better control over logging levels and outputs.
+
+- The package uses the `die` function when it can't open a file. Consider using a more user-friendly way to handle errors, such as returning an error message to the user.
+
+- The package uses the `DBI->connect` method for connecting to the database. Consider using `DBI->connect_cached` for efficiency, as it reuses database handles for the same connection details.
+
+- The package uses the `DBI->prepare` method for preparing SQL statements. Consider using placeholders in SQL statements to prevent SQL injection attacks.
+
+- The package uses the `DBI->execute` method for executing SQL statements. Consider checking the return value of `execute` to handle any errors that may occur during execution.
+`Catalyst::Model::DBIC::Schema` class, which is a part of the Catalyst framework, a Perl-based web application framework.
+## Comserv::Model::ToDo Package
+
+The `Comserv::Model::ToDo` package is a part of the project that handles database interactions. It extends the
+### Key Features
+
+- **ToDo Listing**: The `index` method retrieves all ToDo records from the database and stores them in the stash for display.
+
+- **ToDo Creation**: The `create` method creates a new ToDo in the database. It retrieves the DBI handle from `Comserv::Model::DB` and constructs the model name from the database and table names.
+
+- **ToDo Addition**: The `add` method retrieves the submitted form data and stashes it so it can be accessed in the `addtodo.tt` form.
+
+- **Database Selection**: The `select_tables` method retrieves the selected databases from the form data and retrieves the list of tables for each selected database.
+
+- **Database Listing**: The `list_databases` method retrieves all databases.
+
+- **Insertion into Project Table**: The `insert_into_project_table` method inserts a new project into the database.
+
+- **Old ToDo Addition**: The `old_todo_add` method retrieves the distinct `company_code` values, `sitename` values, and `project_code` values from the appropriate tables and passes them to the template.
+
+- **Old ToDo Listing**: The `old_todo` method retrieves the todos from the `csc_todo` table, filters out the completed tasks, and sorts by priority and due date.
+
+### Coding and Naming Considerations
+
+- The package uses a debug print statement (`print $debug . __LINE__ . "\n";`) frequently. Consider using a dedicated logging module for better control over logging levels and outputs.
+
+- The package uses the `die` function when it can't open a file. Consider using a more user-friendly way to handle errors, such as returning an error message to the user.
+
+- The package uses the `DBI->connect` method for connecting to the database. Consider using `DBI->connect_cached` for efficiency, as it reuses database handles for the same connection details.
+
+- The package uses the `DBI->prepare` method for preparing SQL statements. Consider using placeholders in SQL statements to prevent SQL injection attacks.
+
+- The package uses the `DBI->execute` method for executing SQL statements. Consider checking the return value of `execute` to handle any errors that may occur during execution.
+## Comserv::Model::Schema Package
+
+The `Comserv::Model::Schema` package is a part of the project that handles database interactions. It extends the
+### Key Features
+
+- **ToDo Listing**: The `index` method retrieves all ToDo records from the database and stores them in the stash for display.
+
+- **ToDo Creation**: The `create` method creates a new ToDo in the database. It retrieves the DBI handle from `Comserv::Model::DB` and constructs the model name from the database and table names.
+
+- **ToDo Addition**: The `add` method retrieves the submitted form data and stashes it so it can be accessed in the `addtodo.tt` form.
+
+- **Database Selection**: The `select_tables` method retrieves the selected databases from the form data and retrieves the list of tables for each selected database.
+
+- **Database Listing**: The `list_databases` method retrieves all databases.
+
+- **Insertion into Project Table**: The `insert_into_project_table` method inserts a new project into the database.
+
+- **Old ToDo Addition**: The `old_todo_add` method retrieves the distinct `company_code` values, `sitename` values, and `project_code` values from the appropriate tables and passes them to the template.
+
+- **Old ToDo Listing**: The `old_todo` method retrieves the todos from the `csc_todo` table, filters out the completed tasks, and sorts by priority and due date.
+
+### Coding and Naming Considerations
+
+- The package uses a debug print statement (`print $debug . __LINE__ . "\n";`) frequently. Consider using a dedicated logging module for better control over logging levels and outputs.
+
+- The package uses the `die` function when it can't open a file. Consider using a more user-friendly way to handle errors, such as returning an error message to the user.
+
+- The package uses the `DBI->connect` method for connecting to the database. Consider using `DBI->connect_cached` for efficiency, as it reuses database handles for the same connection details.
+
+- The package uses the `DBI->prepare` method for preparing SQL statements. Consider using placeholders in SQL statements to prevent SQL injection attacks.
+
+- The package uses the `DBI->execute` method for executing SQL statements. Consider checking the return value of `execute` to handle any errors that may occur during execution.
+## Comserv::Model::Schema Package
+
+The `Comserv::Model::Schema` package is a part of the project that handles database interactions. It extends the
+`Catalyst::Model::DBIC::Schema` class, which is a part of the Catalyst framework, a Perl-based web application framework.
+### Key Features
+
+- **Namespace Loading**: The `load_namespaces` method is called to load the Result and ResultSet classes from your application's namespace.
+
+- **Immutability**: The `meta->make_immutable` method is called to make the package immutable, which is a common practice in Moose to get a slight speedup once the package has been fully defined.
+
+### Usage
+
+This package is used as a base class for your DBIx::Class schema. It provides methods for interacting with the database schema, such as loading namespaces.
+
+### Dependencies
+
+This package depends on the `DBIx::Class::Schema` package for the base schema class, and `Moose` for object-oriented programming.
+
+### Coding and Naming Considerations
+
+- The package uses the `Moose` and `namespace::autoclean` modules. `Moose` is a postmodern object system for Perl 5 that provides a simple declarative layer of "sugar" on top of the Object::Tiny::RW, Class::Accessor::Fast, and Class::XSAccessor modules. `namespace::autoclean` is used to clean up imported symbols at the end of the package's compile cycle.
+
+- The package extends `DBIx::Class::Schema`, which is a base class for DBIx::Class schemas. This allows the package to use the methods provided by `DBIx::Class::Schema`.
+
+- The package calls `__PACKAGE__->load_namespaces()`, which loads the Result and ResultSet classes from your application's namespace.
+
+- The package calls `__PACKAGE__->meta->make_immutable` to make the package immutable. This is a common practice in Moose to get a slight speedup once the package has been fully defined.
+
+
+## Usage
+
+Instructions for using the project.
+
+## Dependencies
+
+List of project dependencies.
+
+## License
+
+Information about the project's license.
+
+## Contributing
+
+Guidelines for contributing to the project.
+
+## Code of Conduct
+
+Project's code of conduct.
+
+## Acknowledgments
+
+Any acknowledgments you want to include.
+
+Comserv::Model::DB Package
+a_build_dbh method: This method establishes a connection to the database using the DBI->connect method. It uses the DBI information stored in the dbi_info attribute of the class.
+a_read_dbi_info_from_file method: This method reads the DBI information from a JSON file. The DBI information includes the database name, host, username, and password.
+adbi_info method: This method retrieves the DBI information. If the DBI information is not already defined in the object, it tries to read it from the .dat file.
+aconnect_info method: This method retrieves or creates the DBI information. It reads the DBI information from dbi_info.json and returns the connection information.
+a_test_db_connection method: This method tests the database connection. It uses the DBI->connect method to connect to the database using the DBI information.
+a_build_dbi_info method: This method retrieves the DBI information. If the DBI information could not be read or is not valid, it returns an error message.
+get_tables method: This method retrieves tables from a given database. It uses the DBI->prepare and DBI->execute methods to execute a SQL query.
+get_fields method: This method retrieves fields of a given table from a specific database. It uses the DBI->prepare and DBI->execute methods to execute a SQL query.
+get_filtered_schema_info method: This method retrieves filtered schema information based on a given criteria. It uses the DBI->prepare and DBI->execute methods to execute a SQL query.
+get_database_contents method: This method retrieves the contents of a given database. It uses the DBI->prepare and DBI->execute methods to execute a SQL query.
+get_databases method: This method retrieves all databases. It uses the DBI->prepare and DBI->execute methods to execute a SQL query.
+create_result_classes method: This method creates result classes for each table in the database. It uses the DBI->prepare and DBI->execute methods to execute a SQL query.
+get_user_by_username method: This method retrieves a user by username from the database. It uses the DBI->prepare and DBI->execute methods to execute a SQL query.
+acheck_password method: This method checks a password against the stored password for a user. It uses the DBI->prepare and DBI->execute methods to execute a SQL query.
+ahash_password method: This method hashes a password using a hardcoded salt. It uses the DBI->prepare and DBI->execute methods to execute a SQL query.
+check_password method: This method checks a password against a hashed password. It uses the DBI->prepare and DBI->execute methods to execute a SQL query.
+change_password method: This method changes a user's password. It uses the DBI->prepare and DBI->execute methods to execute a SQL query.
+create_or_update_schema method: This method creates or updates the database schema. It uses the DBI->prepare and DBI->execute methods to execute a SQL query.
+shanta_forager_schema method: This method retrieves the ShantaForager schema. It uses the DBI->prepare and DBI->execute methods to execute a SQL query.
+Comserv::Controller::User Package
+create method: This method creates a new user in the database. It retrieves the DBI handle from Comserv::Model::DB and constructs the model name from the database and table names.
+login method: This method handles user login. It retrieves the user from the database, hashes the provided password, and checks it against the stored hashed password. If the username and password are correct, it creates a user session and redirects to the home page.
+register method: This method handles user registration. It creates a new user and redirects to the login page if the user was successfully created.
+Comserv::Controller::ToDo Package
+create method: This method creates a new ToDo in the database. It retrieves the DBI handle from Comserv::Model::DB and constructs the model name from the database and table names.
+add method: This method retrieves the submitted form data and stashes it so it can be accessed in the addtodo.tt form.
+select_tables method: This method retrieves the selected databases from the form data and retrieves the list of tables for each selected database.
+list_databases method: This method retrieves all databases.
+insert_into_project_table method: This method inserts a new project into the database.
+old_todo_add method: This method retrieves the distinct company_code values, sitename values, and project_code values from the appropriate tables and passes them to the template.
+old_todo method: This method retrieves the todos from the csc_todo table, filters out the completed tasks, and sorts by priority and due date.
+Comserv::Model::Schema Package
+This package extends DBIx::Class::Schema, which is a base class for DBIx::Class schemas. This allows the package to use the methods provided by DBIx::Class::Schema.
+The package calls __PACKAGE__->load_namespaces(), which loads the Result and ResultSet classes from your application's namespace.
+The package calls __PACKAGE__->meta->make_immutable to make the package immutable. This is a common practice in Moose to get a slight speedup once the package has been fully defined.
+In terms of interference, the Comserv::Model::DB package is the main package that interacts with the DBI. The Comserv::Controller::User and Comserv::Controller::ToDo packages use the Comserv::Model::DB package to interact with the DBI. The Comserv::Model::Schema package does not directly interact with the DBI, but it does use the DBIx::Class::Schema package, which is a base class for DBIx::Class schemas and provides methods for interacting with the database schema.  In terms of unused code, it seems that all the methods in the provided code are used. However, without the full codebase, it's hard to say for sure. It's also worth noting that some methods (like a_build_dbh, a_read_dbi_info_from_file, adbi_info, aconnect_info, a_test_db_connection, a_build_dbi_info) are defined in the Comserv::Model::DB package but are not used within that package. They may be used elsewhere in the codebase.
