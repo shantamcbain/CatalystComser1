@@ -368,7 +368,23 @@ sub get_table_structure {
 
     return \@table_structure;
 }
+sub get_user_by_username {
+    my ($self, $c, $username) = @_;
 
+    # Retrieve the DBIx::Class::Schema object
+    my $schema = $c->model('DB::Ency')->schema;
+
+    # Prepare the SQL query
+    my $user_rs = $schema->resultset('User')->search({ username => $username });
+    # Fetch the user data
+    my $user = $user_rs->first;
+    my $username = $user->username;
+    print $debug . __LINE__ . " username: $username\n";  # Debug print
+    my $password = $user->password;
+    print $debug . __LINE__ . " password: $password\n";  # Debug print
+   # print $debug . __LINE__ . " user: " . Dumper($user) . "\n";  # Debug print
+    return $user;
+}
 sub hash_password {
     my ($self, $password) = @_;
     return sha256_hex($password);
