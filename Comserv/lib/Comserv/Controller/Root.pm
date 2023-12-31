@@ -174,28 +174,35 @@ sub display_schema :Local {
     # Forward to the view
     $c->forward($c->view('TT'));
 }
-sub ashow_tables :Path('/show_tables') :Args(0) {
-    my ($self, $c) = @_;
+sub get_tables {
+    my ($self, $c, $database) = @_;
 
-    # Retrieve the selected database from the query parameters
-    my $database = $c->request->query_parameters->{database};
+    # Retrieve the DBI handle
+    my $dbh = $self->_build_dbh($c);
 
-    # Retrieve the list of tables for the selected database
-    my $tables = $c->model('DB')->get_tables($database);
+    # Check if the DBI handle is defined
+    if (!defined $dbh) {
+        print $debug . __LINE__ . " Error: Failed to connect to the database\n";
+        return;
+    }
 
-    # Store the list of tables in the stash
-    $c->stash(tables => $tables);
+    # Prepare the query to retrieve the list of tables
+    my $sth = $dbh->prepare("SHOW TABLES IN `$database`");
+    $sth->execute();
 
-    # Set the template
-    $c->stash(template => 'setup/tables.tt');
+    # Fetch the results
+    my @tables;
+    while (my $row = $sth->fetchrow_arrayref) {
+        push @tables, $row->[0];
+    }
 
-    # Forward to the view
-    $c->forward($c->view('TT'));
+    return \@tables;
 }
-sub ashow_tables :Path('/show_tables') :Args(0) {
+
+sub show_tables_post :Path('/show_tables') :Args(0) {
     my ($self, $c) = @_;
 
-    # Retrieve the selected database from the form submission
+    # Retrieve the selected database from the body parameters
     my $database = $c->request->body_parameters->{database};
 
     # Check if the database is defined
@@ -204,10 +211,47 @@ sub ashow_tables :Path('/show_tables') :Args(0) {
         return;
     }
 
-    # Retrieve the list of tables for the selected database
+    # Retrieve the list of tables
     my $tables = $c->model('DB')->get_tables($c, $database);
 
-    # Store the selected database and list of tables in the stash
+    # Check if the tables are defined
+    if (!defined $tables) {
+        $c->stash(error_message => 'Failed to retrieve the list of tables.');
+        return;
+    }
+
+    # Store the database name and list of tables in the stash
+    $c->stash(database => $database);
+    $c->stash(tables => $tables);
+
+    # Set the template
+    $c->stash(template => 'show_tables.tt');
+
+    # Forward to the view
+    $c->forward($c->view('TT'));
+}
+sub show_tables_post :Path('/show_tables') :Args(0) {
+    my ($self, $c) = @_;
+
+    # Retrieve the selected database from the body parameters
+    my $database = $c->request->body_parameters->{database};
+
+    # Check if the database is defined
+    if (!defined $database) {
+        $c->stash(error_message => 'No database specified.');
+        return;
+    }
+
+    # Retrieve the list of tables
+    my $tables = $c->model('DB')->get_tables($c, $database);
+
+    # Check if the tables are defined
+    if (!defined $tables) {
+        $c->stash(error_message => 'Failed to retrieve the list of tables.');
+        return;
+    }
+
+    # Store the database name and list of tables in the stash
     $c->stash(database => $database);
     $c->stash(tables => $tables);
 
@@ -217,33 +261,7 @@ sub ashow_tables :Path('/show_tables') :Args(0) {
     # Forward to the view
     $c->forward($c->view('TT'));
 }
-sub display_filtered_schema :Local {
-    Comserv::debug_log($debug . __LINE__ . " Enter display_filtered_schema\n");
-    my ($self, $c) = @_;
 
-    # Get the criteria from the request parameters
-    my $criteria = $c->request->parameters->{criteria};
-
-    # Get the filtered schema information
-    Comserv::debug_log($debug . __LINE__ . " Call get_filtered_schema_info\n");
-    my $schema_info = $c->model('DB')->get_filtered_schema_info($c, $criteria);
-
-    # Pass the schema information to the view
-    $c->stash(schema_info => $schema_info);
-    Comserv::debug_log($debug . __LINE__ . " Exit display_filtered_schema $schema_info\n");
-
-    # Get the debug log entries
-    my $debug_log_entries = \@Comserv::debug_log_entries;
-
-    # Pass the debug log entries to the view
-    $c->stash(debug_log_entries => $debug_log_entries);
-
-    # Set the template
-    $c->stash(template => 'display_schema.tt');
-
-    # Forward to the view
-    $c->forward($c->view('TT'));
-}
 sub search_schema :Path('/search_schema') :Args(0) {
     my ($self, $c) = @_;
     Comserv::debug_log($debug . __LINE__ . " Enter search_schema\n");
@@ -294,11 +312,8 @@ sub default :Path {
 sub setup :Path('/setup') :Args(0) {
     my ($self, $c) = @_;
 
-    # Retrieve the DBI information
-    my $dbi_info = $c->model('DB')->dbi_info($c);
-
-    # Retrieve the list of databases
-    my $databases = $c->model('DB')->get_databases($c);  # Pass $c as an argument
+    # Retrieve the list of databases from the dbi_info attribute
+    my $databases = [keys %{$c->model('DB')->dbi_info}];
 
     # Store the list of databases in the stash
     $c->stash(databases => $databases);
@@ -308,75 +323,8 @@ sub setup :Path('/setup') :Args(0) {
 
     # Forward to the view
     $c->forward($c->view('TT'));
-}sub get_table_structure :Path('/get_table_structure') :Args(1) {
-    my ($self, $c, $table_name) = @_;
-    Comserv::debug_log($debug . __LINE__ . " Enter get_table_structure\n");
-
-    # Get the table structure from the DB model
-    Comserv::debug_log($debug . __LINE__ . " Call get_table_structure\n");
-    my $table_structure = $c->model('DB')->get_table_structure($c, $table_name);
-   if ($c->request->method eq 'POST') {
-        sub sort_tables {
-    my ($self, $c, $table_name) = @_;
-
-    # Retrieve the result from get_related_tables
-    Comserv::debug_log($debug . __LINE__ . " Enter sort_tables\n");
-    my $tables = $self->get_related_tables($c, $table_name);
-    Comserv::debug_log($debug . __LINE__ . " tables: $tables\n");
-            # Sort the tables based on the table name
-    my @sorted_tables = sort { $a->{table_name} cmp $b->{table_name} } @{$tables->{table_structure}};
-
-    # For each table, sort the related tables based on the table name
-    foreach my $table (@sorted_tables) {
-        my @sorted_related_tables = sort { $a->{table_name} cmp $b->{table_name} } @{$table->{related_tables}};
-        $table->{related_tables} = \@sorted_related_tables;
-    }
-
-    return \@sorted_tables;
 }
-my $table_name = $c->request->params->{table_name};
 
-        # Get the sorted tables from the DB model
-        my $new_sorted_tables = $c->model('DB')->sort_tables($c, $table_name);
-
-        # Get the existing sorted tables from the stash
-        my $existing_sorted_tables = $c->stash->{sorted_tables} || [];
-
-        # Combine the new and existing sorted tables
-        my @combined_sorted_tables = (@$existing_sorted_tables, @$new_sorted_tables);
-
-        # Remove duplicate tables
-        my %seen;
-        my @unique_sorted_tables = grep { !$seen{$_->{table_name}}++ } @combined_sorted_tables;
-
-        # Store the unique sorted tables in the stash
-        $c->stash(sorted_tables => \@unique_sorted_tables);
-    }
-        open my $log_fh, '>>', 'todoschemaold.txt' or die "Could not open todoschemaold.txt: $!";
-        # Create a new hash where the key is the table name and the value is the table structure
-        # Change the Data::Dumper settings
-        $Data::Dumper::Varname = $table_name;
-        $Data::Dumper::Indent = 1;
-        my %table_data = ( $table_name => $table_structure );
-
-        # Write the table data to the schema file
-        print $log_fh Dumper(\%table_data) . "\n";        # Close the debug.log file
-        close $log_fh;
-
-    # Log the content of the table_structure array
-    Comserv::debug_log($debug . __LINE__ . " table_structure: " . Dumper($table_structure));
-
-    # Convert the table structure to JSON
-    Comserv::debug_log($debug . __LINE__ . " Call to_json\n");
-    my $json = $c->stash->{json} = $table_structure;
-    Comserv::debug_log($debug . __LINE__ . " json: $json\n");
-
-    # Set the response content type to application/json
-    $c->response->content_type('application/json');
-
-    # Write the JSON to the response body
-    $c->response->body($json);
-}
 __PACKAGE__->meta->make_immutable;
 
 1;

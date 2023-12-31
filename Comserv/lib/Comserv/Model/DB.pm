@@ -13,7 +13,7 @@ use Digest::SHA 'sha256_hex';
 extends 'Catalyst::Model::DBIC::Schema';
 # Add a class attribute to store the DBI information
 has 'dbi_info' => (
-    is => 'ro',
+    is => 'rw',
     isa => 'HashRef',
     lazy => 1,
     default => sub {
@@ -42,186 +42,61 @@ my $env_master_key = '12345678901234567890123456789012';
 $ENV{MASTER_KEY} = $env_master_key;
 print $debug . __LINE__ . " MASTER_KEY: $ENV{MASTER_KEY}\n";
 
+
 # Builder method to create the DBI handle
-# Builder method to create the DBI handle
-sub a_read_dbi_info_from_file {
-    my ($self) = @_;
-
-    # Path to the DBI information file
-    my $file = 'dbi_info.json';
-
-    # Check if the file exists
-    if (-e $file && -r $file) {
-        # If the file exists, open it
-        open my $fh, '<', $file or die "Cannot open $file: $!";
-
-        # Read the file content
-        my $json_text = do { local $/; <$fh> };
-
-        # Close the file
-        close($fh);
-
-        # Decode the JSON text to get the DBI information
-        my $dbi_info;
-        eval {
-            $dbi_info = decode_json($json_text);
-            1;
-        } or do {
-            my $error = $@;
-            return undef;  # Return undef if JSON decoding fails
-        };
-
-        return $dbi_info;
-    }
-
-    # If the file does not exist, return undef
-    return undef;
-}
-sub a_build_dbh {
-    my ($self) = @_;
+sub _build_dbh {
+    my ($self, $c, $database) = @_;
     print $debug . __LINE__ . " Enter _build_dbh\n";
-        # If the DBI handle is already stored in the object, return it
+
+    # If the DBI handle is already stored in the object, return it
     if (defined $self->{dbh}) {
         return $self->{dbh};
     }
 
-    # Retrieve the DBI information
-    my $dbi_info = $self->_read_dbi_info_from_file();
+    # Retrieve the DBI information directly from the dbi_info attribute
+    my $dbi_info = $self->dbi_info;
     print $debug . __LINE__ . " dbi_info: " . Dumper($dbi_info) . "\n";
-    # If the DBI information could not be read or is not valid, return
-    if (!defined $dbi_info) {
-        print $debug . __LINE__ . " DBI information is missing or invalid\n";
-        return;
-    }
-
-    # Connect to the database
-    my $dbh = DBI->connect("DBI:mysql:database=$dbi_info->{database};host=$dbi_info->{host}", $dbi_info->{username}, $dbi_info->{password});
-
-    if (!defined $dbh) {
-        print $debug . __LINE__ . "Failed to connect to the database: " . DBI->errstr . "\n"; # Debug print
-    }else {
-        # Store the DBI handle in the object
-        $self->{dbh} = $dbh;
-    }
-
-    return $dbh;
-}
-# Method to get the dbi_info
-sub adbi_info {
-    my ($self, $c) = @_;
-
-    # If dbi_info is already defined in the object, return it
-    if (defined $self->{dbi_info}) {
-        return $self->{dbi_info};
-    }
-
-    # Try to read the DBI information from the .dat file
-    my $dbi_info = $self->_read_dbi_info_from_file($c);
-    print $debug . __LINE__ . " dbi_info: " . Dumper($dbi_info) . "\n";
-    # If the DBI information could not be read or is not valid
-    if (!defined $dbi_info || !$self->_test_db_connection($c, $dbi_info)) {
-        $c->stash(error_message => 'DBI information is missing or invalid.');
-        return;
-    }
-
-    # Store the DBI information in the object
-    $self->{dbi_info} = $dbi_info;
-
-    return $self->{dbi_info};
-}
-# Builder method to retrieve or create the DBI information
-sub aconnect_info {
-    my $self = shift;
-
-    # Read the DBI information from dbi_info.json
-    my $dbi_info = $self->_read_dbi_info_from_file();
-
-    return {
-        dsn => "dbi:mysql:database=$dbi_info->{database};host=$dbi_info->{host}",
-        user => $dbi_info->{username},
-        password => $dbi_info->{password},
-        AutoCommit => 1,
-    };
-}
-sub a_test_db_connection {
-    my ($self, $c, $dbi_info) = @_;
-    Comserv::debug_log($debug . __LINE__ . " Enter search_schema\n");
-    print $debug . __LINE__ . " in _test_db_connection\n";
-    #print $debug . __LINE__ . " dbi_info: " . Dumper($dbi_info) . "\n";
-
-    # Check if the DBI information is provided
-    if ($dbi_info && $dbi_info->{username} && $dbi_info->{password}) {
-        # Perform the necessary code to test the database connection using the $dbi_info
-        my $dbh = DBI->connect("DBI:mysql:database=$dbi_info->{database};host=$dbi_info->{host}", $dbi_info->{username}, $dbi_info->{password});
-
-        if ($dbh) {
-            my $query = "SELECT 1";
-            my $sth = $dbh->prepare($query);
-            if ($sth && $sth->execute) {
-                print $debug . __LINE__ . " DB connection successful\n";
-     # If the connection is successful, store the connection status in the stash and session
-    $c->stash(dbi_connected => 1);
-    $c->session(dbi_connected => 1);
-               $sth->finish;
-#                $dbh->disconnect;
-                return 1;  # Connection successful
-            }
-            $sth->finish;
-        } else {
-            # Print the DBI error message
-            print $debug . __LINE__ . " DBI error: " . DBI->errstr . "\n";
-        }
-    }
-
-    print $debug . __LINE__ . " DB connection failed\n";
-    return 0;  # Connection failed
-}
-sub a_build_dbi_info {
-    my ($self, $c) = @_;
-
-    # Try to read the DBI information from the .dat file
-    my $dbi_info = $self->_read_dbi_info_from_file($c);
-
-    # If the DBI information could not be read or is not valid
-    if (!defined $dbi_info || !$self->_test_db_connection($c, $dbi_info)) {
-        $c->stash(error_message => 'DBI information is missing or invalid.');
-        return;
-    }
-
-    # Store the DBI information in the object
-    $self->{dbi_info} = $dbi_info;
-
-    return $self->{dbi_info};
-}
-# Method to get the schema info
-sub get_tables {
-    my ($self, $c, $database) = @_;
 
     # Check if the database is defined
     if (!defined $database) {
         print $debug . __LINE__ . " Error: No database specified\n";
-        Comserv::debug_log($debug . __LINE__ . " Error: No database specified\n");
         return;
     }
+
+    # Retrieve the DBI information for the selected database
+    my $dbi_info_db = $dbi_info->{$database};
+
+    # If the DBI information for the selected database could not be read or is not valid, return
+    if (!defined $dbi_info_db) {
+        print $debug . __LINE__ . " DBI information for database $database is missing or invalid\n";
+        return;
+    }
+
+    # Connect to the database
+    my $dbh = DBI->connect("DBI:mysql:database=$dbi_info_db->{database};host=$dbi_info_db->{host}", $dbi_info_db->{username}, $dbi_info_db->{password});
+
+    if (!defined $dbh) {
+        print $debug . __LINE__ . "Failed to connect to the database: " . DBI->errstr . "\n"; # Debug print
+    }
+
+    return $dbh;
+}
+
+# Method to get the schema info
+sub get_tables {
+    my ($self, $c, $database) = @_;
 
     # Retrieve the DBI handle
-    my $dbh = $self->_build_dbh($c);
+    my $dbh = $self->_build_dbh($c, $database);
 
-    # If the DBI handle is an error message, return it
-    if (!ref $dbh) {
-        print $debug . __LINE__ . " DBI handle is not a reference. Error: $dbh\n";
-        Comserv::debug_log($debug . __LINE__ . " DBI handle is not a reference. Error: $dbh\n");
-        return { error => $dbh };
-    }
-
-    # Prepare the query to retrieve tables for the given database
-    my $sth = $dbh->prepare("SHOW TABLES IN `$database`");
-    if (!$sth) {
-        print $debug . __LINE__ . " Failed to prepare statement. DBI error: " . $dbh->errstr . "\n";
-        Comserv::debug_log($debug . __LINE__ . " Failed to prepare statement. DBI error: " . $dbh->errstr . "\n");
+    # Check if the DBI handle is defined
+    if (!defined $dbh) {
+        print $debug . __LINE__ . " Error: Failed to connect to the database\n";
         return;
     }
 
+    # Prepare the query to retrieve the list of tables
+    my $sth = $dbh->prepare("SHOW TABLES IN `$database`");
     $sth->execute();
 
     # Fetch the results
@@ -230,20 +105,9 @@ sub get_tables {
         push @tables, $row->[0];
     }
 
-    # If no tables were found, log an error message
-    if (!@tables) {
-        print $debug . __LINE__ . " Error: No tables found for database $database\n";
-        Comserv::debug_log($debug . __LINE__ . " Error: No tables found for database $database\n");
-    }
-
-    # Log each table
-    foreach my $table (@tables) {
-        print $debug . __LINE__ . " Table: $table\n";
-        Comserv::debug_log($debug . __LINE__ . " Table: $table\n");
-    }
-
     return \@tables;
 }
+
 sub get_fields {
     my ($self, $c, $database, $table) = @_;
 
@@ -261,6 +125,30 @@ sub get_fields {
     }
 
     return \@fields;
+}
+sub get_table_structure {
+    my ($self, $c, $database, $table) = @_;
+
+    # Retrieve the DBI handle
+    my $dbh = $self->_build_dbh($c);
+
+    # Check if the DBI handle is defined
+    if (!defined $dbh) {
+        print $debug . __LINE__ . " Error: Failed to connect to the database\n";
+        return;
+    }
+
+    # Prepare the query to retrieve the structure of the table
+    my $sth = $dbh->prepare("DESCRIBE `$database`.`$table`");
+    $sth->execute();
+
+    # Fetch the results
+    my @table_structure;
+    while (my $row = $sth->fetchrow_hashref) {
+        push @table_structure, $row;
+    }
+
+    return \@table_structure;
 }
 
 sub get_filtered_schema_info {
@@ -439,58 +327,48 @@ sub create_result_classes {
         print "Created Result class for table $table->[0]\n";
     }
 }
-sub get_user_by_username {
-    my ($self, $c, $username) = @_;
+sub get_table_structure {
+    my ($self, $c, $database, $table) = @_;
 
-    # Retrieve the DBIx::Class::Schema object
-    my $schema = $c->model('DB::Ency')->schema;
+    # Retrieve the DBI handle
+    my $dbh = $self->_build_dbh($c);
 
-    # Prepare the SQL query
-    my $user_rs = $schema->resultset('User')->search({ username => $username });
-    # Fetch the user data
-    my $user = $user_rs->first;
-    my $username = $user->username;
-    print $debug . __LINE__ . " username: $username\n";  # Debug print
-    my $password = $user->password;
-    print $debug . __LINE__ . " password: $password\n";  # Debug print
-   # print $debug . __LINE__ . " user: " . Dumper($user) . "\n";  # Debug print
-    return $user;
-}
-
-sub acheck_password {
-    my ($self, $c, $username, $password) = @_;
-
-    # Retrieve the user from the database
-    my $user = $self->get_user_by_username($c, $username);
-
-    # If the user doesn't exist, return false
-    if (!$user) {
-        return 0;
+    # Check if the DBI handle is defined
+    if (!defined $dbh) {
+        print $debug . __LINE__ . " Error: Failed to connect to the database\n";
+        return;
     }
 
-    # Hash the provided password
-    my $hashed_password = $self->hash_password($password);
+    # Prepare the query to retrieve the structure of the table
+    my $sth;
+    eval {
+        $sth = $dbh->prepare("DESCRIBE `$database`.`$table`");
+        1;
+    } or do {
+        my $error = $@ || 'Unknown error';
+        print $debug . __LINE__ . " Error preparing query: $error\n";
+        return;
+    };
 
-    # Compare the hashed password with the stored password
-    if ($hashed_password eq $user->{password}) {
-        # The passwords match
-        return 1;
-    } else {
-        # The passwords don't match
-        return 0;
+    # Execute the query
+    eval {
+        $sth->execute();
+        1;
+    } or do {
+        my $error = $@ || 'Unknown error';
+        print $debug . __LINE__ . " Error executing query: $error\n";
+        return;
+    };
+
+    # Fetch the results
+    my @table_structure;
+    while (my $row = $sth->fetchrow_hashref) {
+        push @table_structure, $row;
     }
+
+    return \@table_structure;
 }
-sub ahash_password {
-    my ($self, $password) = @_;
 
-    # Define the salt
-    my $salt = 'your_salt_here';  # Replace 'your_salt_here' with your actual salt
-
-    # Use the same hash function as was used when the password was stored
-    my $hashed_password = crypt($password, $salt);
-
-    return $hashed_password;
-}
 sub hash_password {
     my ($self, $password) = @_;
     return sha256_hex($password);
@@ -511,14 +389,7 @@ sub check_password {
         return 0;
     }
 }
-sub ahash_password {
-    my ($self, $password) = @_;
 
-    # Hash the password using the Catalyst hashing system
-    my $hashed_password = Digest::SHA::sha256_hex($password);
-
-    return $hashed_password;
-}
 sub change_password {
     my ($self, $c, $username, $new_password) = @_;
 

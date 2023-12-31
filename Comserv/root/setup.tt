@@ -8,19 +8,16 @@
 
     <h1>Select a Database</h1>
 
-    <!-- Form for selecting a database -->
-     <form action="/show_tables" method="post" target="_blank">
-        <select name="database">
-            <option value="">Select a database</option>
-            <option value="ency">ency</option>
-            <option value="ShantaForager">ShantaForager</option>
-        </select>
-        <input type="submit" value="Submit">
-    </form>
-</head>
-
-
-    <h1>Database Schema Information</h1>
+ <!-- Form for selecting a database -->
+<form action="/show_tables" method="post" target="_blank">
+    <select name="database">
+        <option value="">Select a database</option>
+        [% FOREACH database IN databases %]
+            <option value="[% database %]">[% database %]</option>
+        [% END %]
+    </select>
+    <input type="submit" value="Submit">
+</form>  <h1>Database Schema Information</h1>
     <p>This page displays information about the database schema, including the tables and their columns.</p>
 
     [% FOREACH table IN schema_info %]

@@ -16,7 +16,7 @@ sub create {
     my ($self, $c, $user_data) = @_;
 
     # Retrieve the DBI handle
-    my $dbh = $c->model('MyDB')->_build_dbh($c);
+    my $dbh = $c->model('DB')->_build_dbh($c);
 
     # Prepare the query to create a new user
     my $sth = $dbh->prepare('INSERT INTO users (username, password, email) VALUES (?, ?, ?)');
