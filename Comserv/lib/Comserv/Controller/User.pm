@@ -7,7 +7,7 @@ BEGIN { push @INC, '/home/shantam/PycharmProjects/CatalystComser1/Comserv/lib'; 
 
 BEGIN { extends 'Catalyst::Controller'; }
 
-my $debug = "Comserv::Controller::Root Line #";
+my $debug = "Comserv::Controller::User Line #";
 print $debug . __LINE__ . "\n";
 print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
 print $debug . __LINE__ . " Enter auto\n";  # Add this linedebug_log($debug . __LINE__ . " Enter Root\n");
@@ -49,21 +49,22 @@ sub index :Path : Args(0) {
 }
 sub login :Path('/login') :Args(0) {
     my ($self, $c) = @_;
-
+    print $debug . __LINE__ . " Enter login\n";  # Add this linedebug_log($debug . __LINE__ . " Enter Root\n");
     if ($c->request->method eq 'POST') {
         my $username = $c->request->params->{username};
         my $password = $c->request->params->{password};
 
         # Retrieve the user from the database
         my $user = $c->model('DB')->get_user_by_username($c, $username);
-
+ #       print $debug . __LINE__ . " user: " . Dumper($user) . "\n";  # Add this linedebug_log($debug . __LINE__ . "
+        # Enter Root\n");
         if ($user) {
-            # Retrieve the username and hashed password from the user object
+            # Retrieve the username, role and hashed password from the user object
             my $username_from_db = $user->username;
+            print $debug . __LINE__ . " username_from_db: " . $username_from_db . "\n";  # Add this linedebug_log($debug . __LINE__ . " Enter Root\n");
+            my $role_from_db = $user->roles;
+            print $debug . __LINE__ . " role_from_db: " . $role_from_db . "\n";  # Add this linedebug_log($debug . __LINE__ . " Enter Root\n");
             my $hashed_password_from_db = $user->password;
-
-            print $debug . __LINE__ . " username_from_db: " . $username_from_db . "\n";
-            print $debug . __LINE__ . " hashed_password_from_db: " . $hashed_password_from_db . "\n";
 
             # Hash the provided password
             my $hashed_provided_password = $c->model('DB')->hash_password($password);
@@ -74,6 +75,7 @@ sub login :Path('/login') :Args(0) {
                 # Create a user session
                 $c->session(user_id => $user->id);
                 $c->session(username => $username_from_db);
+                $c->session(group => $role_from_db);  # Stash the user's role into the group session variable
                 $c->response->redirect($c->uri_for('/'));
             } else {
                 # The password is incorrect
@@ -92,6 +94,7 @@ sub login :Path('/login') :Args(0) {
         $c->forward($c->view('TT'));
     }
 }
+
 sub logout :Path('/logout') :Args(0) { my ($self, $c) = @_;
 # Clear the user session
 $c->logout;

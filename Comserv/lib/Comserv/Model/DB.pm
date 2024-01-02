@@ -126,31 +126,61 @@ sub get_fields {
 
     return \@fields;
 }
-sub get_table_structure {
-    my ($self, $c, $database, $table) = @_;
+sub get_record_by_id {
+    my ($self, $c, $database, $table, $id_field, $id) = @_;
 
     # Retrieve the DBI handle
-    my $dbh = $self->_build_dbh($c);
+    my $dbh = $self->_build_dbh($c, $database);
 
-    # Check if the DBI handle is defined
-    if (!defined $dbh) {
-        print $debug . __LINE__ . " Error: Failed to connect to the database\n";
-        return;
-    }
+    # Prepare the query to retrieve the record
+    my $sth = $dbh->prepare("SELECT * FROM $table WHERE $id_field = ?");
 
-    # Prepare the query to retrieve the structure of the table
-    my $sth = $dbh->prepare("DESCRIBE `$database`.`$table`");
-    $sth->execute();
+    # Execute the query with the actual value of $id
+    $sth->execute($id);
 
-    # Fetch the results
-    my @table_structure;
-    while (my $row = $sth->fetchrow_hashref) {
-        push @table_structure, $row;
-    }
+    # Fetch the record data
+    my $record = $sth->fetchrow_hashref;
 
-    return \@table_structure;
+    return $record;
 }
 
+sub delete_record_by_id {
+    my ($self, $c, $database, $table, $id_field, $id) = @_;
+
+    # Retrieve the DBI handle
+    my $dbh = $self->_build_dbh($c, $database);
+
+    # Prepare the query to delete the record
+    my $sth = $dbh->prepare("DELETE FROM $table WHERE $id_field = ?");
+
+    # Execute the query with the actual value of $id
+    $sth->execute($id);
+
+    return;
+}
+sub modify_record_by_id {
+    my ($self, $c, $database, $table, $id_field, $id, $new_data) = @_;
+
+    # Retrieve the DBI handle
+    my $dbh = $self->_build_dbh($c, $database);
+
+    # Prepare the SQL UPDATE query
+    my @fields = keys %$new_data;
+    my $sql = sprintf(
+        "UPDATE %s SET %s WHERE %s = ?",
+        $table,
+        join(", ", map { "$_ = ?" } @fields),
+        $id_field
+    );
+
+    # Prepare the statement
+    my $sth = $dbh->prepare($sql);
+
+    # Execute the query with the new data and the ID
+    $sth->execute((values %$new_data), $id);
+
+    return;
+}
 sub get_filtered_schema_info {
     my ($self, $c, $criteria) = @_;
 
@@ -371,20 +401,33 @@ sub get_table_structure {
 sub get_user_by_username {
     my ($self, $c, $username) = @_;
 
+    my $debug = "Comserv::Model::DB Line #";
+
+    print $debug . __LINE__ . " \$c is a " . ref($c) . "\n";  # Debug print
+
     # Retrieve the DBIx::Class::Schema object
     my $schema = $c->model('DB::Ency')->schema;
 
     # Prepare the SQL query
     my $user_rs = $schema->resultset('User')->search({ username => $username });
+
     # Fetch the user data
     my $user = $user_rs->first;
     my $username = $user->username;
-    print $debug . __LINE__ . " username: $username\n";  # Debug print
+    print $debug . __LINE__ . " Username: $username\n";  # Debug print
+    my $role_from_db = $user->roles;  # Use the roles method to fetch the user's role
+
+    print $debug . __LINE__ . " Role from DB: $role_from_db\n";  # Debug print
+
+    $c->session(group => $role_from_db);  # Stash the user's role into the group session variable
+
+    print $debug . __LINE__ . " Session group after assignment: " . $c->session->{group} . "\n";  # Debug print
+
     my $password = $user->password;
-    print $debug . __LINE__ . " password: $password\n";  # Debug print
-   # print $debug . __LINE__ . " user: " . Dumper($user) . "\n";  # Debug print
+
     return $user;
 }
+
 sub hash_password {
     my ($self, $password) = @_;
     return sha256_hex($password);
@@ -449,6 +492,42 @@ sub create_or_update_schema {
 sub shanta_forager_schema {
     my ($self, $c) = @_;
     return $c->model('DB::ShantaForager');
+}
+sub get_links {
+    my ($self, $c) = @_;
+
+    # Print the type of $c
+    print "Type of \$c: " . ref($c) . "\n";
+
+    # Check if $c is a Catalyst context object
+    if (!blessed($c) || !$c->isa('Catalyst::Context')) {
+        print $debug . __LINE__ . " Error: \$c is not a Catalyst context object\n";
+        return;
+    }
+
+    print $debug . __LINE__ . " Enter get_links\n";  # Debug print
+
+    # Retrieve the DBI handle
+    my $dbh = $self->_build_dbh($c, 'shanta_forager');
+
+    # Prepare the query to retrieve all links where sitename is 'All' or the SiteName session variable
+    my $sql = "SELECT * FROM internal_links_tb WHERE sitename = 'All' OR sitename = ?";
+    print $debug . __LINE__ . " SQL query: $sql\n";  # Debug print
+    my $sth = $dbh->prepare($sql);
+
+    my $site_name = $c->session->{SiteName};
+    print $debug . __LINE__ . " SiteName: $site_name\n";  # Debug print
+    $sth->execute($site_name);
+
+    # Fetch the results
+    my @links;
+    while (my $row = $sth->fetchrow_hashref) {
+        print $debug . __LINE__ . " Row: " . Dumper($row) . "\n";  # Debug print
+        push @links, $row;
+    }
+
+    print $debug . __LINE__ . " Links: " . Dumper(\@links) . "\n";  # Debug print
+    return \@links;
 }
 __PACKAGE__->meta->make_immutable(inline_constructor => 0);
 

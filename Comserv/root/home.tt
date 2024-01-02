@@ -1,9 +1,9 @@
 [%# INCLUDE 'layout.tt' %]
 [% PageVersion	= 'home.tt,v 0.01 2023/08/30 shanta Exp shanta '	%]
-[% IF debug_mode == 1 %]
+[% IF c.session.debug_mode == 1 %]
  [%	PageVersion %]
     [% "Debugging HostName: " _ HostName %]
-    [% INCLUDE 'debug.tt' %]
+    [%# INCLUDE 'debug.tt' %]
 [% END %]
 <p>This is the landing page for the ComServ Application. </p>
 <p>Here is a list of the sites available for this application.</p>
@@ -30,7 +30,6 @@
 </ul>
 <h2> What is current under development.</h2>
 <ol>
-    <li>Login </li>
     <li>Registration</li>
     <li>Forgot Password</li>
     <li>Forgot Username</li>

@@ -14,7 +14,7 @@
     </tr>
     [% END %]
 </table>
-
+[% USE Dumper %]
 <h1>Session Information</h1>
 <table>
     <tr>
@@ -24,10 +24,30 @@
     [% FOREACH key IN c.session.keys.sort %]
     <tr>
         <td>[% key %]</td>
-        <td>[% c.session.$key | html %]</td>
+        <td>
+            [%# Check if the session variable is an array reference %]
+ [% IF ref(c.session.$key) == 'ARRAY' %]
+    check array
+    [%# Iterate over the array and print each element %]
+    [% FOREACH element IN c.session.$key %]
+    [% END %]
+        [%# Check if the element is a hash reference %]
+        [% IF ref(element) == 'HASH' %]
+        [% ELSE %]
+        [% END %]
+            [% element | html %]<br>
+            [%# Iterate over the keys of the hash and print each key-value pair %]
+            [% FOREACH subkey IN element.keys.sort %]
+            [% END %]
+                [% subkey _ " => " _ element.$subkey | html %]<br>
+
+[% ELSE %]
+    [% c.session.$key | html %]
+[% END %]        </td>
     </tr>
     [% END %]
 </table>
+
 [% USE Dumper %]
 <h1>Debug Log Entries</h1>
 [% USE JSON %]
@@ -39,3 +59,5 @@
         [% END %]
     </p>
 [% END %]
+
+</table>

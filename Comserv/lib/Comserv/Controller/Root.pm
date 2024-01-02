@@ -89,56 +89,23 @@ sub auto :Private {
         print $debug . __LINE__ . " Error in auto: $@\n";
         $c->stash(error_msg => "Error in auto: $@");
     };
+# In your Comserv::Controller::Root controller
+if (ref($c) eq 'Catalyst::Context') {
+    my @main_links = $c->model('DB')->get_links($c, 'Main');
+    my @login_links = $c->model('DB')->get_links($c, 'Login');
+    my @global_links = $c->model('DB')->get_links($c, 'Global');
+    my @hosted_links = $c->model('DB')->get_links($c, 'Hosted');
+    my @member_links = $c->model('DB')->get_links($c, 'Member');
 
-    # Continue processing the rest of the request
+    $c->session(
+        main_links => \@main_links,
+        login_links => \@login_links,
+        global_links => \@global_links,
+        hosted_links => \@hosted_links,
+        member_links => \@member_links,
+    );
+}    # Continue processing the rest of the request
     return 1;
-}sub catalyst_help :Path('/catalyst_help') {
-    my ($self, $c) = @_;
-    $c->response->body($c->welcome_message);
-}
-sub display_tables {
-    my ($self, $c) = @_;
-
-    print $debug . __LINE__ . " in display_tables\n";  # Debug print
-    Comserv::debug_log($debug . __LINE__ . " Enter display_tables\n");
-    # Get an instance of Comserv::Model::DB
-    my $DB = $c->model('DB');
-    print ref $DB;
-
-    # Check if $DB is an instance of Comserv::Model::DB
-    if (!blessed($DB) || !$DB->isa('Comserv::Model::DB')) {
-        my $error_message = "Error: \$DB is not an instance of Comserv::Model::DB";
-
-        # Store the error message in the stash and session
-        $c->stash(last_error => $error_message);
-        $c->session(last_error => $error_message);
-
-        # Open the debug.log file for appending
-        open my $log_fh, '>>', 'debug.log' or die "Could not open debug.log: $!";
-
-        # Write the error message to the debug.log file
-        print $log_fh $error_message . "\n";
-
-        # Close the debug.log file
-        close $log_fh;
-
-        # Return from the method
-        return;
-    }
-
-    # Call the get_schema_info method with $c as an argument
-    my $schema_info = $DB->get_schema_info($c);
-
-    print $debug . __LINE__ . " schema_info: " . Dumper($schema_info) . "\n";  # Debug print
-
-    # Call the get_relevant_tables method from the ToDo model
-    my $relevant_tables = $c->model('ToDo')->get_relevant_tables($c, $c->model('DB')->dbi_info($c));
-
-    # Store the relevant tables in the stash
-    $c->stash(relevant_tables => $relevant_tables);
-
-    # Set the template
-    $c->stash(template => 'display_tables.tt');
 }
 sub css_form :Path('/css_form') {
     my ($self, $c) = @_;

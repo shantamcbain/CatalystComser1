@@ -1,132 +1,29 @@
-[% PageVersion	= 'pagetop.tt,v 0.02 2023/08/30 shanta Exp shanta '	%]
-[% IF debug_mode == 1 %]
- [%	PageVersion %]
+[% PageVersion = 'pagetop.tt,v 0.021 2024/01/01 shanta Exp shanta ' %]
+[%# PageVersion = 'pagetop.tt,v 0.02 2023/08/30 shanta Exp shanta ' %]
+[% IF c.session.debug_mode == 1 %]
+    [% PageVersion %]
     [% "Debugging HostName: " _ HostName %]
     [%# INCLUDE 'debug.tt' %]
 [% END %]
 <header>
     <!-- Site Greeting -->
     <h1>Welcome to [% welcome_message | html %]</h1>
-    <!-- Debug Information -->
-    [%# INCLUDE 'debug.tt' %]
-    [% IF debug_mode == 1 %]
-
-    <div class="debug-content">
-        [% debug_content %]
-    </div>
-    [% END %]
-   [%# INCLUDE 'debug.tt' %]
-    <!-- Main Menu -->
+     <!-- Main Menu.pm -->
     <nav>
         <ul class="horizontal-menu">
             <li class="horizontal-dropdown">
                 <a href="[% c.session.return_url %]"class="dropbtn">Back</a>
             </li>
-        <li class="horizontal-dropdown">
-                <a href="#" class="dropbtn">Main</a>
-                <div class="dropdown-content">
-                    <a href="[% c.uri_for('/' _ c.session.SiteName)%]" onclick="activateSite('Home')">Home</a>
-                    <a href="[% c.session.return_url %]">Go Back</a>
-                    <!-- Add more main menu options -->
-                </div>
-            </li>
-        <li class="horizontal-dropdown">
-            <a href="#" class="dropbtn">Login</a>
-            <div class="dropdown-content">
-                <a href="/login">Login</a>
-                <a href="/logout">Logout</a>
-                <a href="/register">Register</a>
-                <!-- Add more login options if needed -->
-            </div>
-        </li>
-        <!-- Other menu items... -->
-            <li class="horizontal-dropdown">
-                <a href="#" class="dropbtn">Global</a>
-                <div class="dropdown-content">
-                    <a href="/mail">Mail</a>
-                    <a href="/jobs">Jobs</a>
-                    <a href="/join">Join</a>
-                    <!-- Add more global options -->
-                </div>
-            </li>
-            <li class="horizontal-dropdown">
-                <a href="#" class="dropbtn">Hosted</a>
-                <div class="dropdown-content">
-                    <a href="/apply">Apply for Hosted Account</a>
-                    <a href="/accounts">Hosted Accounts</a>
-                    <!-- Add more hosted op    function toggleDebugMode() {
-        // Get the current debug mode value from the session or stash
-        var debugMode = getSessionDebugMode(); // Replace with your implementation to retrieve the debug mode value
-
-        // Toggle the debug mode value
-        if (debugMode === 0) {
-            debugMode = 1;
-        } else {
-            debugMode = 0;
-        }
-
-        // Update the debug mode value in the session and stash
-        setSessionDebugMode(debugMode); // Replace with your implementation to update the debug mode value
-
-        // Optionally, perform any additional actions based on the new debug mode value
-        if (debugMode === 1) {
-            console.log('Debug mode enabled');
-            // Perform actions for debug mode enabled
-        } else {
-            console.log('Debug mode disabled');
-            // Perform actions for debug mode disabled
-        }
-    }
-
-    // Implement the functions getSessionDebugMode() and setSessionDebugMode() to retrieve and update the debug mode value in the session or stash.
-    // You can use AJAX requests or any other method suitable for your application.
-tions -->
-                </div>
-            </li>
-            <li class="horizontal-dropdown">
-                <a href="#" class="dropbtn">Member</a>
-                <div class="dropdown-content">
-                    <a href="/membership">Membership Information</a>
-                    <a href="/applymembership">Apply for Membership</a>
-                    <!-- Add more member options -->
-                </div>
-            </li>
+            [% INCLUDE 'Navigation/TopDropListMain.tt' %]
+            [% INCLUDE 'Navigation/TopDropListLogin.tt' %]
+            [% INCLUDE 'Navigation/TopDropListGlobal.tt' %]
+            [% INCLUDE 'Navigation/TopDropListHosted.tt' %]
+            [% INCLUDE 'Navigation/TopDropListMember.tt' %]
         [% IF c.session.user_id == 1 %]
-            [% INCLUDE 'admintopmenu.tt' %]
+            [% INCLUDE 'Navigation/admintopmenu.tt' %]
         [% END %]
-            [% INCLUDE 'TopDropListHelpDesk.tt' %]
+
+        [% INCLUDE 'Navigation/TopDropListHelpDesk.tt' %]
         </ul>
     </nav>
 </header>
-<script>
-    var submenuTimeouts = {};
-
-    function openSubmenu(submenuId) {
-        clearTimeout(submenuTimeouts[submenuId]);
-        document.getElementById(submenuId).classList.add('show');
-    }
-
-    function closeSubmenu(submenuId) {
-        submenuTimeouts[submenuId] = setTimeout(function () {
-            document.getElementById(submenuId).classList.remove('show');
-        }, 300);
-    }
-
-    function openAdminDropdown() {
-        clearTimeout(adminDropdownTimeout);
-        document.getElementById('adminDropdown').classList.add('show');
-    }
-
-    function closeAdminDropdown() {
-        adminDropdownTimeout = setTimeout(function () {
-            document.getElementById('adminDropdown').classList.remove('show');
-        }, 300);
-    }
-
-    function activateSite(site) {
-        // Code to be executed when a site is clicked
-        console.log('Site activated:', site);
-        // Replace the console.log statement with your desired code for site activation
-        // Perform the necessary action based on the site clicked (e.g., redirect, perform an operation, etc.)
-    }
-</script>
