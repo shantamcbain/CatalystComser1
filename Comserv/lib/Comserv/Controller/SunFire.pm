@@ -12,7 +12,7 @@ sub index :Path :Args(0) {
 
     # Check if the domain is 'sunfire.computersystemconsulting.ca' or 'sunfiresystems.ca'
     if ($domain =~ /sunfire\.computersystemconsulting\.ca$/ || $domain =~ /sunfiresystems\.ca$/) {
-        $c->stash(template => 'sunfire/index.tt');
+        $c->stash(template => 'sunfire/SunFire.tt');
     } else {
         # Redirect to 404 page or another appropriate page
         $c->response->redirect('/404');
@@ -24,7 +24,7 @@ sub base :Chained('/') :PathPart('SunFire') :CaptureArgs(0) {
     # Check if the site name is 'SunFire'
     if ($c->stash->{SiteName} eq 'SunFire') {
         # Set the template
-        $c->stash(template => 'SunFire/index.tt');
+        $c->stash(template => 'SunFire/SunFire.tt');
     } else {
         # Redirect to 404 page or another appropriate page
         $c->response->redirect('/404');
