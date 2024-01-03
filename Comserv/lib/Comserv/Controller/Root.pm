@@ -27,7 +27,7 @@ sub index :Path :Args(0) {
 
     # Check the site name and set the template accordingly
     if ($site_name eq 'SunFire') {
-        $c->stash(template => 'sunfire/index.tt');
+        $c->stash(template => 'SunFire/index.tt');
     } elsif ($site_name eq 'CSC') {
         $c->stash(template => 'CSC/CSC.tt');
     } elsif ($site_name eq 'BMaster') {
