@@ -20,20 +20,29 @@ my $site_name = 'home';
 __PACKAGE__->config(namespace => '');
 
 sub index :Path :Args(0) {
-
-    # Print the inheritance chain of this controller
-    print "Inheritance chain of " . __PACKAGE__ . ": @Comserv::Controller::Root::ISA\n";
-print $debug. __LINE__. " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
     my ($self, $c) = @_;
-    my $site_name = $c->stash->{SiteName}||'home';
-    print $debug . __LINE__ . " Site Name: $site_name\n";
-    $c->stash(template => 'home.tt');
-my $dbi_info_ency = $c->model('DB::Ency')->connect_info;
-my $dbi_info_shanta_forager = $c->model('DB::ShantaForager')->connect_info;
-    print $debug. __LINE__. " Site Name: $site_name\n";
-    print stash_dump($c);
+
+    # Get the site name from the session
+    my $site_name = $c->session->{SiteName};
+
+    # Check the site name and set the template accordingly
+    if ($site_name eq 'SunFire') {
+        $c->stash(template => 'sunfire/index.tt');
+    } elsif ($site_name eq 'CSC') {
+        $c->stash(template => 'CSC/CSC.tt');
+    } elsif ($site_name eq 'BMaster') {
+        $c->stash(template => 'BMaster/BMaster.tt');
+    } elsif ($site_name eq 'USBM') {
+        $c->stash(template => 'USBM/USBM.tt');
+    } else {
+        # Set the template for the default home page
+        $c->stash(template => 'home.tt');
+    }
+
+    # Forward to the view
     $c->forward($c->view('TT'));
 }
+
 sub auto :Private {
     my ($self, $c) = @_;
 
@@ -43,26 +52,38 @@ sub auto :Private {
     # Get the domain name from the request
     my $domain = $c->request->uri->host;
     $c->session->{Domain} = $domain;
-    # Check if the domain is 'sunfire.computersystemconsulting.ca' or 'sunfiresystems.ca'
+
+    # Check the domain and set the site accordingly
     if ($domain =~ /sunfire\.computersystemconsulting\.ca$/ || $domain =~ /sunfiresystems\.ca$/) {
         $c->stash->{SiteName} = 'SunFire';
         $c->session->{SiteName} = 'SunFire';
-    }
-    # Check if the domain is 'shanta.computersystemconsulting.ca'
-    elsif ($domain =~ /shanta\.computersystemconsulting\.ca$/) {
+    } elsif ($domain =~ /shanta\.computersystemconsulting\.ca$/) {
         $c->stash->{SiteName} = 'CSC';
         $c->session->{SiteName} = 'CSC';
-    }
-    # Check if the domain is 'BMaster.computersystemconsulting.ca', 'beemaster.ca' or 'BMaster'
-    elsif ($domain =~ /BMaster\.computersystemconsulting\.ca$/ || $domain =~ /beemaster\.ca$/ || $domain =~ /BMaster$/) {
+    } elsif ($domain =~ /BMaster\.computersystemconsulting\.ca$/ || $domain =~ /beemaster\.ca$/ || $domain =~ /BMaster$/) {
         $c->stash->{SiteName} = 'BMaster';
         $c->session->{SiteName} = 'BMaster';
-    }
-    # Check if the domain is 'usbm.computersystemconsulting.ca', 'usbm.ca' or 'USBM'
-    elsif ($domain =~ /usbm\.computersystemconsulting\.ca$/ || $domain =~ /usbm\.ca$/ || $domain =~ /USBM$/) {
+    } elsif ($domain =~ /usbm\.computersystemconsulting\.ca$/ || $domain =~ /usbm\.ca$/ || $domain =~ /USBM$/) {
         $c->stash->{SiteName} = 'USBM';
         $c->session->{SiteName} = 'USBM';
     }
+    elsif ($domain =~ /0.0.0.0 $/ || $domain =~ /home$/ || $domain =~ /USBM$/) {
+        $c->stash->{SiteName} = 'home';
+        $c->session->{SiteName} = 'home';
+    }
+    # Get the site name from the URL
+    my $site_name = $c->req->param('site');
+    if (defined $site_name) {
+        # If site name is defined in the URL, update the session and stash
+        $c->stash->{SiteName} = $site_name;
+        $c->session->{SiteName} = $site_name;
+    } else {
+        # If site name is not defined in the URL, use the session or stash value, or default to 'home'
+        $site_name = $c->session->{SiteName} || $c->stash->{SiteName} || 'home';
+        $c->stash->{SiteName} = $site_name;
+        $c->session->{SiteName} = $site_name;
+    }
+
     # Get the debug parameter from the URL
     my $debug_param = $c->req->param('debug');
     # If the debug parameter is defined
@@ -104,7 +125,6 @@ sub auto :Private {
 
     return 1;
 }
-
 sub css_form :Path('/css_form') {
     my ($self, $c) = @_;
     my $site_name = $c->stash->{SiteName};
