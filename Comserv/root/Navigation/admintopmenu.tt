@@ -34,11 +34,13 @@
                 <div class="submenu">
                     <a href="/BMaster?site=BMaster" class="site-dropdown-item" onclick="activateSite('BMaster')">BMaster</a>
                     <a href="/CSC?site=CSC" class="site-dropdown-item" onclick="activateSite('CSC')">CSC</a>
-                    <a href="/USBM?site=USBM" class="site-dropdown-item" onclick="activateSite('USBM')">USBM</a>
+                    <a href="/SunFire?site=SunFire" class="site-dropdown-item" onclick="activateSite('SunFire')
+">SunFire</a>
+           <a href="/USBM?site=USBM" class="site-dropdown-item" onclick="activateSite('USBM')">USBM</a>
                 </div>
             </div>
             <div class="submenu-item">
-                <span class="submenu-header">System Passed Links</span>
+                <span class="submenu-header">System Links</span>
                 <div class="submenu">
                     [% FOREACH link = c.stash.dbi.query("SELECT * FROM page_tb WHERE (menu = 'Admin' AND status = 2) AND (sitename = '$SiteName' OR sitename = 'All') ORDER BY link_order") %]
                         <a href="/cgi-bin/index.cgi?site=[% SiteName %]&amp;[% session_string %]&amp;page=[% link.page_code %]" name="Contact" target="[% link.target %]" title=" [% linkview_.name %] "><font class="LeftSideBarNavStyle">[% link.view_name %]</font></a>
@@ -56,12 +58,13 @@
             <div class="submenu-item">
                 <span class="submenu-header">Other Options</span>
                 <div class="submenu">
-                    [% IF debug_mode == 0 %]
-                        <a href="[% c.session.return_url %]?debug=1">Toggle Debug Mode ON</a>
-                    [% ELSE %]
+                    [% IF debug_mode == 1 %]
                         <a href="[% c.session.return_url %]?&debug=0">Toggle Debug Mode OFF</a>
+                    [% ELSE %]
+                        <a href="[% c.session.return_url %]?debug=1">Toggle Debug Mode ON</a>
                     [% END %]
-                    <a href="#">Option 3</a>
+            <a href="/debug" target="_blank">Debug</a>
+                   <a href="#">Option 3</a>
                 </div>
             </div>
         </div>

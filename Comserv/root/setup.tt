@@ -1,11 +1,22 @@
 <head>
-    [% PageVersion = 'display_schema.tt,v 0.01 2023/11/03 shanta Exp shanta ' %]
+    [% PageVersion = 'setup.tt,v 0.01 2023/11/03 shanta Exp shanta ' %]
     <meta charset="utf-8">
     [% IF debug_mode == 1 %]
         [% PageVersion %]
         [% INCLUDE 'debug.tt' %]
     [% END %]
 
+<h2>Documentation</h2>
+
+<ul>
+
+    <li><a href="https://shanta.computersystemconsulting.ca/" target="_blank">dev</a> - Our new
+        development</li>
+    <li><a href="/multi_site">Information for AI on setting up the Sites on the system.</a></li>
+    <li><a href="/CSC">Computer System Consulting</a> - Our Hosting and development.</li>
+    <li><a href="/USBM">Universal School of Biological Life</a></li>
+
+</ul>
     <h1>Select a Database</h1>
 
  <!-- Form for selecting a database -->

@@ -37,17 +37,18 @@ my $dbi_info_shanta_forager = $c->model('DB::ShantaForager')->connect_info;
 sub auto :Private {
     my ($self, $c) = @_;
 
-    # Use eval to catch any errors
-    eval {
-        print $debug . __LINE__ . " Enter auto\n";  # Add this line
+    # Set the default group in the session if it's not already set
+    $c->session->{group} ||= 'normal';
 
-        # Set the default group in the session if it's not already set
-        $c->session->{group} ||= 'normal';
+    # Get the domain name from the request
+    my $domain = $c->request->uri->host;
+    $c->session->{Domain} = $domain;
 
-        # Get the domain name from the request
-        my $domain = $c->request->uri->host;
-        $c->session->{Domain} = $domain;
-
+    # Check the domain and set the site accordingly
+    if ($domain =~ /sunfiresystems\.ca$/ || $domain =~ /sunfire\.computersystemconsulting\.ca$/) {
+        $c->stash->{SiteName} = 'SunFire';
+        $c->session->{SiteName} = 'SunFire';
+    } else {
         # Get the site name from the URL
         my $site_name = $c->req->param('site');
         if (defined $site_name) {
@@ -60,53 +61,50 @@ sub auto :Private {
             $c->stash->{SiteName} = $site_name;
             $c->session->{SiteName} = $site_name;
         }
+    }
 
-        # Get the debug parameter from the URL
-        my $debug_param = $c->req->param('debug');
-        # If the debug parameter is defined
-        if (defined $debug_param) {
-            # If the debug parameter is different from the session value
-            if ($c->session->{debug_mode} ne $debug_param) {
-                # Store the new debug parameter in the session and stash
-                $c->session->{debug_mode} = $debug_param;
-                $c->stash->{debug_mode} = $debug_param;
-            }
-        } elsif (defined $c->session->{debug_mode}) {
-            # If the debug parameter is not defined but there is a value in the session
-            # Store the session value in the stash
-            $c->stash->{debug_mode} = $c->session->{debug_mode};
+    # Get the debug parameter from the URL
+    my $debug_param = $c->req->param('debug');
+    # If the debug parameter is defined
+    if (defined $debug_param) {
+        # If the debug parameter is different from the session value
+        if ($c->session->{debug_mode} ne $debug_param) {
+            # Store the new debug parameter in the session and stash
+            $c->session->{debug_mode} = $debug_param;
+            $c->stash->{debug_mode} = $debug_param;
         }
+    } elsif (defined $c->session->{debug_mode}) {
+        # If the debug parameter is not defined but there is a value in the session
+        # Store the session value in the stash
+        $c->stash->{debug_mode} = $c->session->{debug_mode};
+    }
 
-        # Set the HostName and SiteName in the stash
-        $c->stash->{HostName} = $c->request->base;
+    # Set the HostName and SiteName in the stash
+    $c->stash->{HostName} = $c->request->base;
 
-        # Set the Domain in the session
-        $c->session->{Domain} = $domain;
+    # Set the Domain in the session
+    $c->session->{Domain} = $domain;
 
-        1;  # Ensure the eval block returns a true value
-    } or do {
-        # If there's an error, print it
-        print $debug . __LINE__ . " Error in auto: $@\n";
-        $c->stash(error_msg => "Error in auto: $@");
-    };
-# In your Comserv::Controller::Root controller
-if (ref($c) eq 'Catalyst::Context') {
-    my @main_links = $c->model('DB')->get_links($c, 'Main');
-    my @login_links = $c->model('DB')->get_links($c, 'Login');
-    my @global_links = $c->model('DB')->get_links($c, 'Global');
-    my @hosted_links = $c->model('DB')->get_links($c, 'Hosted');
-    my @member_links = $c->model('DB')->get_links($c, 'Member');
+    # In your Comserv::Controller::Root controller
+    if (ref($c) eq 'Catalyst::Context') {
+        my @main_links = $c->model('DB')->get_links($c, 'Main');
+        my @login_links = $c->model('DB')->get_links($c, 'Login');
+        my @global_links = $c->model('DB')->get_links($c, 'Global');
+        my @hosted_links = $c->model('DB')->get_links($c, 'Hosted');
+        my @member_links = $c->model('DB')->get_links($c, 'Member');
 
-    $c->session(
-        main_links => \@main_links,
-        login_links => \@login_links,
-        global_links => \@global_links,
-        hosted_links => \@hosted_links,
-        member_links => \@member_links,
-    );
-}    # Continue processing the rest of the request
+        $c->session(
+            main_links => \@main_links,
+            login_links => \@login_links,
+            global_links => \@global_links,
+            hosted_links => \@hosted_links,
+            member_links => \@member_links,
+        );
+    }
+
     return 1;
 }
+
 sub css_form :Path('/css_form') {
     my ($self, $c) = @_;
     my $site_name = $c->stash->{SiteName};
@@ -165,7 +163,15 @@ sub get_tables {
 
     return \@tables;
 }
+sub multi_site :Path('/multi_site') :Args(0) {
+    my ($self, $c) = @_;
 
+    # Set the template
+    $c->stash(template => 'setup/multi_site.tt');
+
+    # Forward to the view
+    $c->forward($c->view('TT'));
+}
 sub show_tables_post :Path('/show_tables') :Args(0) {
     my ($self, $c) = @_;
 
