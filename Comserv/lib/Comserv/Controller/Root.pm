@@ -43,26 +43,26 @@ sub auto :Private {
     # Get the domain name from the request
     my $domain = $c->request->uri->host;
     $c->session->{Domain} = $domain;
-
-    # Check the domain and set the site accordingly
-    if ($domain =~ /sunfiresystems\.ca$/ || $domain =~ /sunfire\.computersystemconsulting\.ca$/) {
+    # Check if the domain is 'sunfire.computersystemconsulting.ca' or 'sunfiresystems.ca'
+    if ($domain =~ /sunfire\.computersystemconsulting\.ca$/ || $domain =~ /sunfiresystems\.ca$/) {
         $c->stash->{SiteName} = 'SunFire';
         $c->session->{SiteName} = 'SunFire';
-    } else {
-        # Get the site name from the URL
-        my $site_name = $c->req->param('site');
-        if (defined $site_name) {
-            # If site name is defined in the URL, update the session and stash
-            $c->stash->{SiteName} = $site_name;
-            $c->session->{SiteName} = $site_name;
-        } else {
-            # If site name is not defined in the URL, use the session or stash value, or default to 'home'
-            $site_name = $c->session->{SiteName} || $c->stash->{SiteName} || 'home';
-            $c->stash->{SiteName} = $site_name;
-            $c->session->{SiteName} = $site_name;
-        }
     }
-
+    # Check if the domain is 'shanta.computersystemconsulting.ca'
+    elsif ($domain =~ /shanta\.computersystemconsulting\.ca$/) {
+        $c->stash->{SiteName} = 'CSC';
+        $c->session->{SiteName} = 'CSC';
+    }
+    # Check if the domain is 'BMaster.computersystemconsulting.ca', 'beemaster.ca' or 'BMaster'
+    elsif ($domain =~ /BMaster\.computersystemconsulting\.ca$/ || $domain =~ /beemaster\.ca$/ || $domain =~ /BMaster$/) {
+        $c->stash->{SiteName} = 'BMaster';
+        $c->session->{SiteName} = 'BMaster';
+    }
+    # Check if the domain is 'usbm.computersystemconsulting.ca', 'usbm.ca' or 'USBM'
+    elsif ($domain =~ /usbm\.computersystemconsulting\.ca$/ || $domain =~ /usbm\.ca$/ || $domain =~ /USBM$/) {
+        $c->stash->{SiteName} = 'USBM';
+        $c->session->{SiteName} = 'USBM';
+    }
     # Get the debug parameter from the URL
     my $debug_param = $c->req->param('debug');
     # If the debug parameter is defined
