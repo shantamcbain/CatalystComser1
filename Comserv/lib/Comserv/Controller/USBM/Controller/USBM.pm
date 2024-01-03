@@ -29,7 +29,7 @@ Catalyst Controller.
 sub csc :Path('/USBM') {
     my ($self, $c) = @_;
     print $debug. __LINE__. "Calling /USBM in USBM.pm\n";
-    $c->stash(template => 'USBM/USBMHome.tt', layout => 'layout.tt');
+    $c->stash(template => 'USBM/USBM.tt', layout => 'layout.tt');
     $c->forward($c->view('TT'));  # Render the template
 }
 

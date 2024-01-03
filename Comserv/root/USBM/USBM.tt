@@ -1,7 +1,8 @@
-[%# INCLUDE 'layout.tt' %]
-
 [% PageVersion	= 'USBM.tt,v 0.01 2023/08/30 shanta Exp shanta '	%]
-[% INCLUDE 'debugmode.tt' %]
+[% IF debug_mode == 1 %]
+  [% PageVersion %]
+    [% INCLUDE 'debug.tt' %]
+[% END %]
 
 
     <p>This is the home page for the USBM (Universal School of Biological Life).</p>
