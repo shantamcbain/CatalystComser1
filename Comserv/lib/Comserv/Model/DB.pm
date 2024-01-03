@@ -127,23 +127,28 @@ sub get_fields {
     return \@fields;
 }
 sub get_record_by_id {
-    my ($self, $c, $database, $table, $id_field, $id) = @_;
+    my ($self, $c, $database, $table, $id) = @_;
+    print $debug . __LINE__ . " Database: $database, Table: $table, ID: $id\n";
+    my $model = 'DB::Schema::' . ucfirst($database) . '::Result::' . ucfirst($table);
 
-    # Retrieve the DBI handle
-    my $dbh = $self->_build_dbh($c, $database);
 
-    # Prepare the query to retrieve the record
-    my $sth = $dbh->prepare("SELECT * FROM $table WHERE $id_field = ?");
+    print $debug . __LINE__ . " Enter get_record_by_id\n";
+    my $model_instance = $c->model($model);
+    # Construct the model name from the database and table names
+    print $debug . __LINE__ . " Constructing model name\n";
+    my $model = 'DB::Schema::' . ucfirst($database) . '::Result::' . ucfirst($table);
+    print $debug . __LINE__ . " Model name: $model\n";
+    print $debug . __LINE__ . " Model: " . Dumper($model_instance) . "\n";
 
-    # Execute the query with the actual value of $id
-    $sth->execute($id);
 
-    # Fetch the record data
-    my $record = $sth->fetchrow_hashref;
+    # Retrieve the record from the database using the id
+    print $debug . __LINE__ . " Retrieving record\n";
+    my $record = $c->model($model)->find($id);
+    print $debug . __LINE__ . " Record: " . Dumper($record) . "\n";
 
+    print $debug . __LINE__ . " Exiting get_record_by_id\n";
     return $record;
 }
-
 sub delete_record_by_id {
     my ($self, $c, $database, $table, $id_field, $id) = @_;
 

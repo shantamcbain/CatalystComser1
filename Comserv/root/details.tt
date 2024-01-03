@@ -1,3 +1,9 @@
+[% PageVersion = 'details.tt,v 0.2 2024/01/02 shanta Exp shanta ' %]
+[% IF debug == 1 %]
+    [% PageVersion %]
+    [% "Debugging HostName: " _ HostName %]
+    [% INCLUDE 'debug.tt' %]
+[% END %]
 <h2>Task Details</h2>
 
 <form action="/todo/save" method="POST">

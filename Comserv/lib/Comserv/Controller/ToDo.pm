@@ -116,7 +116,8 @@ sub create :Path('create') :Args(2) {
         # Forward to the view
         $c->forward($c->view('TT'));
     };
-}sub insert_into_project_table :Private {
+}
+sub insert_into_project_table :Private {
     my ($self, $c, $project_details) = @_;
 
     # Retrieve the username_of_poster and group_of_poster from the session
@@ -276,4 +277,65 @@ sub old_todo :Path('old_todo') :Args(0) {
 
     # Forward to the view
     $c->forward($c->view('TT'));
+}
+sub details :Path('todo/details') :Args(3) {
+    my ($self, $c, $database, $table, $record_id) = @_;
+
+    # Construct the model name from the database and table names
+    my $model = 'DB::' . $database . '::' . $table;
+
+    # Retrieve the record from the database using the record_id
+    my $record = $c->model('DB')->get_record_by_id($c, $database, $table, $record_id);
+
+    # Check if the record exists
+    if (!$record) {
+        $c->stash(error_msg => "No record found with id: $record_id");
+        $c->stash(template => 'error.tt');
+    } else {
+        # Get the column names of the record
+        my @columns = $record->result_source->columns;
+
+        # Pass the record and the column names to the template
+        $c->stash(record => $record);
+        $c->stash(columns => \@columns);
+
+        # Set the template
+        $c->stash(template => 'todo/details.tt');
+    }
+
+    # Forward to the view
+    $c->forward($c->view('TT'));
+}
+sub modify :Path('modify') :Args(3) {
+    my ($self, $c, $database, $table, $record_id) = @_;
+
+    # Construct the model name from the database and table names
+    my $model = 'DB::' . ucfirst($database) . '::' . ucfirst($table);
+
+    # Retrieve the record from the database using the record_id
+    my $record = $c->model($model)->find($record_id);
+
+    # Check if the record exists
+    if (!$record) {
+        $c->stash(error_msg => "No record found with id: $record_id");
+        $c->stash(template => 'error.tt');
+        $c->forward($c->view('TT'));
+        return;
+    }
+
+    # Retrieve the submitted form data
+    my $params = $c->req->params;
+
+    # Add the username of the current user and the current date to the data
+    $params->{last_mod_by} = $c->session->{username} // 'unknown';  # Use 'unknown' if the username is undefined
+    $params->{last_mod_date} = DateTime->now->strftime('%Y-%m-%d %H:%M:%S');
+
+    # Update the record with the submitted data
+    $record->update($params);
+
+    # Set a success message in the stash
+    $c->stash(success_msg => "Record updated successfully");
+
+    # Redirect to the form page for the record
+    $c->response->redirect($c->uri_for("/todo/details/$database/$table/$record_id"));
 }

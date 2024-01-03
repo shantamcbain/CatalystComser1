@@ -1,8 +1,8 @@
 [% PageVersion = 'pagetop.tt,v 0.021 2024/01/01 shanta Exp shanta ' %]
 [%# PageVersion = 'pagetop.tt,v 0.02 2023/08/30 shanta Exp shanta ' %]
 [% IF c.session.debug_mode == 1 %]
-    [% PageVersion %]
-    [% "Debugging HostName: " _ HostName %]
+    [%# PageVersion %]
+    [%# "Debugging HostName: " _ HostName %]
     [%# INCLUDE 'debug.tt' %]
 [% END %]
 <header>
@@ -27,3 +27,9 @@
         </ul>
     </nav>
 </header>
+[% IF error_msg %]
+    <p>Error: [% error_msg %]</p>
+[% END %]
+[% IF success_msg %]
+    <p>Error: [% success_msg %]</p>
+[% END %]

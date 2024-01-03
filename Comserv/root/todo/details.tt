@@ -6,7 +6,7 @@
     [% "Debugging HostName: " _ HostName %]
     [% INCLUDE 'debug.tt' %]
 [% END %]
-<h1>Record Details View.</h1>
+
 <h1>Record Details View.</h1>
 <form action="/modify/ShantaForager/CscTodoTb/[% record.id %]" method="post">
     [% FOREACH column IN columns %]
