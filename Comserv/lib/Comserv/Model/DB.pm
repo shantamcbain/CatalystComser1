@@ -129,17 +129,15 @@ sub get_fields {
 sub get_record_by_id {
     my ($self, $c, $database, $table, $id) = @_;
     print $debug . __LINE__ . " Database: $database, Table: $table, ID: $id\n";
-    my $model = 'DB::Schema::' . ucfirst($database) . '::Result::' . ucfirst($table);
 
-
-    print $debug . __LINE__ . " Enter get_record_by_id\n";
-    my $model_instance = $c->model($model);
     # Construct the model name from the database and table names
     print $debug . __LINE__ . " Constructing model name\n";
     my $model = 'DB::Schema::' . ucfirst($database) . '::Result::' . ucfirst($table);
     print $debug . __LINE__ . " Model name: $model\n";
-    print $debug . __LINE__ . " Model: " . Dumper($model_instance) . "\n";
 
+    # Get the model instance
+    my $model_instance = $c->model($model);
+    print $debug . __LINE__ . " Model: " . Dumper($model_instance) . "\n";
 
     # Retrieve the record from the database using the id
     print $debug . __LINE__ . " Retrieving record\n";
@@ -148,8 +146,7 @@ sub get_record_by_id {
 
     print $debug . __LINE__ . " Exiting get_record_by_id\n";
     return $record;
-}
-sub delete_record_by_id {
+}sub delete_record_by_id {
     my ($self, $c, $database, $table, $id_field, $id) = @_;
 
     # Retrieve the DBI handle

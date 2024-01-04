@@ -37,7 +37,8 @@
                     <a href="/SunFire?site=SunFire" class="site-dropdown-item" onclick="activateSite('SunFire')
 ">SunFire</a>
            <a href="/USBM?site=USBM" class="site-dropdown-item" onclick="activateSite('USBM')">USBM</a>
-                </div>
+           <a href="/?site=home" class="site-dropdown-item" onclick="activateSite('home')
+">Default home</a>               </div>
             </div>
             <div class="submenu-item">
                 <span class="submenu-header">System Links</span>
