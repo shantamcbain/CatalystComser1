@@ -17,6 +17,7 @@
     <li><a href="sunfire.computersystemconsulting.ca" target="_blank">Sunfire Systems</a> Main site for Sunfire Systems. Primary
         focus is the solar system monitoring system.</li>
     <li><a href="/USBM">Universal School of Biological Life</a></li>
+    <li><a href="/VE7TIT">ve7tit.com site.</a> My Ham Radio site.</li>
     <li><a href="weaverbeck.com" target="_blank">weaverbeck.com</a> - the weaver beck geological site.</li>
         development</li>
 
@@ -25,13 +26,16 @@
 <ul>
 
     <li><a href="/Forager">The new forager.com site</a></li>
-    <li><a href="/VE7TIT">ve7tit.com site.</a> My Ham Radio site.</li>
     <li><a href="/Monashee">The new forager.com site</a></li>
 
 </ul>
-<h2> What is current under development.</h2>
+<h2> What is currently under development.</h2>
 <ol>
-
+    <li>We Need to work on getting the server restarted after a git pull, also we need to get the production server for
+        catalyst working.
+        This way we can separate the testing from production.
+    </li>
+    <li>Currently, we need to go into processes in cpanel and kill the active 3000 server. Then restart the server.</li>
     <li>Schema.</li>
     <ol>
     <li>Schema ability of admin users to create and modify Database schema</li>
