@@ -1,1 +1,4 @@
 [% SiteName = c.session.SiteName %]
+[% firstname = c.session.fristname %]
+[% lastname =  c.session.lastname %]
+[% welcome_message =  c.session.welcome_message %]

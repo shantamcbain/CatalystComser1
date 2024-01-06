@@ -28,12 +28,19 @@ sub index :Path :Args(0) {
     # Check the site name and set the template accordingly
     if ($site_name eq 'SunFire') {
         $c->stash(template => 'SunFire/SunFire.tt');
-    } elsif ($site_name eq 'CSC') {
-        $c->stash(template => 'CSC/CSC.tt');
     } elsif ($site_name eq 'BMaster') {
         $c->stash(template => 'BMaster/BMaster.tt');
-    } elsif ($site_name eq 'USBM') {
+    } elsif ($site_name eq 'CSC') {
+        $c->stash(template => 'CSC/CSC.tt');
+    } elsif ($site_name eq 'Shanta') {
+        $c->stash(template => 'Shanta/Shanta.tt');
+    }elsif ($site_name eq 'WB') {
+        $c->stash(template => 'Shanta/WB.tt');
+    }
+    elsif ($site_name eq 'USBM') {
         $c->stash(template => 'USBM/USBM.tt');
+    } elsif ($site_name eq 've75i5') {
+        $c->stash(template => 'Shanta/ve7tit.tt');
     } else {
         # Set the template for the default home page
         $c->stash(template => 'home.tt');
@@ -57,15 +64,28 @@ sub auto :Private {
     if ($domain =~ /sunfire\.computersystemconsulting\.ca$/ || $domain =~ /sunfiresystems\.ca$/) {
         $c->stash->{SiteName} = 'SunFire';
         $c->session->{SiteName} = 'SunFire';
-    } elsif ($domain =~ /shanta\.computersystemconsulting\.ca$/) {
+    } elsif ($domain =~ /computersystemconsulting\.ca$/|| $domain =~
+        /CSC$/) {
         $c->stash->{SiteName} = 'CSC';
         $c->session->{SiteName} = 'CSC';
+    } elsif ($domain =~ /shanta\.computersystemconsulting\.ca$/|| $domain =~ /shanta\.weaverbeck\.com$/ || $domain =~
+        /Shanta$/) {
+        $c->stash->{SiteName} = 'Shanta';
+        $c->session->{SiteName} = 'Shanta';
     } elsif ($domain =~ /BMaster\.computersystemconsulting\.ca$/ || $domain =~ /beemaster\.ca$/ || $domain =~ /BMaster$/) {
         $c->stash->{SiteName} = 'BMaster';
         $c->session->{SiteName} = 'BMaster';
     } elsif ($domain =~ /usbm\.computersystemconsulting\.ca$/ || $domain =~ /usbm\.ca$/ || $domain =~ /USBM$/) {
         $c->stash->{SiteName} = 'USBM';
         $c->session->{SiteName} = 'USBM';
+    } elsif ($domain =~ /weaverbeck\.weaverback\.ca$/ || $domain =~ /vet7tit\.com$/ || $domain =~
+        /veytit$/) {
+        $c->stash->{SiteName} = 'WB';
+        $c->session->{SiteName} = 'WB';
+    } elsif ($domain =~ /weaverbeck\.computersystemconsulting\.ca$/ || $domain =~ /weaverbeck\.com$/ || $domain =~
+        /WB$/) {
+        $c->stash->{SiteName} = 'WB';
+        $c->session->{SiteName} = 'WB';
     }
     elsif ($domain =~ /0.0.0.0 $/ || $domain =~ /home$/ || $domain =~ /USBM$/) {
         $c->stash->{SiteName} = 'home';
@@ -100,7 +120,7 @@ sub auto :Private {
         $c->stash->{debug_mode} = $c->session->{debug_mode};
     }
 
-    # Set the HostName and SiteName in the stash
+    # Set the HostName in the stash
     $c->stash->{HostName} = $c->request->base;
 
     # Set the Domain in the session

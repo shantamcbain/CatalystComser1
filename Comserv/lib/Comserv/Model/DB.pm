@@ -416,6 +416,7 @@ sub get_user_by_username {
     # Fetch the user data
     my $user = $user_rs->first;
     my $username = $user->username;
+    my $first_name = $user->first_name;
     print $debug . __LINE__ . " Username: $username\n";  # Debug print
     my $role_from_db = $user->roles;  # Use the roles method to fetch the user's role
 

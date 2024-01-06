@@ -18,7 +18,7 @@
              <a href="/todo/details/ShantaForager/CscTodoTb/[% todo.record_id %]">Priority: [% todo.priority %],
                  Subject: [% todo
                 .subject %]</a>
-        [% END %]$database, $table, $record_id
+        [% END %]
     </div>
 </div>            <div class="submenu-item">
                 <span class="submenu-header">Setup</span>
@@ -32,11 +32,14 @@
             <div class="submenu-item">
                 <span class="submenu-header">Select Domain</span>
                 <div class="submenu">
-                    <a href="/BMaster?site=BMaster" class="site-dropdown-item" onclick="activateSite('BMaster')">BMaster</a>
-                    <a href="/CSC?site=CSC" class="site-dropdown-item" onclick="activateSite('CSC')">CSC</a>
-                    <a href="/SunFire?site=SunFire" class="site-dropdown-item" onclick="activateSite('SunFire')
+                    <a href="?site=BMaster" class="site-dropdown-item" onclick="activateSite('BMaster')">BMaster</a>
+                    <a href="?site=CSC" class="site-dropdown-item" onclick="activateSite('CSC')">CSC</a>
+                    <a href="?site=Shanta" class="site-dropdown-item" onclick="activateSite('Shanta')">Shanta</a>
+
+                    <a href="?site=SunFire" class="site-dropdown-item" onclick="activateSite('SunFire')
 ">SunFire</a>
            <a href="/USBM?site=USBM" class="site-dropdown-item" onclick="activateSite('USBM')">USBM</a>
+           <a href="?site=WB" class="site-dropdown-item" onclick="activateSite('wb')">WeaverBeck.com</a>
            <a href="/?site=home" class="site-dropdown-item" onclick="activateSite('home')
 ">Default home</a>               </div>
             </div>

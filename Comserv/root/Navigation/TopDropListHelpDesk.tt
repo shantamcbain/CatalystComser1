@@ -6,10 +6,10 @@
                     [% IF c.session.group == 'admin' %]
                     <a href="/add_link?menu=HelpDesk">Add</a>
                     [% END %]
-                    <a href="/helpdesk"target=.blank'>HelpDesk</a>
+                    <a href="/HelpDesk"target=.blank'>HelpDesk</a>
                     <a href="/faq" target="_blank" ><font   class="LeftSideBarNavStyle">Our FAQ</font></a>
-                    <a href="/knowlegebase" target="_blank" >Knowledge
-                            base<</a>
+                    <a href="/KnowlegeBase" target="_blank" >Knowledge
+                            base</a>
                     <a href="https://www.computersystemconsulting.ca/whmcs/submitticket.php?step=2&deptid=2"
                    target='_blank' >Sumbmit a support ticket.</a>
                 [% FOREACH link IN member_links %]
