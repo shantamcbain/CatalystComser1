@@ -39,7 +39,7 @@ sub index :Path :Args(0) {
     }
     elsif ($site_name eq 'USBM') {
         $c->stash(template => 'USBM/USBM.tt');
-    } elsif ($site_name eq 've75i5') {
+    } elsif ($site_name eq 've7tit') {
         $c->stash(template => 'Shanta/ve7tit.tt');
     } else {
         # Set the template for the default home page

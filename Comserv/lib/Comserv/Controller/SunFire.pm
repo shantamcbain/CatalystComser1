@@ -4,20 +4,7 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller' }
 
-sub index :Path :Args(0) {
-    my ($self, $c) = @_;
 
-    # Get the domain name from the request
-    my $domain = $c->request->uri->host;
-
-    # Check if the domain is 'sunfire.computersystemconsulting.ca' or 'sunfiresystems.ca'
-    if ($domain =~ /sunfire\.computersystemconsulting\.ca$/ || $domain =~ /sunfiresystems\.ca$/) {
-        $c->stash(template => 'sunfire/SunFire.tt');
-    } else {
-        # Redirect to 404 page or another appropriate page
-        $c->response->redirect('/404');
-    }
-}
 sub base :Chained('/') :PathPart('SunFire') :CaptureArgs(0) {
     my ($self, $c) = @_;
 
