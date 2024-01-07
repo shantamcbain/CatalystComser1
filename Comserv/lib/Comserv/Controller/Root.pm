@@ -88,11 +88,6 @@ sub auto :Private {
         $c->stash->{SiteName} = 'USBM';
         $c->session->{SiteName} = 'USBM';
     }
-    elsif ($domain =~ /weaverbeck\.weaverback\.ca$/ || $domain =~ /vet7tit\.com$/ || $domain =~
-        /veytit$/) {
-        $c->stash->{SiteName} = 'WB';
-        $c->session->{SiteName} = 'WB';
-    }
     elsif ($domain =~ /weaverbeck\.computersystemconsulting\.ca$/ || $domain =~ /weaverbeck\.com$/ || $domain =~
         /WB$/) {
         $c->stash->{SiteName} = 'WB';
@@ -100,8 +95,8 @@ sub auto :Private {
     }
      elsif ($domain =~ /ve7tit\.weaverbeck\.com$/ || $domain =~ /ve7tit\.com$/ || $domain =~
         /ve7tit$/) {
-        $c->stash->{SiteName} = 'WB';
-        $c->session->{SiteName} = 'WB';
+        $c->stash->{SiteName} = 've7tit';
+        $c->session->{SiteName} = 've7tit';
     }elsif ($domain =~ /0.0.0.0 $/ || $domain =~ /home$/ || $domain =~ /USBM$/) {
         $c->stash->{SiteName} = 'home';
         $c->session->{SiteName} = 'home';
