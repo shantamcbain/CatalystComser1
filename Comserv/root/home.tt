@@ -31,11 +31,29 @@
 </ul>
 <h2> What is currently under development.</h2>
 <ol>
+    <li>Migrate sites from old server.
+        <ol>.
+            <li>altpowerstore.com</li>
+            <li>computersystemconsulting.ca</li>
+            <li>beemaster.ca</li>
+            <li>Helpfulearth.com</li>
+            <li>Shamanbotanicals.ca</li>
+            <li>skyfarm.com</li>
+            <li>forager.com</li>
+            <li>usbm.ca</li>
+            <li>countrystores.com</li>
+            <li>grindrodbc.com</li>
+            <li>ve7tit.com done</li>
+            <li>weaverbeck.com done</li>
+        </ol>
+    </li>
     <li>We Need to work on getting the server restarted after a git pull, also we need to get the production server for
         catalyst working.
         This way we can separate the testing from production.
+
+        Currently, we need to go into processes in cpanel and kill the active 3000 server.
+        Then restart the server.
     </li>
-    <li>Currently, we need to go into processes in cpanel and kill the active 3000 server. Then restart the server.</li>
     <li>Schema.</li>
     <ol>
     <li>Schema ability of admin users to create and modify Database schema</li>

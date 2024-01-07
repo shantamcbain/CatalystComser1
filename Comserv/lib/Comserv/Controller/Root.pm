@@ -107,7 +107,8 @@ sub auto :Private {
         # If site name is defined in the URL, update the session and stash
         $c->stash->{SiteName} = $site_name;
         $c->session->{SiteName} = $site_name;
-    } else {
+    }
+    else {
         # If site name is not defined in the URL, use the session or stash value, or default to 'home'
         $site_name = $c->session->{SiteName} || $c->stash->{SiteName} || 'home';
         $c->stash->{SiteName} = $site_name;
