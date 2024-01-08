@@ -50,10 +50,13 @@ sub index :Path :Args(0) {
     elsif ($site_name eq 've7tit') {
         $c->stash(template => 'Shanta/ve7tit.tt');
     }
-    else {
-        # Set the template for the default home page
+    elsif ($site_name eq 'home') {
         $c->stash(template => 'home.tt');
     }
+    else {
+        $c->stash(template => 'home.tt');
+    }
+
 
     # Forward to the view
     $c->forward($c->view('TT'));
@@ -106,7 +109,8 @@ sub auto :Private {
         /ve7tit$/) {
         $c->stash->{SiteName} = 've7tit';
         $c->session->{SiteName} = 've7tit';
-    }elsif ($domain =~ /0.0.0.0 $/ || $domain =~ /home$/ || $domain =~ /USBM$/) {
+    }
+    elsif ($domain =~ /0.0.0.0 $/ || $domain =~ /home$/ || $domain =~ /home/) {
         $c->stash->{SiteName} = 'home';
         $c->session->{SiteName} = 'home';
     }

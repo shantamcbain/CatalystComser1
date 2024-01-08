@@ -19,7 +19,6 @@
     <li><a href="/USBM">Universal School of Biological Life</a></li>
     <li><a href="/VE7TIT">ve7tit.com site.</a> My Ham Radio site.</li>
     <li><a href="weaverbeck.com" target="_blank">weaverbeck.com</a> - the weaver beck geological site.</li>
-        development</li>
 
 </ul>
 <h2> Soon to be added!</h2>
@@ -33,12 +32,12 @@
 <ol>
     <li>Migrate sites from old server.
         <ol>
+            <li>forager.com Mostly moved the new server.  Have to get Page system working.</li>
             <li>computersystemconsulting.ca</li>
             <li>beemaster.ca</li>
             <li>Helpfulearth.com</li>
             <li>Shamanbotanicals.ca</li>
             <li>skyfarm.com</li>
-            <li>forager.com</li>
             <li>usbm.ca</li>
             <li>countrystores.com</li>
             <li>grindrodbc.com</li>
@@ -54,7 +53,7 @@
         Currently, we need to go into processes in cpanel and kill the active 3000 server.
         Then restart the server.
     </li>
-    <li>Schema.</li>
+    <li>Schema.
     <ol>
     <li>Schema ability of admin users to create and modify Database schema</li>
         <li>Schema Management</li>
@@ -62,17 +61,17 @@
         <li>Schema Management - Edit Schema</li>
         <li>Schema Management - Delete Schema</li>
         <li>Schema Management - View Schema</li>
-    </ol>
+    </ol></li>
     <li>Site Page Management Via database.</li>
-    <ol>
+   <li> <ol>
         <li>Site Page Management - Add Page to site.</li>
         <li>Site Page Management - Edit Page</li>
         <li>Site Page Management - Delete Page</li>
         <li>Site Page Management - View Page</li>
-    </ol>
+    </ol></li>
     <li>CSS system for site styling by user</li>
-    <li>Site Admin</li>
-        <ol><li>User Management</li>
+    <li>Site Admin
+        <ol><li>User Management
     <ol>
         <li>User Management - Add User</li>
         <li>User Management - Edit User</li>
@@ -82,7 +81,7 @@
         <li>Forgot Password</li>
         <li>Forgot Username</li>
         <li>Change Password</li>
-    </ol>
+    </ol></li>
     <li>Site Admin - User Management</li>
     <li>Site Admin - Site Management</li>
     <li>Site Admin - Site Page Management</li>
@@ -91,8 +90,8 @@
     <li>Site Admin - Site Page Content Management - Edit Content</li>
     <li>Site Admin - Site Page Content Management - Delete Content</li>
     <li>Site Admin - Site Page Content Management - View Content</li>
-    </ol>
-    <li>ToDo system</li>
+    </ol></li>
+    <li>ToDo system
     <ol>
         <li>ToDo Management</li>
         <li>ToDo Management - Add ToDo</li>
@@ -101,16 +100,16 @@
         <li>ToDo Management - View ToDo</li>
         <li>loging </li>
         <li>projects</li>
-    </ol>
-    <li>Blog system</li>
+    </ol></li>
+    <li>Blog system
     <ol>
         <li>Blog Management</li>
         <li>Blog Management - Add Blog</li>
         <li>Blog Management - Edit Blog</li>
         <li>Blog Management - Delete Blog</li>
         <li>Blog Management - View Blog</li>
-    </ol>
-    <li>System to collect all the Videos, books etc and put the files in a database.</li>
+    </ol></li>
+    <li>System to collect all the Videos, books, etc. and put the files in a database.</li>
     <li>Calendar system</li>
     <li>Solar Management system.</li>
     <li>Weather Management system.</li>
