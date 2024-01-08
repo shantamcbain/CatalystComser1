@@ -32,8 +32,7 @@
 <h2> What is currently under development.</h2>
 <ol>
     <li>Migrate sites from old server.
-        <ol>.
-            <li>altpowerstore.com</li>
+        <ol>
             <li>computersystemconsulting.ca</li>
             <li>beemaster.ca</li>
             <li>Helpfulearth.com</li>
@@ -45,7 +44,8 @@
             <li>grindrodbc.com</li>
             <li>ve7tit.com done</li>
             <li>weaverbeck.com done</li>
-        </ol>
+             <li>altpowerstore.com done</li>
+       </ol>
     </li>
     <li>We Need to work on getting the server restarted after a git pull, also we need to get the production server for
         catalyst working.

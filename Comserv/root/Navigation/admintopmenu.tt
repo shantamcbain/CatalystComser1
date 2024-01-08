@@ -68,7 +68,7 @@
                         <a href="[% c.session.return_url %]?debug=1">Toggle Debug Mode ON</a>
                     [% END %]
             <a href="/debug" target="_blank">Debug</a>
-                   <a href="#">Option 3</a>
+                   <a href="https://sunfire.computersystemconsulting.ca:2087">Sunfire WHM</a>
                 </div>
             </div>
         </div>

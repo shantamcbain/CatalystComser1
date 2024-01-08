@@ -35,7 +35,10 @@ sub index :Path :Args(0) {
     elsif ($site_name eq 'CSC') {
         $c->stash(template => 'CSC/CSC.tt');
     }
-    elsif ($site_name eq 'Shanta') {
+    elsif ($site_name eq 'Forager') {
+        $c->stash(template => 'Forager/Forager.tt');
+    }
+   elsif ($site_name eq 'Shanta') {
         $c->stash(template => 'Shanta/Shanta.tt');
     }
     elsif ($site_name eq 'WB') {
@@ -46,7 +49,8 @@ sub index :Path :Args(0) {
     }
     elsif ($site_name eq 've7tit') {
         $c->stash(template => 'Shanta/ve7tit.tt');
-    } else {
+    }
+    else {
         # Set the template for the default home page
         $c->stash(template => 'home.tt');
     }
@@ -79,6 +83,11 @@ sub auto :Private {
         /Shanta$/) {
         $c->stash->{SiteName} = 'Shanta';
         $c->session->{SiteName} = 'Shanta';
+    }
+    elsif ($domain =~ /forager\.com$/ || $domain =~
+        /Forager$/) {
+        $c->stash->{SiteName} = 'Forager';
+        $c->session->{SiteName} = 'Forager';
     }
     elsif ($domain =~ /BMaster\.computersystemconsulting\.ca$/ || $domain =~ /beemaster\.ca$/ || $domain =~ /BMaster$/) {
         $c->stash->{SiteName} = 'BMaster';
