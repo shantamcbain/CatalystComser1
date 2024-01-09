@@ -135,4 +135,13 @@ sub register :Path('/register') :Args(0) {
         $c->forward($c->view('TT'));
     }
 }
+sub mail :Path('/mail') :Args(0) {
+    my ($self, $c) = @_;
+
+    # Set the TT template to use
+    $c->stash(template => 'user/mail.tt');
+
+    # Forward to the 'end' action (which will render the template)
+    $c->forward('View::TT');
+}
 1;

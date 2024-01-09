@@ -32,7 +32,6 @@
 <ol>
     <li>Migrate sites from old server.
         <ol>
-            <li>forager.com Mostly moved the new server.  Have to get Page system working.</li>
             <li>computersystemconsulting.ca</li>
             <li>beemaster.ca</li>
             <li>Helpfulearth.com</li>
@@ -44,6 +43,7 @@
             <li>ve7tit.com done</li>
             <li>weaverbeck.com done</li>
              <li>altpowerstore.com done</li>
+            <li>forager.com Mostly moved the new server.  Have to get Page system working.</li>
        </ol>
     </li>
     <li>We Need to work on getting the server restarted after a git pull, also we need to get the production server for
@@ -77,6 +77,12 @@
         <li>User Management - Edit User</li>
         <li>User Management - Delete User</li>
         <li>User Management - View User</li>
+        <li>User Management - Add email address to session
+            <ol>
+                <li>Get 2096 working</li>
+                <li></li>
+            </ol>
+        </li>
         <li>Registration</li>
         <li>Forgot Password</li>
         <li>Forgot Username</li>

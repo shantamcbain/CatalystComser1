@@ -34,6 +34,7 @@
                 <div class="submenu">
                     <a href="?site=BMaster" class="site-dropdown-item" onclick="activateSite('BMaster')">BMaster</a>
                     <a href="?site=CSC" class="site-dropdown-item" onclick="activateSite('CSC')">CSC</a>
+                   <a href="?site=Forager" class="site-dropdown-item" onclick="activateSite('Forager')">Forager</a>
                     <a href="?site=Shanta" class="site-dropdown-item" onclick="activateSite('Shanta')">Shanta</a>
 
                     <a href="?site=SunFire" class="site-dropdown-item" onclick="activateSite('SunFire')
@@ -68,7 +69,7 @@
                         <a href="[% c.session.return_url %]?debug=1">Toggle Debug Mode ON</a>
                     [% END %]
             <a href="/debug" target="_blank">Debug</a>
-                   <a href="https://sunfire.computersystemconsulting.ca:2087">Sunfire WHM</a>
+                   <a href="https://forager.com:2087" target="_blank">Sunfire WHM</a>
                 </div>
             </div>
         </div>
