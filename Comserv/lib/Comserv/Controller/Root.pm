@@ -38,6 +38,9 @@ sub index :Path :Args(0) {
     elsif ($site_name eq 'Forager') {
         $c->stash(template => 'Forager/Forager.tt');
     }
+   elsif ($site_name eq 'Monashee') {
+        $c->stash(template => 'Monashee/Monashee.tt');
+    }
    elsif ($site_name eq 'Shanta') {
         $c->stash(template => 'Shanta/Shanta.tt');
     }
@@ -92,9 +95,14 @@ sub auto :Private {
         $c->stash->{SiteName} = 'Forager';
         $c->session->{SiteName} = 'Forager';
     }
-    elsif ($domain =~ /BMaster\.computersystemconsulting\.ca$/ || $domain =~ /beemaster\.ca$/ || $domain =~ /BMaster$/) {
-        $c->stash->{SiteName} = 'BMaster';
-        $c->session->{SiteName} = 'BMaster';
+    elsif ($domain =~ /monasheecoopsupport.computersystemconsulting.ca$/ || $domain =~ /Monashee$/) {
+        $c->stash->{SiteName} = 'Monashee';
+        $c->session->{SiteName} = 'Monashee';
+    }
+    elsif ($domain =~ /onnashe\.computersystemconsulting\.ca$/|| $domain =~ /shanta\.weaverbeck\.com$/ || $domain =~
+        /Shanta$/) {
+        $c->stash->{SiteName} = 'Shanta';
+        $c->session->{SiteName} = 'Shanta';
     }
     elsif ($domain =~ /usbm\.computersystemconsulting\.ca$/ || $domain =~ /usbm\.ca$/ || $domain =~ /USBM$/) {
         $c->stash->{SiteName} = 'USBM';
@@ -142,6 +150,20 @@ sub auto :Private {
         # If the debug parameter is not defined but there is a value in the session
         # Store the session value in the stash
         $c->stash->{debug_mode} = $c->session->{debug_mode};
+    }
+   my $page = $c->req->param('page');
+    # If the debug parameter is defined
+    if (defined $page) {
+        # If the debug parameter is different from the session value
+        if ($c->session->{page} ne $page) {
+            # Store the new debug parameter in the session and stash
+            $c->session->{page} = $page;
+            $c->stash->{page} = $page;
+        }
+    } elsif (defined $c->session->{page}) {
+        # If the debug parameter is not defined but there is a value in the session
+        # Store the session value in the stash
+        $c->stash->{page} = $c->session->{page};
     }
 
     # Set the HostName in the stash

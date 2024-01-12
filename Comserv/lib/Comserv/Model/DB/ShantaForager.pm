@@ -8,8 +8,8 @@ has 'dbi_info' => (
     isa => 'HashRef',
     lazy => 1,
     default => sub {
-        # Read the DBI information from the JSON file
-        return decode_json(path('dbi_info.json')->slurp_utf8);
+        # Read the DBI information from the secure JSON file
+        return decode_json(path('secure_dbi_info.json')->slurp_utf8);
     },
 );
 
@@ -20,7 +20,7 @@ __PACKAGE__->config(
         my $self = shift;
         my $dbi_info = $self->dbi_info->{shanta_forager};
         return {
-            dsn => "dbi:mysql:database=$dbi_info->{database};host=$dbi_info->{host};port=$dbi_info->{port}",
+        dsn => "dbi:mysql:database=$dbi_info->{database};host=$dbi_info->{host};port=$dbi_info->{port}",
             user => $dbi_info->{username},
             password => $dbi_info->{password},
         };
@@ -28,4 +28,4 @@ __PACKAGE__->config(
 );
 
 __PACKAGE__->meta->make_immutable;
-1;
+1;1;

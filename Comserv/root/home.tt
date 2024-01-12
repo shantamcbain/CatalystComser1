@@ -11,7 +11,21 @@
 
 <h2> sites to be added to catalyst!</h2>
 <ul>
-   <li><a href="/Monashee">The new Monashee coop site</a></li>
+   <li><a href="/Monashee">The new Monashee coop site
+              <ul>
+                <li>Create new branch in git.</li>
+                <li>Add site to Root.pm</li>
+                <li>Add route to index in Root.</li>
+                <li>Create site home page.</li>
+                <li>Create Controller for all further pages.</li>
+                <li>Need to add the ability to add a new user to the database.</li>
+                <li>Need to add the ability to add a new user to the database.</li>
+                <li>Need to add the ability to add a new user to the database.</li>
+                <li>Need to add the ability to add a new user to the database.</li>
+              </ul>
+
+
+       </a></li>
 
     <li><a href="/Forager">The new forager.com site</a></li>
     <li><a href="/helpfullearth">helpfullearth.com</a></li>

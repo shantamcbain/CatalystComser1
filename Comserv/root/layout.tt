@@ -11,7 +11,7 @@
         [% INCLUDE 'pagetop.tt' %]
     [%# INCLUDE 'home.tt' %]
         [% content %]
-
+        [% INCLUDE 'AdminNotes.tt' %]
         [% INCLUDE 'footer.tt' %]
     </body>
     </html>
