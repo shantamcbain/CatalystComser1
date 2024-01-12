@@ -2,19 +2,29 @@ package Comserv::Model::DB::ShantaForager;
 use Moose;
 extends 'Catalyst::Model::DBIC::Schema';
 
-# Use the dbi_info attribute from the Comserv::Model::DB module
-my $dbi_info = Comserv::Model::DB->new->dbi_info->{shanta_forager};
+# Add a class attribute to store the DBI information
+has 'dbi_info' => (
+    is => 'ro',
+    isa => 'HashRef',
+    lazy => 1,
+    default => sub {
+        # Read the DBI information from the JSON file
+        return decode_json(path('dbi_info.json')->slurp_utf8);
+    },
+);
 
-# Convert the dbi_info into a format that connect_info can use
-my $connect_info = {
-    dsn => "dbi:mysql:database=$dbi_info->{database};host=$dbi_info->{host};port=$dbi_info->{port}",
-    user => $dbi_info->{username},
-    password => $dbi_info->{password},
-};
-
+# Set the schema_class and connect_info when the package is loaded
 __PACKAGE__->config(
     schema_class => 'Comserv::Model::Schema::ShantaForager',
-    connect_info => $connect_info
+    connect_info => sub {
+        my $self = shift;
+        my $dbi_info = $self->dbi_info->{shanta_forager};
+        return {
+            dsn => "dbi:mysql:database=$dbi_info->{database};host=$dbi_info->{host};port=$dbi_info->{port}",
+            user => $dbi_info->{username},
+            password => $dbi_info->{password},
+        };
+    },
 );
 
 __PACKAGE__->meta->make_immutable;

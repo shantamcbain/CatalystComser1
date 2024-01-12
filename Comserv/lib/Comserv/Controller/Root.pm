@@ -22,7 +22,7 @@ __PACKAGE__->config(namespace => '');
 sub index :Path :Args(0) {
     my ($self, $c) = @_;
 
-    # Get the site name from the session
+     # Get the site name from the session
     my $site_name = $c->session->{SiteName};
 
     # Check the site name and set the template accordingly
@@ -192,7 +192,7 @@ sub display_schema :Local {
     $c->model('DB')->create_or_update_schema($c);  # Ensure $c is being passed here
 
     # Retrieve the schema information
-    my $schema_info = $c->model('DB')->shanta_forager_schema->get_schema_info($c);
+    my $schema_info = $c->model('DB::ShantaForager')->get_schema_info($c);
 
     # Store the schema information in the stash
     $c->stash(schema_info => $schema_info);

@@ -8,42 +8,42 @@
 <p>This is the landing page for the ComServ Application. </p>
 <p>Here is a list of the sites available for this application.</p>
 
-<ul>
 
-    <li><a href="https://shanta.computersystemconsulting.ca/" target="_blank">dev</a> - Our new
-        development</li>
-    <li><a href="/BMaster">The new beemaster.ca site</a></li>
-    <li><a href="/CSC">Computer System Consulting</a> - Our Hosting and development.</li>
-    <li><a href="sunfire.computersystemconsulting.ca" target="_blank">Sunfire Systems</a> Main site for Sunfire Systems. Primary
-        focus is the solar system monitoring system.</li>
-    <li><a href="/USBM">Universal School of Biological Life</a></li>
-    <li><a href="/VE7TIT">ve7tit.com site.</a> My Ham Radio site.</li>
-    <li><a href="weaverbeck.com" target="_blank">weaverbeck.com</a> - the weaver beck geological site.</li>
-
-</ul>
-<h2> Soon to be added!</h2>
+<h2> sites to be added to catalyst!</h2>
 <ul>
+   <li><a href="/Monashee">The new Monashee coop site</a></li>
 
     <li><a href="/Forager">The new forager.com site</a></li>
-    <li><a href="/Monashee">The new forager.com site</a></li>
+    <li><a href="/helpfullearth">helpfullearth.com</a></li>
+    <li><a href="?site=SB">shamanbotanicals.ca"</a></li>
+    <li><a href="skyefarm.com">skyefarm.com</a></li>
+    <li><a href="grindrodbc.com">grindrodbc.com</a></li>
+   <li><a href="/Monashee">The new Monashee coop site</a></li>
+   <li><a href="/Monashee">The new Monashee coop site</a></li>
 
 </ul>
 <h2> What is currently under development.</h2>
 <ol>
     <li>Migrate sites from old server.
         <ol>
-            <li>computersystemconsulting.ca</li>
-            <li>beemaster.ca</li>
-            <li>Helpfulearth.com</li>
-            <li>Shamanbotanicals.ca</li>
-            <li>skyfarm.com</li>
-            <li>usbm.ca</li>
-            <li>countrystores.com</li>
-            <li>grindrodbc.com</li>
-            <li>ve7tit.com done</li>
-            <li>weaverbeck.com done</li>
-             <li>altpowerstore.com done</li>
-            <li>forager.com Mostly moved the new server.  Have to get Page system working.</li>
+            <li>ssl to add  skyfarm.com, mail.skyfarm.com, computersystemconsulting.ca,
+                beemaster.ca,
+                helpfulearth.com, mail.helpfulearth.com, shamambotanicals.ca, grindrodbc.com, countrystores.ca usbm
+                .ca</li>
+            <li><a href="https://computersystemconsulting.ca" target="_blank">computersystemconsulting.ca Works</a></li>
+            <li><a href="https://beemaster.ca" target="_blank">beemaster.ca default home</a></li>
+            <li><a href="https://helpfullearth.com" target="_blank">Helpfulearth.com default home</a></li>
+            <li><a href="https://shamanbotanicals.ca" target="_blank">shamanbotanicals.ca default home</a></li>
+            <li><a href="https://skyefarm.com" target="_blank">skyefarm.com default home</a></li>
+            <li><a href="https://usbm.ca" target="_blank">usbm.ca works</a></li>
+            <li><a href="https://forager.com" target="_blank"> Forager.com works.</a></li>
+            <li><a href="http://countrystores.ca/" target="_blank">countrystores.ca done</a></li>
+            <li><a href="https://grindrodbc.com" target="_blank">grindrodbc.com</a></li>
+            <li><a href="https://ve7tit.com" target="_blank">ve7tit.com working  </a></li>
+            <li><a href="https://weaverbeck.com" target="_blank">weaverbeck.com</a> done shanta@weaverbeck.com not working.
+                appears that mail users are asked to varify them selves.
+            </li>
+             <li><a href="https://altpowerstore.com" target="_blank">altpowerstore.com</a> works done</li>
        </ol>
     </li>
     <li>We Need to work on getting the server restarted after a git pull, also we need to get the production server for
