@@ -55,7 +55,11 @@ sub _build_dbh {
 
     # Retrieve the DBI information directly from the dbi_info attribute
     my $dbi_info = $self->dbi_info;
-    print $debug . __LINE__ . " dbi_info: " . Dumper($dbi_info) . "\n";
+    print $debug . __LINE__ . " dbi_info: " . " dbi_info: " . "Dbi_info" . Dumper($dbi_info) . "\n";
+    Comserv::debug_log $debug . __LINE__ . " dbi_info: " . "Dbi_info" . Dumper($dbi_info) . "\n";
+
+    # Store the DBI information in the session
+    $c->session(dbi_info => $dbi_info);
 
     # Check if the database is defined
     if (!defined $database) {
@@ -81,7 +85,6 @@ sub _build_dbh {
 
     return $dbh;
 }
-
 # Method to get the schema info
 sub get_tables {
     my ($self, $c, $database) = @_;
@@ -134,6 +137,9 @@ sub get_record_by_id {
     print $debug . __LINE__ . " Constructing model name\n";
     my $model = 'DB::Schema::' . ucfirst($database) . '::Result::' . ucfirst($table);
     print $debug . __LINE__ . " Model name: $model\n";
+    # Construct the model name from the database and table names
+    my $model = ucfirst($database) . '::' . ucfirst($table);
+
 
     # Get the model instance
     my $model_instance = $c->model($model);
@@ -146,7 +152,8 @@ sub get_record_by_id {
 
     print $debug . __LINE__ . " Exiting get_record_by_id\n";
     return $record;
-}sub delete_record_by_id {
+}
+sub delete_record_by_id {
     my ($self, $c, $database, $table, $id_field, $id) = @_;
 
     # Retrieve the DBI handle

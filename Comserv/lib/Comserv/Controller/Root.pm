@@ -35,7 +35,10 @@ sub index :Path :Args(0) {
     elsif ($site_name eq 'CSC') {
         $c->stash(template => 'CSC/CSC.tt');
     }
-    elsif ($site_name eq 'Forager') {
+    elsif ($site_name eq 'Dev') {
+        $c->stash(template => 'dev/index.tt');
+    }
+   elsif ($site_name eq 'Forager') {
         $c->stash(template => 'Forager/Forager.tt');
     }
    elsif ($site_name eq 'Monashee') {
@@ -57,7 +60,7 @@ sub index :Path :Args(0) {
         $c->stash(template => 'home.tt');
     }
     else {
-        $c->stash(template => 'home.tt');
+        $c->stash(template => 'index.tt');
     }
 
 
@@ -90,6 +93,11 @@ sub auto :Private {
         $c->stash->{SiteName} = 'Shanta';
         $c->session->{SiteName} = 'Shanta';
     }
+    elsif ($domain =~ /dev\.computersystemconsulting\.ca$/|| $/ || $domain =~
+        /Dev$/) {
+        $c->stash->{SiteName} = 'Shanta';
+        $c->session->{SiteName} = 'Shanta';
+    }
     elsif ($domain =~ /forager\.com$/ || $domain =~
         /Forager$/) {
         $c->stash->{SiteName} = 'Forager';
@@ -118,7 +126,7 @@ sub auto :Private {
         $c->stash->{SiteName} = 've7tit';
         $c->session->{SiteName} = 've7tit';
     }
-    elsif ($domain =~ /0.0.0.0 $/ || $domain =~ /home$/ || $domain =~ /home/) {
+    elsif ( $domain =~ /home$/ || $domain =~ /home/) {
         $c->stash->{SiteName} = 'home';
         $c->session->{SiteName} = 'home';
     }

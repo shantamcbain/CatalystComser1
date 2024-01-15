@@ -9,7 +9,7 @@ sub edit_admin_notes :Path('edit_admin_notes') :Args(0) {
 
     # Print the contents of the session
     use Data::Dumper;
-    print Dumper($c->stash);
+    print Dumper($c->self);
 
     # Retrieve the admin notes from the database
     my $dbh = $c->stash->{dbi};

@@ -280,12 +280,21 @@ sub old_todo :Path('old_todo') :Args(0) {
 }
 sub details :Path('todo/details') :Args(3) {
     my ($self, $c, $database, $table, $record_id) = @_;
+    print $debug . __LINE__ . " Enter details\n";  # Debug print
+    print $debug . __LINE__ . " database: $database, table: $table, record_id: $record_id\n";  # Debug print
 
     # Construct the model name from the database and table names
-    my $model = 'DB::' . $database . '::' . $table;
-
+    my $model = 'Model::' . ucfirst($database);
+    print $debug . __LINE__ . " model: $model\n";  # Debug print
     # Retrieve the record from the database using the record_id
-    my $record = $c->model('DB')->get_record_by_id($c, $database, $table, $record_id);
+   # Retrieve the record from the database using the record_id
+    if (!$model) {
+        die "Model $model does not exist";
+    }
+    print $debug . __LINE__ . " model instance: " . ref($model) . "\n";  # Debug print
+
+    my $record = $c->model($model)->resultset(ucfirst($table))->find($record_id);
+
 
     # Check if the record exists
     if (!$record) {

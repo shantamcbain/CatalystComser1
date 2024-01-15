@@ -127,8 +127,14 @@ __PACKAGE__->config(
         ],
         ignore_extensions => [ qw/ tt tt2 / ],
     },
-    'Model::DB' => {
-        schema_class => 'Comserv::Model::Schema',
+    #'Model::DB' => {
+    #    schema_class => 'Comserv::Model::Schema',
+    #},
+    'Model::Ency' => {
+        schema_class => 'Comserv::Model::Schema::Ency',
+    },
+    'Model::ShantaForager' => {
+        schema_class => 'Comserv::Model::Schema::ShantaForager',
     },
     'Model::CssForm' => {
         class => 'Comserv::Model::CssForm',

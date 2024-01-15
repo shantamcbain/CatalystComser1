@@ -36,6 +36,7 @@
                 <div class="submenu">
                     <a href="?site=BMaster" class="site-dropdown-item" onclick="activateSite('BMaster')">BMaster</a>
                     <a href="?site=CSC" class="site-dropdown-item" onclick="activateSite('CSC')">CSC</a>
+                    <a href="?site=Dev" class="site-dropdown-item" onclick="activateSite('Dev')">Dev</a>
                     <a href="?site=Monashee" class="site-dropdown-item" onclick="activateSite('Monashee')">Monashee</a>
                     <a href="?site=Forager" class="site-dropdown-item" onclick="activateSite('Forager')">Forager</a>
                     <a href="?site=Shanta" class="site-dropdown-item" onclick="activateSite('Shanta')">Shanta</a>
