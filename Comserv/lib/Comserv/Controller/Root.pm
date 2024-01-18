@@ -79,16 +79,19 @@ sub auto :Private {
     $c->session->{Domain} = $domain;
 
     # Check the domain and set the site accordingly
-    if ($domain =~ /sunfire\.computersystemconsulting\.ca$/ || $domain =~ /sunfiresystems\.ca$/) {
+    if ($domain =~ /sunfire\.computersystemconsulting\.ca$/
+        || $domain =~ /sunfiresystems\.ca$/) {
         $c->stash->{SiteName} = 'SunFire';
         $c->session->{SiteName} = 'SunFire';
     }
-    elsif ($domain =~ /computersystemconsulting\.ca$/|| $domain =~
+    elsif ($domain =~ /computersystemconsulting\.ca$/
+        || $domain =~
         /CSC$/) {
         $c->stash->{SiteName} = 'CSC';
         $c->session->{SiteName} = 'CSC';
     }
-    elsif ($domain =~ /shanta\.computersystemconsulting\.ca$/|| $domain =~ /shanta\.weaverbeck\.com$/ || $domain =~
+    elsif ($domain =~ /shanta\.computersystemconsulting\.ca$/
+        || $domain =~ /shanta\.weaverbeck\.com$/ || $domain =~
         /Shanta$/) {
         $c->stash->{SiteName} = 'Shanta';
         $c->session->{SiteName} = 'Shanta';
@@ -103,20 +106,24 @@ sub auto :Private {
         $c->stash->{SiteName} = 'Forager';
         $c->session->{SiteName} = 'Forager';
     }
-    elsif ($domain =~ /monasheecoopsupport.computersystemconsulting.ca$/ || $domain =~ /Monashee$/) {
+    elsif ($domain =~ /monasheecoopsupport.computersystemconsulting.ca$/
+        || $domain =~ /Monashee$/) {
         $c->stash->{SiteName} = 'Monashee';
         $c->session->{SiteName} = 'Monashee';
     }
-    elsif ($domain =~ /onnashe\.computersystemconsulting\.ca$/|| $domain =~ /shanta\.weaverbeck\.com$/ || $domain =~
+    elsif ($domain =~ /onnashe\.computersystemconsulting\.ca$/
+        || $domain =~ /shanta\.weaverbeck\.com$/ || $domain =~
         /Shanta$/) {
         $c->stash->{SiteName} = 'Shanta';
         $c->session->{SiteName} = 'Shanta';
     }
-    elsif ($domain =~ /usbm\.computersystemconsulting\.ca$/ || $domain =~ /usbm\.ca$/ || $domain =~ /USBM$/) {
+    elsif ($domain =~ /usbm\.computersystemconsulting\.ca$/
+        || $domain =~ /usbm\.ca$/ || $domain =~ /USBM$/) {
         $c->stash->{SiteName} = 'USBM';
         $c->session->{SiteName} = 'USBM';
     }
-    elsif ($domain =~ /weaverbeck\.computersystemconsulting\.ca$/ || $domain =~ /weaverbeck\.com$/ || $domain =~
+    elsif ($domain =~ /weaverbeck\.computersystemconsulting\.ca$/
+        || $domain =~ /weaverbeck\.com$/ || $domain =~
         /WB$/) {
         $c->stash->{SiteName} = 'WB';
         $c->session->{SiteName} = 'WB';
@@ -126,7 +133,8 @@ sub auto :Private {
         $c->stash->{SiteName} = 've7tit';
         $c->session->{SiteName} = 've7tit';
     }
-    elsif ( $domain =~ /home$/ || $domain =~ /home/) {
+    elsif ( $domain =~ /home$/
+        || $domain =~ /home/) {
         $c->stash->{SiteName} = 'home';
         $c->session->{SiteName} = 'home';
     }
@@ -138,8 +146,24 @@ sub auto :Private {
         $c->session->{SiteName} = $site_name;
     }
     else {
-        # If site name is not defined in the URL, use the session or stash value, or default to 'home'
-        $site_name = $c->session->{SiteName} || $c->stash->{SiteName} || 'home';
+     $site_name = $c->session->{SiteName}
+        || $c->stash->{SiteName} || 'none';
+    $c->stash->{SiteName} = $site_name;
+    $c->session->{SiteName} = $site_name;
+
+    }
+
+    # Get the site name from the URL
+    my $site_name = $c->req->param('site');
+    if (defined $site_name) {
+        # If site name is defined in the URL, update the session and stash
+        $c->stash->{SiteName} = $site_name;
+        $c->session->{SiteName} = $site_name;
+    }
+    else {
+        # If site name is not defined in the URL, use the session or stash value, or default to 'none'
+        $site_name = $c->session->{SiteName}
+            || $c->stash->{SiteName} || 'none';
         $c->stash->{SiteName} = $site_name;
         $c->session->{SiteName} = $site_name;
     }
