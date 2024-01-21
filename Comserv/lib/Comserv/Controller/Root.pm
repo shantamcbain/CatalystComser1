@@ -20,52 +20,37 @@ my $site_name = 'home';
 __PACKAGE__->config(namespace => '');
 
 sub index :Path :Args(0) {
-    my ($self, $c) = @_;
+    my ($self, $context) = @_;
 
-     # Get the site name from the session
-    my $site_name = $c->session->{SiteName};
+    # Get the site name from the session
+    my $site_name = $context->session->{SiteName};
 
-    # Check the site name and set the template accordingly
-    if ($site_name eq 'SunFire') {
-        $c->stash(template => 'SunFire/SunFire.tt');
-    }
-    elsif ($site_name eq 'BMaster') {
-        $c->stash(template => 'BMaster/BMaster.tt');
-    }
-    elsif ($site_name eq 'CSC') {
-        $c->stash(template => 'CSC/CSC.tt');
-    }
-    elsif ($site_name eq 'Dev') {
-        $c->stash(template => 'dev/index.tt');
-    }
-   elsif ($site_name eq 'Forager') {
-        $c->stash(template => 'Forager/Forager.tt');
-    }
-   elsif ($site_name eq 'Monashee') {
-        $c->stash(template => 'Monashee/Monashee.tt');
-    }
-   elsif ($site_name eq 'Shanta') {
-        $c->stash(template => 'Shanta/Shanta.tt');
-    }
-    elsif ($site_name eq 'WB') {
-        $c->stash(template => 'Shanta/WB.tt');
-    }
-    elsif ($site_name eq 'USBM') {
-        $c->stash(template => 'USBM/USBM.tt');
-    }
-    elsif ($site_name eq 've7tit') {
-        $c->stash(template => 'Shanta/ve7tit.tt');
-    }
-    elsif ($site_name eq 'home') {
-        $c->stash(template => 'home.tt');
-    }
-    else {
-        $c->stash(template => 'index.tt');
-    }
+    # Define a hash to map site names to templates
+    my %site_to_template = (
+        'SunFire' => 'SunFire/SunFire.tt',
+        'BMaster' => 'BMaster/BMaster.tt',
+        'CSC' => 'CSC/CSC.tt',
+        'Dev' => 'dev/index.tt',
+        'Forager' => 'Forager/Forager.tt',
+        'Monashee' => 'Monashee/Monashee.tt',
+        'Shanta' => 'Shanta/Shanta.tt',
+        'WB' => 'Shanta/WB.tt',
+        'USBM' => 'USBM/USBM.tt',
+        've7tit' => 'Shanta/ve7tit.tt',
+        'home' => 'home.tt',
+    );
 
+    # Check if the site name exists in the hash
+    if (exists $site_to_template{$site_name}) {
+        # If it does, use the corresponding template
+        $context->stash(template => $site_to_template{$site_name});
+    } else {
+        # If it doesn't, default to 'index.tt'
+        $context->stash(template => 'index.tt');
+    }
 
     # Forward to the view
-    $c->forward($c->view('TT'));
+    $context->forward($context->view('TT'));
 }
 
 sub auto :Private {
@@ -78,66 +63,6 @@ sub auto :Private {
     my $domain = $c->request->uri->host;
     $c->session->{Domain} = $domain;
 
-    # Check the domain and set the site accordingly
-    if ($domain =~ /sunfire\.computersystemconsulting\.ca$/
-        || $domain =~ /sunfiresystems\.ca$/) {
-        $c->stash->{SiteName} = 'SunFire';
-        $c->session->{SiteName} = 'SunFire';
-    }
-    elsif ($domain =~ /computersystemconsulting\.ca$/
-        || $domain =~
-        /CSC$/) {
-        $c->stash->{SiteName} = 'CSC';
-        $c->session->{SiteName} = 'CSC';
-    }
-    elsif ($domain =~ /shanta\.computersystemconsulting\.ca$/
-        || $domain =~ /shanta\.weaverbeck\.com$/ || $domain =~
-        /Shanta$/) {
-        $c->stash->{SiteName} = 'Shanta';
-        $c->session->{SiteName} = 'Shanta';
-    }
-    elsif ($domain =~ /dev\.computersystemconsulting\.ca$/|| $/ || $domain =~
-        /Dev$/) {
-        $c->stash->{SiteName} = 'Shanta';
-        $c->session->{SiteName} = 'Shanta';
-    }
-    elsif ($domain =~ /forager\.com$/ || $domain =~
-        /Forager$/) {
-        $c->stash->{SiteName} = 'Forager';
-        $c->session->{SiteName} = 'Forager';
-    }
-    elsif ($domain =~ /monasheecoopsupport.computersystemconsulting.ca$/
-        || $domain =~ /Monashee$/) {
-        $c->stash->{SiteName} = 'Monashee';
-        $c->session->{SiteName} = 'Monashee';
-    }
-    elsif ($domain =~ /onnashe\.computersystemconsulting\.ca$/
-        || $domain =~ /shanta\.weaverbeck\.com$/ || $domain =~
-        /Shanta$/) {
-        $c->stash->{SiteName} = 'Shanta';
-        $c->session->{SiteName} = 'Shanta';
-    }
-    elsif ($domain =~ /usbm\.computersystemconsulting\.ca$/
-        || $domain =~ /usbm\.ca$/ || $domain =~ /USBM$/) {
-        $c->stash->{SiteName} = 'USBM';
-        $c->session->{SiteName} = 'USBM';
-    }
-    elsif ($domain =~ /weaverbeck\.computersystemconsulting\.ca$/
-        || $domain =~ /weaverbeck\.com$/ || $domain =~
-        /WB$/) {
-        $c->stash->{SiteName} = 'WB';
-        $c->session->{SiteName} = 'WB';
-    }
-     elsif ($domain =~ /ve7tit\.weaverbeck\.com$/ || $domain =~ /ve7tit\.com$/ || $domain =~
-        /ve7tit$/) {
-        $c->stash->{SiteName} = 've7tit';
-        $c->session->{SiteName} = 've7tit';
-    }
-    elsif ( $domain =~ /home$/
-        || $domain =~ /home/) {
-        $c->stash->{SiteName} = 'home';
-        $c->session->{SiteName} = 'home';
-    }
     # Get the site name from the URL
     my $site_name = $c->req->param('site');
     if (defined $site_name) {
@@ -145,27 +70,68 @@ sub auto :Private {
         $c->stash->{SiteName} = $site_name;
         $c->session->{SiteName} = $site_name;
     }
-    else {
-     $site_name = $c->session->{SiteName}
-        || $c->stash->{SiteName} || 'none';
-    $c->stash->{SiteName} = $site_name;
-    $c->session->{SiteName} = $site_name;
-
-    }
-
-    # Get the site name from the URL
-    my $site_name = $c->req->param('site');
-    if (defined $site_name) {
-        # If site name is defined in the URL, update the session and stash
-        $c->stash->{SiteName} = $site_name;
-        $c->session->{SiteName} = $site_name;
+    elsif (defined $c->session->{SiteName}) {
+        # If site name is not defined in the URL but is defined in the session, use the session value
+        $c->stash->{SiteName} = $c->session->{SiteName};
     }
     else {
-        # If site name is not defined in the URL, use the session or stash value, or default to 'none'
-        $site_name = $c->session->{SiteName}
-            || $c->stash->{SiteName} || 'none';
-        $c->stash->{SiteName} = $site_name;
-        $c->session->{SiteName} = $site_name;
+        # If site name is not defined in the URL or the session, check the domain and set the site accordingly
+        if ($domain =~ /sunfire\.computersystemconsulting\.ca$/
+            || $domain =~ /sunfiresystems\.ca$/) {
+            $c->stash->{SiteName} = 'SunFire';
+            $c->session->{SiteName} = 'SunFire';
+        }
+        elsif ($domain =~ /computersystemconsulting\.ca$/
+            || $domain =~ /CSC$/) {
+            $c->stash->{SiteName} = 'CSC';
+            $c->session->{SiteName} = 'CSC';
+        }
+        elsif ($domain =~ /shanta\.computersystemconsulting\.ca$/
+            || $domain =~ /shanta\.weaverbeck\.com$/ || $domain =~ /Shanta$/) {
+            $c->stash->{SiteName} = 'Shanta';
+            $c->session->{SiteName} = 'Shanta';
+        }
+        elsif ($domain =~ /dev\.computersystemconsulting\.ca$/ || $domain =~ /Dev$/) {
+            $c->stash->{SiteName} = 'Shanta';
+            $c->session->{SiteName} = 'Shanta';
+        }
+        elsif ($domain =~ /forager\.com$/ || $domain =~ /Forager$/) {
+            $c->stash->{SiteName} = 'Forager';
+            $c->session->{SiteName} = 'Forager';
+        }
+        elsif ($domain =~ /monasheecoopsupport.computersystemconsulting.ca$/
+            || $domain =~ /Monashee$/) {
+            $c->stash->{SiteName} = 'Monashee';
+            $c->session->{SiteName} = 'Monashee';
+        }
+        elsif ($domain =~ /onnashe\.computersystemconsulting\.ca$/
+            || $domain =~ /shanta\.weaverbeck\.com$/ || $domain =~ /Shanta$/) {
+            $c->stash->{SiteName} = 'Shanta';
+            $c->session->{SiteName} = 'Shanta';
+        }
+        elsif ($domain =~ /usbm\.computersystemconsulting\.ca$/
+            || $domain =~ /usbm\.ca$/ || $domain =~ /USBM$/) {
+            $c->stash->{SiteName} = 'USBM';
+            $c->session->{SiteName} = 'USBM';
+        }
+        elsif ($domain =~ /weaverbeck\.computersystemconsulting\.ca$/
+            || $domain =~ /weaverbeck\.com$/ || $domain =~ /WB$/) {
+            $c->stash->{SiteName} = 'WB';
+            $c->session->{SiteName} = 'WB';
+        }
+        elsif ($domain =~ /ve7tit\.weaverbeck\.com$/ || $domain =~ /ve7tit\.com$/ || $domain =~ /ve7tit$/) {
+            $c->stash->{SiteName} = 've7tit';
+            $c->session->{SiteName} = 've7tit';
+        }
+        elsif ($domain =~ /home$/ || $domain =~ /home/) {
+            $c->stash->{SiteName} = 'home';
+            $c->session->{SiteName} = 'home';
+        }
+        else {
+            # If the domain does not match any condition, set SiteName to 'none'
+            $c->stash->{SiteName} = 'none';
+            $c->session->{SiteName} = 'none';
+        }
     }
 
     # Get the debug parameter from the URL
@@ -183,7 +149,8 @@ sub auto :Private {
         # Store the session value in the stash
         $c->stash->{debug_mode} = $c->session->{debug_mode};
     }
-   my $page = $c->req->param('page');
+
+    my $page = $c->req->param('page');
     # If the debug parameter is defined
     if (defined $page) {
         # If the debug parameter is different from the session value
@@ -408,6 +375,23 @@ sub setup :Path('/setup') :Args(0) {
 
     # Store the list of databases in the stash
     $c->stash(databases => $databases);
+
+    # Determine the site-specific content
+    my $site_name = $c->stash->{SiteName};
+    my $site_content;
+       # Use the model to execute a query that retrieves the site-specific content
+   # my $site_content = $c->model('DB::SiteContent')->find({ site_name => $site_name });
+
+    if ($site_name eq 'BMaster') {
+        $site_content = 'BMaster content';
+    } elsif ($site_name eq 'CSC') {
+        $site_content = "";
+    } else {
+        $site_content = 'Default content';
+    }
+
+    # Store the site-specific content in the stash
+    $c->stash(site_content => $site_content);
 
     # Set the template
     $c->stash(template => 'setup.tt');

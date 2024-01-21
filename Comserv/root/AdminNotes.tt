@@ -46,7 +46,7 @@
                                          page_code = 'SiteAdminNotes' AND
                                          sitename = '$SiteName' )
                                   ORDER BY sitename
-                                  ") %]Site admin notes
+                                  ") %]
 
      [% PROCESS 'CSC/pagefields.tt' %]
   [% END %]

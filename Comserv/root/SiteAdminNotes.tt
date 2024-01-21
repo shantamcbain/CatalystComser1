@@ -30,6 +30,6 @@
 
 
   <p><a href="/cgi-bin/page.cgi?site=[% SiteName %]&[% session_string %]&display_modification_form=on&record_id=[%
-  ARecord_id %]" target="_blank"><h3>Click this link to edit admin notes </h3></a>
+  ARecord_id %]" target="_blank"><h3>Click this link to edit admin notes </h3></a> </p>
    [% AdminNotes   %]
  [% END %]
