@@ -138,7 +138,7 @@ sub get_record_by_id {
     my $model = 'DB::Schema::' . ucfirst($database) . '::Result::' . ucfirst($table);
     print $debug . __LINE__ . " Model name: $model\n";
     # Construct the model name from the database and table names
-    my $model = ucfirst($database) . '::' . ucfirst($table);
+     $model = ucfirst($database) . '::' . ucfirst($table);
 
 
     # Get the model instance

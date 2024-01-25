@@ -367,7 +367,9 @@ sub default :Path {
     $c->response->body('Page not found');
     $c->response->status(404);
 }
-sub setup :Path('/setup') :Args(0) {
+use Template;
+
+sub setup :Pathsub setup :Path('/setup') :Args(0) {
     my ($self, $c) = @_;
 
     # Retrieve the list of databases from the dbi_info attribute
@@ -379,13 +381,39 @@ sub setup :Path('/setup') :Args(0) {
     # Determine the site-specific content
     my $site_name = $c->stash->{SiteName};
     my $site_content;
-       # Use the model to execute a query that retrieves the site-specific content
-   # my $site_content = $c->model('DB::SiteContent')->find({ site_name => $site_name });
+    # Define the Template Toolkit object and variables outside the conditional block
+    my $output = '';
+    my $template = Template->new();
+    my $vars = {
+        SiteName => $site_name,
+    };
 
     if ($site_name eq 'BMaster') {
-        $site_content = 'BMaster content';
-    } elsif ($site_name eq 'CSC') {
-        $site_content = "";
+        $site_content = 'BMaster content in root setup';
+    }
+    elsif ($site_name eq 'CSC') {
+        my $template_content = "<h2>[% SiteName %]</h2>
+        <ol>
+<li>
+    Install and setup server to deliver Catalyst application:
+    <ol>
+        <li>Install a web server that supports PSGI, such as Starman: Use the command `cpanm Starman`.To install and setup Starman using cPanel, you can follow these steps:
+ <ol>
+        <li>Log into your cPanel account.</li>
+        <li>Navigate to the \"Perl Modules\" section under the \"Software\" category.</li>
+        <li>In the \"Perl Modules\" section, you can install new Perl modules. In the \"Install a Perl Module\" box, type `Starman` and click on \"Install Now\".</li>
+        <li>After the installation is complete, you will see a confirmation message.</li>
+    </ol>
+        <li>Create a PSGI file for your Catalyst application. This file tells the web server how to run your application.</li>
+        <li>Configure your web server to use the PSGI file. For Starman, you can run your application with the command: `starman --listen :5000 myapp.psgi`.</li>
+        <li>Pull the latest release version from your GitHub repository using the command: `git pull origin master`.</li>
+        <li>Restart your web server to apply the updates. For Starman, you can use `pkill starman` to stop the server, and then use the `starman` command to start it again.</li>
+    </ol>
+</li>
+            <li>install and Setup server to deliver catalyst application.</li>
+            in root setup steps we are working on";
+        $template->process(\$template_content, $vars, \$output) || die $template->error();
+        $site_content = $output;
     } else {
         $site_content = 'Default content';
     }

@@ -22,9 +22,10 @@
 	                                  ORDER BY link_order
 	                                  ")%]
 
-	       <a href="site=[% SiteName %]&amp;page=[% link.page_code %]" name="Contact" target="[% link.target %]" title=" [% linkview_.name %] "><font   class="LeftSideBarNavStyle">[% link.view_name %]</font></a>
+	       <a href="&amp;page=[% link.page_code %]" name="Contact" target="[% link.target %]"
+              title=" [% linkview_.name %] "><font   class="LeftSideBarNavStyle">[% link.view_name %]</font></a>
      [% IF c.session.group == 'admin' %]
-        <a href="/edit_link?link_id=[% link.id %]">Edit/Delete</a>
+        <a href="/edit_link?link_id=[% link.record_id %]">Edit/Delete</a>
         [% END %]
 
 
