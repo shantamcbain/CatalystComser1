@@ -368,7 +368,6 @@ sub default :Path {
     $c->response->status(404);
 }
 use Template;
-
 sub setup :Pathsub setup :Path('/setup') :Args(0) {
     my ($self, $c) = @_;
 
@@ -377,6 +376,10 @@ sub setup :Pathsub setup :Path('/setup') :Args(0) {
 
     # Store the list of databases in the stash
     $c->stash(databases => $databases);
+
+    # Get the domain name from the request
+    my $domain = $c->request->uri->host;
+    $c->session->{Domain} = $domain;
 
     # Determine the site-specific content
     my $site_name = $c->stash->{SiteName};
@@ -413,8 +416,30 @@ sub setup :Pathsub setup :Path('/setup') :Args(0) {
             <li>install and Setup server to deliver catalyst application.</li>
             in root setup steps we are working on";
         $template->process(\$template_content, $vars, \$output) || die $template->error();
+        $site_content = $output;}
+     elsif ($site_name eq 'Monashee') {
+        my $template_content = "<h2>[% SiteName %]</h2>
+        <ol>
+<li>Create script to search files for documents and place them in a csv document for manipulation.
+
+    <ol>
+        <li>Search drive for all documents and store in a currently underdevelopment.</li>
+        <li></li>
+        <li> </li>
+        <li></li>
+    </ol>
+        <li>Create table that will store all the files in a database.</li>
+        <li>Create a password management system for storing all passwords for the coop </li>
+        <li>Create a system to update prices in Square start with spreadsheet but move to an application that can
+        automatialy update prices in Square.</li>
+        <li></li>
+    </ol>
+</li>
+            <li></li>
+            ";
+        $template->process(\$template_content, $vars, \$output) || die $template->error();
         $site_content = $output;
-    } else {
+   } else {
         $site_content = 'Default content';
     }
 
@@ -427,6 +452,7 @@ sub setup :Pathsub setup :Path('/setup') :Args(0) {
     # Forward to the view
     $c->forward($c->view('TT'));
 }
+
 
 __PACKAGE__->meta->make_immutable;
 
