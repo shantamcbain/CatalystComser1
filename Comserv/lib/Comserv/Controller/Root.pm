@@ -29,6 +29,7 @@ sub index :Path :Args(0) {
     my %site_to_template = (
         'SunFire' => 'SunFire/SunFire.tt',
         'BMaster' => 'BMaster/BMaster.tt',
+        'Brew'    => 'Brew/Brew.tt',
         'CSC' => 'CSC/CSC.tt',
         'Dev' => 'dev/index.tt',
         'Forager' => 'Forager/Forager.tt',
@@ -92,22 +93,22 @@ sub auto :Private {
             $c->session->{SiteName} = 'Shanta';
         }
         elsif ($domain =~ /dev\.computersystemconsulting\.ca$/ || $domain =~ /Dev$/) {
-            $c->stash->{SiteName} = 'Shanta';
-            $c->session->{SiteName} = 'Shanta';
+            $c->stash->{SiteName} = 'CSCDev';
+            $c->session->{SiteName} = 'CSCDev';
         }
         elsif ($domain =~ /forager\.com$/ || $domain =~ /Forager$/) {
             $c->stash->{SiteName} = 'Forager';
             $c->session->{SiteName} = 'Forager';
         }
-        elsif ($domain =~ /monasheecoopsupport.computersystemconsulting.ca$/
+        elsif ($domain =~ /monashee.computersystemconsulting.ca$/
             || $domain =~ /Monashee$/) {
             $c->stash->{SiteName} = 'Monashee';
             $c->session->{SiteName} = 'Monashee';
         }
-        elsif ($domain =~ /onnashe\.computersystemconsulting\.ca$/
-            || $domain =~ /shanta\.weaverbeck\.com$/ || $domain =~ /Shanta$/) {
-            $c->stash->{SiteName} = 'Shanta';
-            $c->session->{SiteName} = 'Shanta';
+        elsif ($domain =~ /brew\.computersystemconsulting\.ca$/
+            || $domain =~ /brew\.weaverbeck\.com$/ || $domain =~ /Brew$/) {
+            $c->stash->{SiteName} = 'Brew';
+            $c->session->{SiteName} = 'Brew';
         }
         elsif ($domain =~ /usbm\.computersystemconsulting\.ca$/
             || $domain =~ /usbm\.ca$/ || $domain =~ /USBM$/) {
