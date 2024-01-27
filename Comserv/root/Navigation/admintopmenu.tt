@@ -69,7 +69,7 @@
             <div class="submenu-item">
                 <span class="submenu-header">Other Options</span>
                 <div class="submenu">
-                    [% IF debug_mode == 1 %]
+                    [% IF c.session.debug_mode == 1 %]
                         <a href="[% c.session.return_url %]?&debug=0">Toggle Debug Mode OFF</a>
                     [% ELSE %]
                         <a href="[% c.session.return_url %]?debug=1">Toggle Debug Mode ON</a>

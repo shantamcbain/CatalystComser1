@@ -100,7 +100,7 @@ sub auto :Private {
             $c->stash->{SiteName} = 'Forager';
             $c->session->{SiteName} = 'Forager';
         }
-        elsif ($domain =~ /monashee.computersystemconsulting.ca$/
+        elsif ($domain =~ /monashee\.computersystemconsulting\.ca$/
             || $domain =~ /Monashee$/) {
             $c->stash->{SiteName} = 'Monashee';
             $c->session->{SiteName} = 'Monashee';

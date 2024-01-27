@@ -1,4 +1,4 @@
-[% PageVersion	= 'DefautVariaables.tt,v 0.01 2024/01/12 shanta Exp shanta '	%]
+[% PageVersion	= 'DefautVariables.tt,v 0.01 2024/01/12 shanta Exp shanta '	%]
 [% IF c.session.debug_mode == 1 %]
  [%	PageVersion %]
     [% "Debugging HostName: " _ HostName %]
