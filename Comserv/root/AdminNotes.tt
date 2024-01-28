@@ -8,7 +8,7 @@
 [% SiteName = c.session.SiteName %]
 [% username = c.session.username %][%# username  %]
  [% Page = c.session.page %]
- [% SiteName %]
+ [%# SiteName %]
 [% group = c.session.group %]
 		[% IF group    ==  'Alegro_admin' OR
 			       group    ==  'Apis_Admin' OR

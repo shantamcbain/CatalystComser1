@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module version="4">
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <perl5>
+      <path value="file://$MODULE_DIR$/Comserv/root" type="ttk2-templates" />
+    </perl5>
+    <content url="file://$MODULE_DIR$" />
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
   <component name="SonarLintModuleSettings">
-    <option name="uniqueId" value="910adfaf-3e03-4a2e-a912-b23afef2d327" />
+    <option name="uniqueId" value="7d74cc81-0a29-4bf4-bf36-56c7dcd901b2" />
   </component>
 </module>

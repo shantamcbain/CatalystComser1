@@ -14,7 +14,16 @@ sub csc :Path('/CSC') {
     $c->stash(template => 'CSC/CSC.tt', layout => 'layout.tt');
     $c->forward($c->view('TT'));  # Render the template
 }
-
+sub voip :Path('/voip') {
+    my ($self, $c) = @_;
+    $c->stash(template => 'CSC/voip.tt');
+    $c->forward($c->view('TT'));  # Render the template
+}
+sub helpdesk :Path('/HelpDesk') {
+    my ($self, $c) = @_;
+    $c->stash(template => 'CSC/HelpDesk.tt');
+    $c->forward($c->view('TT'));  # Render the template
+}
 __PACKAGE__->meta->make_immutable;
 
 1;

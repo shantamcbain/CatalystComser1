@@ -78,7 +78,15 @@ sub submit_admin_notes {
     my $sth = $dbh->prepare("UPDATE page_tb SET body = ? WHERE page_code = 'SiteAdminNotes' AND sitename = ?");
     $sth->execute($body, $self->session->{SiteName});
 }
+sub documentation :Local :Args(0) {
+    my ( $self, $c ) = @_;
 
+    # Set the template for the view
+    $c->stash(template => 'Documentation/Documentation.tt');
+
+    # Render the template
+    $c->forward( $c->view('TT') );
+}
 
 =encoding utf8
 

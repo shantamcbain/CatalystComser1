@@ -3,6 +3,7 @@ use Moose;
 use namespace::autoclean;
 use Data::Dumper;
 use JSON::MaybeXS qw(encode_json);
+use Template;
 BEGIN { extends 'Catalyst::Controller' }
 
 sub stash_dump {
@@ -53,7 +54,6 @@ sub index :Path :Args(0) {
     # Forward to the view
     $context->forward($context->view('TT'));
 }
-
 sub auto :Private {
     my ($self, $c) = @_;
 
@@ -284,43 +284,11 @@ sub show_tables_post :Path('/show_tables') :Args(0) {
     $c->stash(tables => $tables);
 
     # Set the template
-    $c->stash(template => 'show_tables.tt');
-
-    # Forward to the view
-    $c->forward($c->view('TT'));
-}
-sub show_tables_post :Path('/show_tables') :Args(0) {
-    my ($self, $c) = @_;
-
-    # Retrieve the selected database from the body parameters
-    my $database = $c->request->body_parameters->{database};
-
-    # Check if the database is defined
-    if (!defined $database) {
-        $c->stash(error_message => 'No database specified.');
-        return;
-    }
-
-    # Retrieve the list of tables
-    my $tables = $c->model('DB')->get_tables($c, $database);
-
-    # Check if the tables are defined
-    if (!defined $tables) {
-        $c->stash(error_message => 'Failed to retrieve the list of tables.');
-        return;
-    }
-
-    # Store the database name and list of tables in the stash
-    $c->stash(database => $database);
-    $c->stash(tables => $tables);
-
-    # Set the template
     $c->stash(template => 'setup/tables.tt');
 
     # Forward to the view
     $c->forward($c->view('TT'));
 }
-
 sub search_schema :Path('/search_schema') :Args(0) {
     my ($self, $c) = @_;
     Comserv::debug_log($debug . __LINE__ . " Enter search_schema\n");
@@ -368,7 +336,6 @@ sub default :Path {
     $c->response->body('Page not found');
     $c->response->status(404);
 }
-use Template;
 sub setup :Pathsub setup :Path('/setup') :Args(0) {
     my ($self, $c) = @_;
 
