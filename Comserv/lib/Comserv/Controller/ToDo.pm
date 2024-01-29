@@ -284,17 +284,18 @@ sub details :Path('todo/details') :Args(3) {
     print $debug . __LINE__ . " database: $database, table: $table, record_id: $record_id\n";  # Debug print
 
     # Construct the model name from the database and table names
-    my $model = 'Model::' . ucfirst($database);
+    my $model = 'Comserv::Model::Schema::' . ucfirst($database) . '::Result::' . ucfirst($table);
     print $debug . __LINE__ . " model: $model\n";  # Debug print
-    # Retrieve the record from the database using the record_id
-   # Retrieve the record from the database using the record_id
-    if (!$model) {
-        die "Model $model does not exist";
+
+    # Retrieve the model object
+    my $model_obj = $c->model($model);
+    if (!defined $model_obj) {
+        print $debug . __LINE__ . " model object is undefined\n";  # Debug print
+        return;
     }
-    print $debug . __LINE__ . " model instance: " . ref($model) . "\n";  # Debug print
 
-    my $record = $c->model($model)->resultset(ucfirst($table))->find($record_id);
-
+    # Retrieve the record from the database using the record_id
+    my $record = $model_obj->search({ record_id => $record_id })->single;
 
     # Check if the record exists
     if (!$record) {

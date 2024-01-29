@@ -93,7 +93,14 @@ __PACKAGE__->config(
         WRAPPER => 'layout.tt',
         TEMPLATE_EXTENSION => '.tt',
     },
-#    'Controller::BMaster' => { path => '/BMaster' },
+    'Model::Ency' => {
+    schema_class => 'Comserv::Model::Schema::Ency',
+},
+    'Model::ShantaForager' => {
+        schema_class => 'Comserv::Model::Schema::ShantaForager',
+    },
+
+    #    'Controller::BMaster' => { path => '/BMaster' },
 #    'Controller::CSC' => { path => '/CSC' },
 #    'Controller::USBM' => { path => '/USBM' },
 #    'Controller::ToDo' => { path => '/todo' },
@@ -130,13 +137,7 @@ __PACKAGE__->config(
     #'Model::DB' => {
     #    schema_class => 'Comserv::Model::Schema',
     #},
-    'Model::Ency' => {
-        schema_class => 'Comserv::Model::Schema::Ency',
-    },
-    'Model::ShantaForager' => {
-        schema_class => 'Comserv::Model::Schema::ShantaForager',
-    },
-    'Model::CssForm' => {
+     'Model::CssForm' => {
         class => 'Comserv::Model::CssForm',
     },
     'Plugin::Authentication' => {
