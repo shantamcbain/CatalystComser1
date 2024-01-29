@@ -362,30 +362,65 @@ sub setup :Pathsub setup :Path('/setup') :Args(0) {
     if ($site_name eq 'BMaster') {
         $site_content = 'BMaster content in root setup';
     }
-    elsif ($site_name eq 'CSC') {
-        my $template_content = "<h2>[% SiteName %]</h2>
-        <ol>
-<li>
-    Install and setup server to deliver Catalyst application:
+ elsif ($site_name eq 'CSC') {
+    my $template_content = "<h2>[% SiteName %]</h2>
     <ol>
-        <li>Install a web server that supports PSGI, such as Starman: Use the command `cpanm Starman`.To install and setup Starman using cPanel, you can follow these steps:
- <ol>
-        <li>Log into your cPanel account.</li>
-        <li>Navigate to the \"Perl Modules\" section under the \"Software\" category.</li>
-        <li>In the \"Perl Modules\" section, you can install new Perl modules. In the \"Install a Perl Module\" box, type `Starman` and click on \"Install Now\".</li>
-        <li>After the installation is complete, you will see a confirmation message.</li>
-    </ol>
-        <li>Create a PSGI file for your Catalyst application. This file tells the web server how to run your application.</li>
-        <li>Configure your web server to use the PSGI file. For Starman, you can run your application with the command: `starman --listen :5000 myapp.psgi`.</li>
-        <li>Pull the latest release version from your GitHub repository using the command: `git pull origin master`.</li>
-        <li>Restart your web server to apply the updates. For Starman, you can use `pkill starman` to stop the server, and then use the `starman` command to start it again.</li>
-    </ol>
-</li>
-            <li>install and Setup server to deliver catalyst application.</li>
-            in root setup steps we are working on";
-        $template->process(\$template_content, $vars, \$output) || die $template->error();
-        $site_content = $output;}
-     elsif ($site_name eq 'Monashee') {
+        <li>Install Starman, a web server that supports PSGI:
+            <ol>
+                <li>Use the command `cpanm Starman` to install Starman.</li>
+                <li>Alternatively, you can install and setup Starman using cPanel by following these steps:
+                    <ol>
+                        <li>Log into your cPanel account.</li>
+                        <li>Navigate to the \"Perl Modules\" section under the \"Software\" category.</li>
+                        <li>In the \"Perl Modules\" section, you can install new Perl modules. In the \"Install a Perl Module\" box, type `Starman` and click on \"Install Now\".</li>
+                        <li>After the installation is complete, you will see a confirmation message.</li>
+                    </ol>
+                </li>
+            </ol>
+        </li>
+        <li>Prepare your Catalyst application:
+            <ol>
+                <li>Create a PSGI file for your Catalyst application. This file tells the web server how to run your application.</li>
+                <li>Install the dependencies of your application using the command: `cpanm --installdeps .`</li>
+                <li>Pull the latest release version from your GitHub repository using the command: `git pull origin master`.</li>
+            </ol>
+        </li>
+        <li>Configure Starman to run your application:
+            <ol>
+                <li>Use the command: `starman --listen :5000 comserv.psgi` to run your application.</li>
+                <li>If you want Starman to keep running even after logging out, use the command: `nohup starman --listen :5000 starman.psgi &`</li>
+            </ol>
+        </li>
+        <li>Setup Starman to run on boot:
+            <ol>
+                <li>Create a systemd service file for Starman. Open a new file in <code>/etc/systemd/system/</code> directory. You can name it <code>starman.service</code>.</li>
+                <li>Add the following content to the file:
+                    <pre>
+                    [Unit]
+                    Description=Starman
+                    After=network.target
+
+                    [Service]
+                    ExecStart=/usr/local/bin/starman --listen :5000 /home/shantam/PycharmProjects/CatalystComser1/Comserv/starman.psgi
+                    WorkingDirectory=/home/shantam/PycharmProjects/CatalystComser1/Comserv
+                    User=shantam
+                    Group=shantam
+                    Restart=always
+
+                    [Install]
+                    WantedBy=multi-user.target
+                    </pre>
+                </li>
+                <li>After saving the file, reload the systemd manager configuration with: <code>sudo systemctl daemon-reload</code></li>
+                <li>Enable the service to start on boot: <code>sudo systemctl enable starman</code></li>
+                <li>You can start the service immediately with: <code>sudo systemctl start starman</code></li>
+                <li>To check the status of the service, use: <code>sudo systemctl status starman</code></li>
+            </ol>
+        </li>
+    </ol>";
+    $template->process(\$template_content, $vars, \$output) || die $template->error();
+    $site_content = $output;
+}     elsif ($site_name eq 'Monashee') {
         my $template_content = "<h2>[% SiteName %]</h2>
         <ol>
 <li>Create script to search files for documents and place them in a csv document for manipulation.
