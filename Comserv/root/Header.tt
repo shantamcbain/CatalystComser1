@@ -40,6 +40,8 @@
     [% IF SiteName == "CSC" %]
         [% embed('CSCWHMCSInterface') %]
     [% END %]
+    <link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/log.css') %]">
+
     <script src="static/js/sub-menu.js"></script>
     <script language="javascript" type="text/javascript">
         function switchpage(select) {
