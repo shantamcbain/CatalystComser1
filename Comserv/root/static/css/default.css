@@ -93,3 +93,6 @@ nav {
 .submenu-item:hover .submenu {
     display: block;
 }
+    .log-row {
+        border: 1px solid black;
+    }
