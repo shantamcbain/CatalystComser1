@@ -12,7 +12,7 @@
         <h2>Log Data:</h2>
         <table>
     <thead>
-        <tr class="log-row">
+        <tr >
             <th>Date</th>
             <th>SiteName</th>
             <th>Message</th>
@@ -20,7 +20,7 @@
     </thead>
     <tbody>
         [% FOREACH entry IN log_data %]
-            <tr>
+            <tr class="log-row">
                 <td>[% entry.0 %]</td>
                 <td>[% entry.1 %]</td>
                 <td>[% entry.2 %]</td>

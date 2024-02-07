@@ -42,8 +42,7 @@ sub log_form :Path('log_form') :Args(0) {
 
     # Pass the context object and the message to the write_log method
     $log_model->write_log($c, $message);
-    $log_model->write_log($c, $message);
-    }
+     }
 
     # Pass the context object to the get_log_data method
     my $log_data = $log_model->get_log_data($c);
