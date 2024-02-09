@@ -4,23 +4,6 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
-=head1 NAME
-
-Comserv::Controller::Log - Catalyst Controller
-
-=head1 DESCRIPTION
-
-Catalyst Controller.
-
-=head1 METHODS
-
-=cut
-
-
-=head2 index
-
-=cut
-
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
