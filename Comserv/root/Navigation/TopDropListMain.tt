@@ -11,7 +11,7 @@
          <li class="horizontal-dropdown">
                 <a href="#" class="dropbtn">Main</a>
                 <div class="dropdown-content">
-                    <a href="[% c.uri_for('/' _ c.session.SiteName)%]" onclick="activateSite('Home')">Home</a>
+                    <a href="[% c.uri_for('/' )%]" onclick="activateSite('Home')">Home</a>
                     <a href="[% c.session.return_url %]">Go Back</a>
                <span><a href="[% c.uri_for('/workshops') %]" onclick="activateSite('Workshops')" target="_blenk">Workshops</a></span>
 

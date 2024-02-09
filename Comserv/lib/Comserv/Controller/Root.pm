@@ -82,6 +82,11 @@ sub auto :Private {
             $c->stash->{SiteName} = 'SunFire';
             $c->session->{SiteName} = 'SunFire';
         }
+        elsif ($domain =~ /beemaster.ca\.ca$/
+            || $domain =~ /BMaster$/) {
+            $c->stash->{SiteName} = 'BMaster';
+            $c->session->{SiteName} = 'BMaster';
+        }
         elsif ($domain =~ /computersystemconsulting\.ca$/
             || $domain =~ /CSC$/) {
             $c->stash->{SiteName} = 'CSC';
