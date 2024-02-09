@@ -38,10 +38,6 @@ my $debug = "Comserv::Model::DB Line #";
 print $debug . __LINE__ . "\n";
 print $debug . __LINE__ . " Caller line: " . (caller(1))[2] . ", Caller sub: " . (caller(1))[3] . ", Caller Package: " . (caller(1))[0] . "\n";
 
-my $env_master_key = '12345678901234567890123456789012';
-$ENV{MASTER_KEY} = $env_master_key;
-print $debug . __LINE__ . " MASTER_KEY: $ENV{MASTER_KEY}\n";
-
 
 # Builder method to create the DBI handle
 sub _build_dbh {

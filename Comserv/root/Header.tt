@@ -41,6 +41,7 @@
         [% embed('CSCWHMCSInterface') %]
     [% END %]
     <link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/log.css') %]">
+    <link rel="stylesheet" type="text/css" href="[% c.uri_for('/static/css/menu.css') %]">
 
     <script src="static/js/sub-menu.js"></script>
     <script language="javascript" type="text/javascript">

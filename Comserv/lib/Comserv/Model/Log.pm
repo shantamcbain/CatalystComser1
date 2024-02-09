@@ -6,27 +6,6 @@ use DateTime;
 use Text::CSV;
 extends 'Catalyst::Model';
 
-=head1 NAME
-
-Comserv::Model::Log - Catalyst Model
-
-=head1 DESCRIPTION
-
-Catalyst Model.
-
-
-=encoding utf8
-
-=head1 AUTHOR
-
-Shanta McBain
-
-=head1 LICENSE
-
-This library is free software. You can redistribute it and/or modify
-it under the same terms as Perl itself.
-
-=cut
 use IO::Handle;  # Import the IO::Handle module to get the autoflush method
 
 use IO::Handle;  # Import the IO::Handle module to get the autoflush method
@@ -41,8 +20,10 @@ sub write_log {
     # Get the current date and time
     my $date = DateTime->now->strftime('%Y-%m-%d %H:%M:%S');
 
-    # Escape any quotes in the message
-    $message =~ s/"/""/g;
+    # Validate the message
+    # Remove or escape any characters that are not allowed in a CSV file
+    $message =~ s/"/""/g;  # Escape any quotes
+    $message =~ s/,/\\,/g;  # Escape any commas
 
     # Format the message as a CSV record
     $message = "$date,$site_name,\"$message\"\n";
@@ -87,6 +68,7 @@ sub get_log_data {
         # Read the log data
         my @log_data;
         while (my $row = $csv->getline($log_file)) {
+            print "Date: $row->[0], SiteName: $row->[1]\n";  # Print the date and SiteName for each log entry
             push @log_data, $row;
         }
 
@@ -94,7 +76,7 @@ sub get_log_data {
         close $log_file;
 
         # Filter the log data based on the SiteName and sort by date
-        my @filtered_log_data = sort { $a->[0] cmp $b->[0] } grep { $_->[1] eq $site_name } @log_data;
+        my @filtered_log_data = sort { $a->[0] cmp $b->[0] } grep { print "Comparing $_->[1] with $site_name\n"; $_->[1] eq $site_name } @log_data;
 
         # If the filtered log data is empty, return a default message
         return @filtered_log_data ? \@filtered_log_data : 'No log entries for this site.';

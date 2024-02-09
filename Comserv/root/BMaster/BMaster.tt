@@ -2,8 +2,6 @@
 [% PageVersion	= 'Bmaster.tt,v 0.01 2023/08/30 shanta Exp shanta '	%]
 [% IF debug_mode == 1 %]
  [%	PageVersion %]
-    [% "Debugging HostName: " _ HostName %]
-    [% INCLUDE 'debug.tt' %]
 [% END %]
 <h1>BMaster Module</h1>
 <p>Welcome to the BMaster Module of our application!</p>
